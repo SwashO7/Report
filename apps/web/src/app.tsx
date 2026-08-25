@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { createBrowserRouter, RouterProvider, Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, Routes, Route, BrowserRouter } from 'react-router-dom';
 import { AuthProvider, useAuth, isAdminRole } from '@/lib/auth';
 import { ToastProvider } from '@/components/ui/toast';
 import { PublicLayout } from '@/layouts/public-layout';
@@ -125,13 +125,13 @@ function AppRoutes() {
   );
 }
 
-import { Routes, Route } from 'react-router-dom';
-
 export function App() {
   return (
     <AuthProvider>
       <ToastProvider>
-        <RouterProvider router={createBrowserRouter([{ element: <AppRoutes /> }])} />
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
       </ToastProvider>
     </AuthProvider>
   );
