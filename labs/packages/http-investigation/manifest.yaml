@@ -1,0 +1,18 @@
+id: http-investigation
+version: 1.0.0
+title: HTTP Investigation - The Daily Packet
+category: web-security
+difficulty: beginner
+runtime:
+  type: docker
+  compose_file: docker-compose.yml
+metadata:
+  estimated_time: 20
+  xp: 150
+objectives:
+  - Inspect raw HTTP responses from the blog
+  - Reassemble the token hidden across headers, robots.txt and cookies
+hints:
+  - "HTTP responses carry more than the body: inspect headers."
+  - "curl -i http://localhost:8082 shows response headers. Check / , /robots.txt and /login."
+  - "Combine the X-Debug-Token header, a robots.txt comment, and a cookie value."

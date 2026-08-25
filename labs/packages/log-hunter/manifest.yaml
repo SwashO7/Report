@@ -1,0 +1,18 @@
+id: log-hunter
+version: 1.0.0
+title: Log Hunter - The Leaked Secret
+category: linux
+difficulty: beginner
+runtime:
+  type: docker
+  compose_file: docker-compose.yml
+metadata:
+  estimated_time: 25
+  xp: 150
+objectives:
+  - Enter the running container and locate the log directory
+  - Search the logs for the secret that should never have been written to disk
+hints:
+  - "SSH into the container with docker compose exec target sh and explore /var/log/suraksha."
+  - "grep -r SURAKSHA /var/log/suraksha would find it directly; try grep -r 'Accepted password' first for the intended path."
+  - "The line is in auth.log, in an sshd 'Accepted password' entry."

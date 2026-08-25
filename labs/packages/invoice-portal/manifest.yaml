@@ -1,0 +1,18 @@
+id: invoice-portal
+version: 1.0.0
+title: Invoice Portal - Acme Corp Billing
+category: web-security
+difficulty: intermediate
+runtime:
+  type: docker
+  compose_file: docker-compose.yml
+metadata:
+  estimated_time: 30
+  xp: 250
+objectives:
+  - Log in to the portal with the provided demo account
+  - Investigate what resources an account can reach beyond its own list
+hints:
+  - "Notice how the app addresses resources: /invoice?id=1001."
+  - "Identifiers that increment predictably invite curiosity. What other ids might exist?"
+  - "Request id=1003 while logged in as guest."

@@ -1,0 +1,2724 @@
+SURAKSHA LABS — COMPLETE PRODUCT BUILD PROMPT
+
+You are building the complete production-ready web platform for:
+
+Suraksha Labs by Shadow Security
+
+This is not a prototype, mockup, static landing page, UI-only implementation, or proof of concept.
+
+Starting state:
+
+The repository is an empty folder.
+There is only the provided company logo asset in the project directory.
+Use that logo as the brand source.
+Convert/adapt the logo to a clean white version suitable for the Suraksha Labs dark/light visual system.
+Do not ask me questions.
+Do not stop at a partially implemented frontend.
+Make reasonable product, UX, architecture, security, and infrastructure decisions yourself.
+Continue until the complete application is functional, integrated, tested, and deployable.
+
+The final result must feel like a real product built by an experienced product/design/engineering team.
+
+1. PRODUCT PURPOSE
+
+Suraksha Labs is a free cybersecurity learning and practical training platform operated by Shadow Security.
+
+Its purpose is to take someone who may know little or nothing about cybersecurity and gradually develop their practical cybersecurity skills through:
+
+Learning → Practice → Labs → Progression → Community → Cybersecurity competency
+
+The eventual ecosystem will lead strong learners toward Suraksha VDP, but VDP-readiness examinations/certification are NOT part of this current implementation.
+
+Do not implement the future VDP examination system now.
+
+The current product must focus on making Suraksha Labs itself exceptional.
+
+The central product philosophy:
+
+Anyone should be able to start cybersecurity from zero, learn concepts in a practical way, immediately apply them, solve realistic security challenges, see measurable progress, and feel proud of their achievements.
+
+2. PRODUCT PRINCIPLES
+
+Build the product around these principles:
+
+Beginner-friendly.
+Practical rather than theory-heavy.
+Learn concepts and solve challenges as separate experiences.
+Progression from absolute beginner to advanced cybersecurity topics.
+Local CTF-style labs for the initial infrastructure model.
+Strong gamification without making the website look like a childish game.
+Premium, calm, modern UX.
+Strong identity for Suraksha Labs.
+Extremely modular architecture.
+Admin-controlled content.
+Security-first engineering.
+Excellent performance.
+Easy future expansion.
+No unnecessary infrastructure cost.
+No developer should need to modify application source code every time the team wants to add or modify educational content.
+3. BRAND AND VISUAL IDENTITY
+
+The product name must be prominently represented as:
+
+Suraksha Labs
+by Shadow Security
+
+Suraksha Labs should have its own visual identity while remaining clearly associated with Shadow Security.
+
+Use the provided logo as the source asset.
+
+Create/adapt a white version of the logo for the appropriate surfaces.
+
+Do not distort the logo.
+
+Do not introduce random branding.
+
+Do not use generic cybersecurity imagery as the primary design language.
+
+4. DESIGN DIRECTION
+
+The website must NOT look:
+
+hackerish
+Matrix-inspired
+cyberpunk
+neon green terminal themed
+like Kali Linux
+like an outdated LMS
+like a generic SaaS template
+like an AI-generated/vibe-coded website
+overly corporate
+overly gamified
+childish
+visually noisy
+
+Avoid:
+
+falling Matrix characters
+unnecessary terminal backgrounds
+excessive glow
+neon gradients everywhere
+excessive glassmorphism
+random 3D objects
+giant meaningless hero graphics
+emoji-based badges
+emoji-based navigation
+excessive animations
+
+The design should feel like it was created by a highly experienced product designer.
+
+Think:
+
+premium education platform + modern technology product + subtle security identity
+
+The product should feel calm, intelligent, trustworthy, modern and enjoyable.
+
+5. DESIGN SYSTEM
+
+Create a proper reusable design system before building individual pages.
+
+Define:
+
+typography
+font hierarchy
+spacing scale
+border radius
+shadows
+cards
+buttons
+inputs
+tabs
+dropdowns
+modals
+tooltips
+badges
+progress indicators
+navigation
+tables
+charts
+empty states
+loading states
+error states
+success states
+
+Use a restrained color system.
+
+The primary brand treatment can use a sophisticated dark navy/charcoal foundation with carefully selected accent colors.
+
+The UI should remain accessible and readable.
+
+Do not make every element colorful.
+
+Use color primarily for:
+
+state
+hierarchy
+progress
+important actions
+achievement levels
+warnings/errors
+
+Do not use emojis for achievements, badges, icons, or navigation.
+
+Use Lucide icons or another consistent professional icon library.
+
+6. TECHNOLOGY STACK
+
+Use:
+
+Frontend
+Bun
+React
+TypeScript
+Vite
+Tailwind CSS
+React Router or an equally robust routing solution
+TanStack Query where appropriate
+Zod for validation
+React Hook Form where appropriate
+Lucide React icons
+
+For animation, use a lightweight professional animation solution such as:
+
+Motion / Framer Motion
+
+Use animation carefully.
+
+Prioritize performance over visual effects.
+
+7. BACKEND
+
+Use a clean TypeScript-compatible backend architecture.
+
+Use:
+
+Bun
+TypeScript
+REST API or a clean typed API architecture
+PostgreSQL
+Prisma or Drizzle ORM
+
+Prefer a modular backend architecture with clear separation between:
+
+authentication
+users
+learning
+lessons
+content blocks
+labs
+attempts
+flags
+achievements
+XP
+leaderboards
+notifications
+analytics
+administration
+
+Do not create a monolithic spaghetti backend.
+
+8. DATABASE
+
+Design a normalized, scalable relational schema.
+
+At minimum support entities for:
+
+Users
+id
+name
+username
+email
+avatar
+authentication provider
+role
+account status
+XP
+level
+created_at
+updated_at
+last_active_at
+Roles
+
+Support at minimum:
+
+learner
+content_editor
+lab_manager
+moderator
+administrator
+super_admin
+
+Implement proper authorization.
+
+Do not rely on frontend role checks.
+
+9. AUTHENTICATION
+
+Authentication must be fully functional.
+
+Support:
+
+Email/password authentication
+
+Including:
+
+signup
+login
+logout
+email verification
+password reset
+password change
+session management
+secure password hashing
+account recovery
+Google authentication
+
+Implement working Google OAuth.
+
+Authentication should use secure industry-standard mechanisms.
+
+Do not implement authentication yourself if a mature authentication framework/provider can safely handle it.
+
+The architecture should allow additional OAuth providers later.
+
+10. AUTH UX
+
+The user must NOT see a login page as the first thing when arriving at the website.
+
+The landing page and public product experience should be accessible without authentication.
+
+Visitors can:
+
+understand what Suraksha Labs is
+see the learning journey
+see public information
+see selected public achievements/leaderboard information
+explore the platform
+understand available topics
+
+However:
+
+Users must create an account before actually starting the learning journey.
+
+They should not be able to consume the structured learning curriculum anonymously.
+
+When they click:
+
+Start Learning
+
+show a beautiful signup/login experience.
+
+The signup screen should communicate:
+
+Your progress, achievements and labs are saved to your Suraksha profile.
+
+Do not make authentication feel like an interruption.
+
+11. ONBOARDING
+
+After signup, create a short onboarding experience.
+
+Collect only useful information.
+
+For example:
+
+current experience level
+interests
+optional username/profile setup
+
+Do not create unnecessary forms.
+
+Then automatically place the learner at:
+
+Level 0 — Cybersecurity Foundations
+
+The learner should immediately know:
+
+This is where you start.
+
+12. THE CORE LEARNING MODEL
+
+The platform must distinguish clearly between:
+
+LEARNING
+
+Learning concepts.
+
+Examples:
+
+What is a computer network?
+What is an IP address?
+What is a port?
+What is DNS?
+What is HTTP?
+What is HTTPS?
+What is a cookie?
+What is authentication?
+What is authorization?
+What is SQL injection?
+What is XSS?
+PRACTICE
+
+Applying concepts in controlled exercises.
+
+Examples:
+
+inspect an HTTP request
+use curl
+inspect DNS
+use Nmap
+inspect packets
+identify open ports
+manipulate a request
+identify headers
+perform simple reconnaissance
+LABS
+
+Realistic security challenges where the learner is given an objective and must figure out how to achieve it.
+
+The vulnerability should not necessarily be disclosed.
+
+Example:
+
+Find the vulnerability and retrieve the flag.
+
+This distinction must be reflected throughout the UX.
+
+13. LEARNING PATH
+
+Create a structured progression.
+
+Initial curriculum should start at:
+
+LEVEL 0 — FOUNDATIONS
+
+Topics such as:
+
+How computers communicate
+Internet basics
+IP addresses
+Ports
+TCP/UDP
+DNS
+HTTP
+HTTPS
+Requests and responses
+Headers
+Cookies
+Sessions
+Browsers
+Basic command line concepts
+LEVEL 1 — LINUX
+
+Topics:
+
+terminal basics
+filesystem
+paths
+files
+directories
+permissions
+processes
+pipes
+redirection
+grep
+curl
+wget
+SSH
+networking commands
+package installation
+basic shell usage
+LEVEL 2 — NETWORKING
+
+Topics:
+
+TCP/IP
+OSI model
+TCP
+UDP
+DNS
+ARP
+routing
+NAT
+ports
+firewalls
+packet analysis
+Wireshark
+LEVEL 3 — WEB
+
+Topics:
+
+HTTP
+HTTPS
+browser architecture
+cookies
+sessions
+authentication
+authorization
+access control
+input validation
+SQL injection
+XSS
+CSRF
+path traversal
+file upload
+SSRF
+API security
+business logic vulnerabilities
+LEVEL 4 — RECONNAISSANCE
+
+Topics:
+
+passive reconnaissance
+active reconnaissance
+DNS enumeration
+subdomains
+technology identification
+endpoint discovery
+directories
+parameters
+attack surface mapping
+basic OSINT
+responsible reconnaissance
+
+Tools can include:
+
+Nmap
+curl
+ffuf
+subfinder
+httpx
+Wireshark
+other appropriate tools
+LEVEL 5 — VULNERABILITY RESEARCH
+
+Topics:
+
+vulnerability identification
+validation
+exploitation fundamentals
+impact analysis
+proof of concept
+evidence
+responsible reporting
+remediation understanding
+
+This should eventually prepare users for practical vulnerability research.
+
+14. CONTENT FORMAT
+
+Lessons must support modular content blocks.
+
+At minimum support:
+
+rich text
+headings
+paragraphs
+YouTube video
+external video
+image
+diagram
+code block
+command block
+callout
+warning
+info box
+quiz
+multiple-choice question
+practice exercise
+lab reference
+downloadable resource
+external resource
+related lesson
+related lab
+
+The frontend must render these through reusable components.
+
+15. VIDEO SUPPORT
+
+Videos are an important part of the learning experience.
+
+A lesson such as:
+
+What is HTTP?
+
+can contain:
+
+2-minute video
+
+followed by:
+
+Simple explanation
+
+followed by:
+
+Try it yourself
+
+followed by:
+
+Practice
+
+Videos can come from:
+
+Shadow Security / Suraksha Labs YouTube
+approved external YouTube educational videos
+future self-hosted videos
+
+Admin must be able to add/edit video URLs without modifying application code.
+
+Use proper YouTube embedding.
+
+Do not download or redistribute copyrighted third-party videos.
+
+Store only the metadata/URL necessary for embedding.
+
+16. CONTENT MANAGEMENT SYSTEM
+
+Build a full admin content management system.
+
+Administrators/content editors should be able to:
+
+create modules
+create topics
+reorder topics
+create lessons
+edit lessons
+add/remove content blocks
+add YouTube videos
+add descriptions
+update existing lessons
+add new topics
+add additional resources
+archive content
+publish/unpublish content
+preview content
+save drafts
+
+Content should support:
+
+draft
+published
+archived
+
+Do not require code changes for normal content updates.
+
+17. VERSIONING
+
+Content should support versioning.
+
+If a lesson changes:
+
+preserve version history
+record who changed it
+record when it changed
+allow admins to inspect previous versions
+avoid breaking learner progress
+
+Do not delete historical progress simply because content is edited.
+
+18. LAB SYSTEM
+
+The initial lab infrastructure should be:
+
+LOCAL CTF-STYLE LABS
+
+Do NOT build a cloud container-per-user system for V1.
+
+The learner downloads a lab package and runs it locally.
+
+The vulnerable application runs on the learner's own machine.
+
+The learner finds the flag.
+
+They submit the flag on Suraksha Labs.
+
+The backend validates the flag and awards the completion.
+
+This dramatically reduces infrastructure cost.
+
+19. LAB TYPES
+
+Support an extensible lab system.
+
+Initial lab runtime:
+
+Docker-based local labs
+
+Potential future runtimes:
+
+standalone executables
+VM-based labs
+browser labs
+cloud labs
+
+Do not implement expensive future runtimes unless needed.
+
+Design the architecture so they can be added later.
+
+20. LAB PACKAGE STRUCTURE
+
+Create a standardized lab package format.
+
+Conceptually:
+
+suraksha-lab/
+├── manifest.yaml
+├── docker-compose.yml
+├── app/
+├── setup/
+├── assets/
+└── README.md
+
+The exact structure can be improved if necessary.
+
+Each lab package must contain a machine-readable manifest.
+
+Example conceptual metadata:
+
+id: web-idor-001
+version: 1.0.0
+
+title: Invoice Portal
+category: web-security
+difficulty: intermediate
+
+runtime:
+  type: docker
+  compose_file: docker-compose.yml
+
+metadata:
+  estimated_time: 30
+  xp: 250
+
+objectives:
+  - Find the vulnerable functionality
+  - Retrieve the flag
+
+hints:
+  - ...
+  - ...
+  - ...
+
+Do not expose sensitive flag-generation information unnecessarily.
+
+21. LAB ADMIN PANEL
+
+Admins must be able to create a lab from the dashboard.
+
+Fields should include:
+
+title
+slug
+short description
+detailed description
+category
+difficulty
+estimated completion time
+XP reward
+prerequisites
+learning topics
+skills
+objectives
+setup instructions
+Docker package
+lab manifest
+hints
+flag configuration
+related lessons
+related labs
+published status
+visibility
+version
+author
+reviewer
+
+Support draft/preview/publish.
+
+22. FLAG SYSTEM
+
+The flag should be validated server-side.
+
+Do not trust client-side completion.
+
+Do not simply accept:
+
+
+
+
+The learner submits a flag.
+
+Backend validates it.
+
+If correct:
+
+mark attempt as completed
+award XP
+unlock achievement if applicable
+update progress
+update leaderboard
+generate completion record
+enable sharing
+trigger appropriate notifications
+
+Use secure storage/validation for flags.
+
+Do not unnecessarily expose plaintext flags through frontend APIs.
+
+23. LAB ATTEMPTS
+
+Track:
+
+attempt ID
+user
+lab
+start timestamp
+completion timestamp
+first attempt
+first successful solve
+number of submissions
+hints used
+completion status
+lab version
+client metadata only where appropriate and privacy-safe
+
+Do not collect unnecessary personal information.
+
+24. RETRIES AND LEADERBOARDS
+
+This needs deliberate logic.
+
+Do NOT let repeated retries corrupt meaningful statistics.
+
+Track separately:
+
+First attempt
+
+Whether the user solved it on their first attempt.
+
+First successful solve
+
+The first time they successfully solved the lab.
+
+Personal best
+
+Their fastest successful attempt.
+
+Overall ranking score
+
+Calculated according to the platform's scoring model.
+
+First-solve performance
+
+Used for meaningful percentile statistics.
+
+Example:
+
+Faster than 74% of learners on their first successful solve.
+
+A user may retry to improve their personal best.
+
+That should not rewrite their historical first-solve record.
+
+25. LEADERBOARD
+
+The leaderboard should feel like a real achievement system.
+
+Do not make it look childish.
+
+Create:
+
+Global Leaderboard
+
+Rank users based on a carefully defined scoring model.
+
+Also support:
+
+XP
+level
+labs solved
+first-attempt solve rate
+achievement count
+skill/category rankings
+
+Potential leaderboard categories:
+
+Overall
+Web Security
+Networking
+Recon
+Linux
+Monthly/Seasonal
+
+Design the system so seasonal leaderboards can be added easily.
+
+26. SEASONAL LEADERBOARDS
+
+Architecture should support future seasons.
+
+For example:
+
+Suraksha Cyber League — Season 01
+
+A season can have:
+
+start date
+end date
+leaderboard
+rewards
+featured challenges
+achievements
+
+Do not hardcode the current date or season into the system.
+
+27. XP SYSTEM
+
+Create a flexible XP engine.
+
+XP can come from:
+
+lesson completion
+practice completion
+lab completion
+achievements
+special challenges
+
+XP values must be configurable by admins.
+
+Do not hardcode XP rewards into frontend components.
+
+28. LEVEL SYSTEM
+
+Create configurable levels.
+
+For example:
+
+Level 1
+Level 2
+Level 3
+...
+
+XP thresholds should be database/config driven.
+
+Admins should eventually be able to modify thresholds without rewriting the frontend.
+
+29. ACHIEVEMENTS
+
+Do NOT use random emoji badges.
+
+Use clean professional badge designs and icons.
+
+Achievement examples:
+
+First Lab
+First Blood
+Linux Initiated
+Network Navigator
+Web Hunter
+Recon Specialist
+First Attempt
+No Hint Solve
+Speed Solver
+10 Labs
+25 Labs
+50 Labs
+100 Labs
+Perfect Week
+
+Make achievements visually distinctive.
+
+Support:
+
+title
+description
+icon
+category
+rarity
+unlock criteria
+XP reward
+visibility
+
+Achievements should be shareable.
+
+30. PROFILE
+
+Build a strong learner profile.
+
+Display:
+
+username
+avatar
+level
+XP
+global rank
+percentile
+achievements
+skills
+labs solved
+first-attempt success
+average solve time
+personal bests
+recent activity
+completed learning paths
+
+Do not expose private information.
+
+Users should control profile visibility where appropriate.
+
+31. SHAREABLE ACHIEVEMENTS
+
+After completing a lab, show a polished achievement/result screen.
+
+Example information:
+
+Lab Completed
+
+Broken Authentication
+
++250 XP
+
+First successful solve
+
+Faster than 72% of learners
+
+Achievement unlocked
+
+Then:
+
+Share Achievement
+
+Generate a polished share card.
+
+It should be suitable for:
+
+Instagram Stories
+LinkedIn
+X
+copying a public URL
+
+No emojis.
+
+Use Suraksha Labs branding.
+
+Include a subtle verification/public profile URL.
+
+32. PUBLIC ACHIEVEMENT PAGES
+
+A shared achievement should resolve to a public page.
+
+Example:
+
+/achievements/<public-id>
+
+Show:
+
+user display name
+achievement
+lab
+XP
+relevant statistic
+date
+Suraksha Labs branding
+
+Do not expose sensitive account information.
+
+33. LEARNING PROGRESS
+
+Track:
+
+module progress
+lesson completion
+practice completion
+lab completion
+overall path progress
+
+A learner should always know:
+
+Where am I?
+
+What did I complete?
+
+What should I do next?
+
+34. RECOMMENDATION ENGINE
+
+After finishing a lesson:
+
+Show:
+
+Continue learning
+
+next lesson.
+
+Practice this
+
+relevant exercise.
+
+Try this lab
+
+related challenge.
+
+Do not make users figure out the next step themselves.
+
+35. LAB DISCOVERY
+
+Create a dedicated Labs page.
+
+Filters:
+
+difficulty
+category
+skill
+estimated time
+completion status
+
+Search.
+
+Cards should show:
+
+title
+short description
+difficulty
+category
+estimated time
+XP
+completion status
+
+Do not reveal the vulnerability category if doing so would spoil the challenge.
+
+For example, if the challenge is intended to teach IDOR but the actual mission should require discovery, do not display:
+
+Vulnerability: IDOR
+
+Instead display:
+
+Skills: HTTP, Authentication, Authorization
+
+Use judgment to preserve the challenge.
+
+36. HINT SYSTEM
+
+Every appropriate lab should support hints.
+
+Hints are revealed progressively.
+
+Example:
+
+Hint 1
+
+Conceptual guidance.
+
+Hint 2
+
+More specific direction.
+
+Hint 3
+
+Strong guidance.
+
+Hints should be configurable in admin.
+
+Track hint usage.
+
+Potentially reduce scoring/achievement eligibility when hints are used.
+
+Do not make hints punitive enough that beginners are afraid to use them.
+
+The goal is learning.
+
+37. LEARNING VS CHEATING PHILOSOPHY
+
+Do not build an elaborate anti-cheat system for normal learning labs.
+
+Public labs are educational.
+
+People may:
+
+Google
+watch YouTube
+read walkthroughs
+discuss solutions
+
+That is acceptable.
+
+The purpose is learning.
+
+The future VDP readiness assessment will be a separate controlled system.
+
+Do not build that assessment now.
+
+However, structure the database and architecture so it can be introduced later without rewriting the platform.
+
+38. SECURITY OF SURAKSHA LABS ITSELF
+
+The Suraksha Labs platform must be security-first.
+
+Do not intentionally introduce vulnerabilities into the main Suraksha Labs website.
+
+The vulnerable applications exist ONLY inside intentionally isolated lab packages.
+
+The main platform must follow secure engineering practices.
+
+Implement:
+
+secure authentication
+secure session handling
+CSRF protection where applicable
+strict authorization
+input validation
+output encoding
+secure headers
+CSP where practical
+rate limiting
+brute-force protection
+secure password storage
+secure OAuth implementation
+secure cookies
+server-side authorization
+SQL injection prevention through ORM/parameterized queries
+XSS prevention
+safe file uploads
+safe URL validation
+safe redirects
+audit logging
+secure secrets handling
+dependency hygiene
+error handling without sensitive leakage
+
+Never expose:
+
+database credentials
+secret keys
+OAuth secrets
+internal infrastructure details
+server stack traces
+plaintext passwords
+plaintext sensitive tokens
+39. LAB PACKAGE SECURITY
+
+Although labs are intentionally vulnerable, treat lab packages as untrusted execution environments.
+
+Document that the vulnerable application is intentionally insecure.
+
+The main platform must never directly execute arbitrary learner-submitted lab code.
+
+Do not let uploaded lab packages automatically execute on the main application server.
+
+Lab package uploads should be:
+
+validated
+stored safely
+access controlled
+versioned
+reviewed
+separated from the main runtime
+40. ADMIN SECURITY
+
+The admin panel must have strict role-based access control.
+
+Do not rely on hidden frontend routes.
+
+Every admin API endpoint must enforce authorization server-side.
+
+Sensitive admin operations should be logged.
+
+Track:
+
+who changed content
+who published a lab
+who modified flags
+who changed XP
+who changed achievements
+who changed user roles
+41. AUDIT LOG
+
+Create an audit log system.
+
+Events include:
+
+login
+failed login
+password reset
+OAuth login
+role change
+content edit
+lab creation
+lab modification
+lab publish
+lab archive
+flag modification
+achievement modification
+administrative action
+
+Admin should be able to inspect audit history.
+
+42. RATE LIMITING
+
+Implement appropriate rate limits for:
+
+authentication
+password reset
+flag submissions
+public APIs
+achievement generation
+share generation
+admin APIs
+
+Do not rate-limit normal learning interactions excessively.
+
+43. EMAIL SYSTEM
+
+Build a proper email architecture.
+
+Support:
+
+email verification
+password reset
+welcome email
+lab completion
+achievement unlocked
+rank milestone
+new content notification
+optional weekly activity summary
+announcements
+
+Do not spam users.
+
+Create email templates managed through the backend/admin architecture.
+
+The email provider must be configurable through environment variables.
+
+44. NOTIFICATIONS
+
+Build a notification system.
+
+Support:
+
+in-app notifications
+email notifications
+
+Examples:
+
+New lab available.
+
+Achievement unlocked.
+
+You moved into the top 10%.
+
+New learning module released.
+
+Users should have notification preferences.
+
+45. ADMIN DASHBOARD
+
+The admin dashboard should be a real operational dashboard.
+
+Show:
+
+Users
+total users
+active users
+new users
+retention
+signup trends
+Learning
+lessons started
+lessons completed
+module completion
+drop-off
+Labs
+labs started
+labs completed
+completion rate
+average completion time
+hint usage
+attempts
+most popular labs
+hardest labs
+easiest labs
+Engagement
+DAU/WAU/MAU
+streaks
+XP distribution
+leaderboard activity
+Content
+published content
+drafts
+recently modified content
+content requiring review
+
+Use clean charts.
+
+Do not overload the dashboard.
+
+46. LAB ANALYTICS
+
+For each lab, admins should see:
+
+starts
+completions
+completion percentage
+average time
+median time
+first-attempt success
+hint usage
+retry rate
+failed submissions
+drop-off
+version performance
+
+This lets the team identify poorly designed labs.
+
+47. CONTENT ANALYTICS
+
+For each lesson:
+
+views
+completion
+drop-off point
+video interaction if available
+practice completion
+related lab conversion
+
+The goal is to understand:
+
+Does this lesson actually prepare people for the lab?
+
+48. RESPONSIVE DESIGN
+
+The platform must work beautifully on:
+
+desktop
+laptop
+tablet
+mobile
+
+However, prioritize desktop for actual cybersecurity labs because learners will generally use external tools.
+
+Mobile should still provide a high-quality experience for:
+
+browsing
+learning
+profiles
+achievements
+leaderboard
+progress
+49. PERFORMANCE
+
+Performance is a first-class requirement.
+
+Avoid:
+
+massive JS bundles
+unnecessary dependencies
+excessive animation
+huge images
+blocking API calls
+unnecessary client-side rendering
+repeated database queries
+unnecessary polling
+
+Use:
+
+lazy loading
+route-level code splitting
+optimized assets
+caching
+pagination
+efficient database queries
+indexed database fields
+debounced search
+server-side validation
+proper loading states
+
+The website should feel instant.
+
+50. ACCESSIBILITY
+
+Implement proper:
+
+keyboard navigation
+semantic HTML
+focus states
+accessible labels
+contrast
+screen-reader-friendly controls
+reduced-motion support
+
+Do not sacrifice accessibility for aesthetics.
+
+51. ERROR STATES
+
+Every important flow needs proper error handling.
+
+Examples:
+
+login failed
+OAuth failed
+lesson unavailable
+lab package unavailable
+invalid flag
+expired session
+network failure
+permission denied
+admin action failed
+
+Never display raw stack traces to users.
+
+Use polished error states.
+
+52. LOADING STATES
+
+Use skeletons or lightweight loading states.
+
+Do not create flashy loaders everywhere.
+
+The interface should feel stable.
+
+53. EMPTY STATES
+
+Design proper empty states.
+
+Examples:
+
+You haven't completed any labs yet.
+
+Then:
+
+Start your first lab →
+
+Do not show blank screens.
+
+54. ROUTING
+
+Create clean routes.
+
+Conceptually:
+
+/
+ /learn
+ /learn/foundations
+ /learn/foundations/http
+ /practice
+ /labs
+ /labs/<slug>
+ /leaderboard
+ /profile/<username>
+ /achievements/<id>
+ /settings
+
+ /login
+ /signup
+ /forgot-password
+
+ /admin
+ /admin/users
+ /admin/content
+ /admin/lessons
+ /admin/labs
+ /admin/achievements
+ /admin/leaderboard
+ /admin/analytics
+ /admin/audit
+ /admin/settings
+
+Protect routes appropriately.
+
+55. LANDING PAGE
+
+The landing page should be exceptional.
+
+It should communicate:
+
+Learn Cybersecurity.
+Actually Practice It.
+
+Subtext explaining that Suraksha Labs takes learners from fundamentals to practical security skills.
+
+Primary CTA:
+
+Start Learning
+
+Secondary CTA:
+
+Explore Labs
+
+Show the learning journey.
+
+Show selected labs.
+
+Show achievements.
+
+Show community/progression.
+
+Show a concise explanation of how it works:
+
+Learn → Practice → Solve
+
+Do not overwhelm the visitor.
+
+56. DO NOT FORCE AUTHENTICATION ON THE LANDING PAGE
+
+Visitors should be able to explore.
+
+Authentication should happen when they choose to begin meaningful progress.
+
+This is important for conversion.
+
+57. FIRST-TIME LEARNER EXPERIENCE
+
+The first experience should feel extremely polished.
+
+After signup:
+
+Welcome to Suraksha Labs.
+Start from the beginning.
+
+Level 0 — Foundations
+
+Then:
+
+Your first lesson
+
+No complicated dashboard maze.
+
+Guide the user naturally.
+
+58. DASHBOARD
+
+The learner dashboard should show:
+
+Continue Learning
+
+Current lesson.
+
+Your Progress
+
+Overall completion.
+
+Current Level
+
+XP progress.
+
+Recommended Lab
+
+Next appropriate challenge.
+
+Recent Achievements
+
+Latest unlocks.
+
+Leaderboard
+
+Current position.
+
+Recent Activity
+
+Recent learning/lab activity.
+
+The dashboard should answer:
+
+What should I do next?
+
+59. GAMIFICATION PHILOSOPHY
+
+Gamification should feel like professional achievement rather than a children's game.
+
+Use:
+
+XP
+ranks
+levels
+achievements
+streaks
+percentiles
+leaderboards
+seasons
+milestones
+
+Avoid:
+
+cartoon characters
+childish sounds
+excessive confetti
+emoji-heavy UI
+fake "energy" systems
+lives
+arbitrary game mechanics
+
+The learner should feel:
+
+"I'm becoming better at cybersecurity."
+
+not:
+
+"I'm playing a mobile game."
+
+60. NO ARTIFICIAL FRICTION
+
+Do not create:
+
+paywalls
+energy systems
+unnecessary daily limits
+excessive ads
+forced referrals
+
+Suraksha Labs is intended to be free.
+
+The value is building the cybersecurity ecosystem and eventually feeding qualified researchers toward Shadow Security's broader ecosystem.
+
+61. DATA MODEL FOR FUTURE EXPANSION
+
+Do not hardcode:
+
+categories
+levels
+achievements
+XP values
+lesson order
+lab order
+difficulty
+seasons
+badges
+
+Make these database/config driven.
+
+Future systems should be able to plug into:
+
+Suraksha VDP
+competitions
+assessments
+certificates
+researcher profiles
+community
+organizations
+
+without requiring a complete rewrite.
+
+62. FUTURE VDP COMPATIBILITY
+
+Do not implement the VDP assessment now.
+
+But create appropriate abstraction points.
+
+Future VDP readiness may involve:
+
+timed assessment
+unique lab
+dynamic challenge
+unknown vulnerability
+flag submission
+report submission
+evaluation
+certificate
+researcher onboarding
+
+The current architecture must not prevent this.
+
+Do not build unnecessary UI for it yet.
+
+63. FUTURE LOCAL LAB MODEL
+
+The current system should prioritize:
+
+Download → Run locally → Hack → Find flag → Submit flag
+
+Future systems may support:
+
+browser labs
+cloud labs
+dynamic instances
+timed assessments
+
+Design the lab abstraction so these can become different runtime types later.
+
+64. ADMIN CONTENT WORKFLOW
+
+Content should follow:
+
+Draft
+ ↓
+Review
+ ↓
+Approved
+ ↓
+Published
+ ↓
+Updated
+ ↓
+Versioned
+
+Support content ownership.
+
+A content editor should not automatically be allowed to publish sensitive infrastructure changes unless their role permits it.
+
+65. LAB REVIEW WORKFLOW
+
+Labs should support:
+
+author
+reviewer
+status
+version
+security review
+published state
+
+Potential states:
+
+Draft
+Internal Testing
+Security Review
+Ready
+Published
+Archived
+66. SEARCH
+
+Implement global search eventually through a modular search layer.
+
+Search:
+
+lessons
+topics
+labs
+resources
+
+Results should clearly distinguish:
+
+Learn
+
+Practice
+
+Labs
+
+67. SEO
+
+Public pages should be SEO-friendly.
+
+Implement:
+
+proper metadata
+titles
+descriptions
+Open Graph
+structured metadata where appropriate
+canonical URLs
+sitemap
+robots.txt
+
+Do not expose private learner information to search engines.
+
+68. OBSERVABILITY
+
+Build production-ready logging.
+
+Separate:
+
+application logs
+security logs
+audit logs
+
+Do not log:
+
+passwords
+session secrets
+OAuth tokens
+flags in plaintext unnecessarily
+sensitive personal information
+
+Add error monitoring integration points through environment configuration.
+
+69. ENVIRONMENT CONFIGURATION
+
+Use environment variables.
+
+Create:
+
+.env.example
+
+with placeholders for:
+
+database URL
+authentication secrets
+Google OAuth
+email provider
+storage
+application URL
+API URL
+analytics
+logging
+
+Never commit real secrets.
+
+70. STORAGE
+
+Use object storage abstraction for:
+
+lab packages
+images
+achievement assets
+downloadable resources
+
+Do not store large binary files directly in PostgreSQL.
+
+Use signed URLs where appropriate.
+
+71. LAB DOWNLOAD SECURITY
+
+Lab downloads should be authorized.
+
+Track download events where useful.
+
+Do not expose private admin storage buckets publicly.
+
+Use safe content-disposition headers.
+
+72. DATABASE PERFORMANCE
+
+Create appropriate indexes for:
+
+user email
+username
+lab slug
+lesson slug
+achievement slug
+leaderboard score
+XP
+attempt user/lab
+completion timestamps
+notifications
+audit events
+
+Avoid N+1 queries.
+
+Paginate large datasets.
+
+73. ADMIN TABLES
+
+Large admin datasets must use:
+
+pagination
+sorting
+filtering
+search
+bulk actions where appropriate
+
+Do not load thousands of rows into the browser at once.
+
+74. MODULAR FRONTEND ARCHITECTURE
+
+Organize code by domain rather than dumping everything into generic components.
+
+For example:
+
+src/
+├── app/
+├── components/
+├── features/
+│   ├── auth/
+│   ├── learning/
+│   ├── practice/
+│   ├── labs/
+│   ├── achievements/
+│   ├── leaderboard/
+│   ├── profile/
+│   ├── notifications/
+│   └── admin/
+├── layouts/
+├── routes/
+├── lib/
+├── hooks/
+├── api/
+├── types/
+└── styles/
+
+Use reusable components.
+
+Avoid giant files.
+
+75. BACKEND ARCHITECTURE
+
+Organize by domain:
+
+server/
+├── auth/
+├── users/
+├── learning/
+├── practice/
+├── labs/
+├── attempts/
+├── achievements/
+├── leaderboard/
+├── notifications/
+├── analytics/
+├── admin/
+├── audit/
+├── storage/
+└── shared/
+
+Use clear service boundaries.
+
+76. API DESIGN
+
+Create clean APIs.
+
+Use consistent:
+
+authentication
+authorization
+validation
+errors
+pagination
+response structures
+
+Use Zod schemas shared where practical.
+
+Do not trust frontend validation.
+
+77. SECURITY TESTING
+
+Before considering the project complete, perform a security review of the application.
+
+Check at minimum:
+
+authentication
+authorization
+IDOR prevention
+privilege escalation
+session handling
+XSS
+CSRF
+injection
+file upload
+path traversal
+SSRF
+open redirects
+rate limiting
+information disclosure
+insecure direct object references
+admin access
+API authorization
+OAuth flows
+password reset
+email verification
+
+The main platform should not contain intentionally exploitable vulnerabilities.
+
+78. TESTING
+
+Implement tests for critical functionality.
+
+At minimum:
+
+Unit tests
+
+For:
+
+XP calculations
+level calculation
+flag verification
+achievement conditions
+leaderboard calculations
+permissions
+Integration tests
+
+For:
+
+signup
+login
+password reset
+lesson completion
+lab completion
+flag submission
+achievements
+admin authorization
+End-to-end tests
+
+For:
+
+signup
+onboarding
+learning
+lab completion
+achievement
+profile
+admin content publishing
+79. SEED DATA
+
+The application must not launch as an empty shell.
+
+Create realistic seed data for demonstration:
+
+Level 0 curriculum
+several lessons
+example video placeholders/URLs where appropriate
+practice activities
+several labs
+achievements
+XP configuration
+leaderboard test users if appropriate for development only
+
+Clearly separate demo/seed data from production data.
+
+Do not use fake production users.
+
+80. SAMPLE LEVEL 0 CONTENT
+
+Build enough initial Level 0 content to demonstrate the complete product loop.
+
+Include concepts such as:
+
+computers and networks
+IP addresses
+ports
+TCP/UDP
+DNS
+HTTP
+HTTPS
+requests/responses
+cookies
+basic Linux
+
+For tools:
+
+Nmap
+
+Provide:
+
+explanation
+installation instructions
+command examples
+short video support
+practice activity
+related lab
+
+The learner should be able to think:
+
+"I just learned what a port is."
+
+Then:
+
+"Now I can actually scan one."
+
+Then:
+
+"Now I understand what Nmap is doing."
+
+81. LAB EXAMPLES
+
+Include example architecture for labs such as:
+
+Port Discovery
+
+Learn:
+
+ports
+services
+Nmap
+
+Practice:
+
+scan target
+
+Lab:
+
+Discover the exposed service and retrieve the flag.
+
+HTTP Investigation
+
+Learn:
+
+requests
+responses
+headers
+cookies
+
+Practice:
+
+inspect a request
+
+Lab:
+
+Investigate the application and locate the hidden flag.
+
+Authentication
+
+Learn:
+
+authentication
+sessions
+cookies
+
+Practice:
+
+inspect login flow
+
+Lab:
+
+Find the flaw in the authentication mechanism.
+
+Do not reveal vulnerability names when that would spoil the challenge.
+
+82. PUBLIC VS PRIVATE INFORMATION
+
+Public:
+
+published lessons
+public labs
+public achievements
+public leaderboard data
+public profiles where enabled
+
+Private:
+
+email
+authentication details
+internal analytics
+admin actions
+private activity
+security logs
+
+Implement proper access control.
+
+83. ACCOUNT SETTINGS
+
+Users should be able to:
+
+update name
+update username
+update avatar
+change password
+manage connected OAuth account where applicable
+manage notification preferences
+control profile visibility
+log out sessions where supported
+delete account
+
+Account deletion should be handled safely and deliberately.
+
+84. PRIVACY
+
+Collect the minimum information necessary.
+
+Do not build unnecessary tracking.
+
+Clearly separate:
+
+product analytics
+security logging
+personal data
+
+Design with privacy in mind.
+
+85. DEPLOYMENT
+
+The final application must be deployable.
+
+Provide:
+
+production build
+database migrations
+seed mechanism
+environment configuration
+deployment documentation
+local development documentation
+Docker configuration where appropriate
+health endpoint
+production start command
+database setup
+storage setup
+authentication setup
+email setup
+
+The project should not require manual undocumented steps.
+
+86. BUN
+
+Use Bun consistently for:
+
+package management
+development
+scripts
+builds
+tests where compatible
+
+Provide commands such as:
+
+bun install
+bun dev
+bun test
+bun run build
+bun run db:migrate
+bun run db:seed
+
+Use equivalent commands if the chosen backend architecture requires different naming.
+
+87. DOCKER
+
+Docker may be used for:
+
+local development
+PostgreSQL
+backend
+deployment
+individual downloadable cybersecurity labs
+
+Do not unnecessarily containerize everything if the deployment target doesn't require it.
+
+88. PRODUCTION READINESS
+
+Before finishing:
+
+remove debug code
+remove console spam
+remove fake credentials
+remove development bypasses
+verify auth
+verify authorization
+verify database migrations
+verify error handling
+verify environment variables
+verify build
+verify responsive design
+verify accessibility
+verify critical flows
+verify security
+verify admin controls
+89. NO PLACEHOLDER FUNCTIONALITY
+
+Do not create buttons that do nothing.
+
+Do not create:
+
+Coming soon
+
+for functionality that is supposed to exist in V1.
+
+If a feature is included in this specification, implement it.
+
+If a future feature is explicitly excluded, architect cleanly for it but do not fake it.
+
+90. NO HARDCODED CONTENT
+
+Do not hardcode:
+
+lessons into JSX
+labs into JSX
+achievements into JSX
+leaderboard values
+XP values
+users
+admin statistics
+
+Use database/configuration.
+
+The frontend renders the data.
+
+91. ADMIN MUST CONTROL THE PRODUCT
+
+The admin panel should make it possible for the team to continuously evolve the platform.
+
+A team member should be able to:
+
+Add a lesson.
+
+Change a YouTube video.
+
+Add a new section.
+
+Add a practice task.
+
+Create a lab.
+
+Upload its Docker package.
+
+Add setup instructions.
+
+Add hints.
+
+Configure the flag.
+
+Set XP.
+
+Publish it.
+
+See how many people attempted it.
+
+See how many solved it.
+
+See where learners dropped off.
+
+Without modifying application source code.
+
+This is a core requirement.
+
+92. DESIGN QUALITY BAR
+
+Do not settle for:
+
+generic dashboard templates
+generic SaaS gradients
+default Tailwind components
+poor spacing
+inconsistent cards
+excessive rounded containers
+random shadows
+inconsistent icons
+giant text everywhere
+
+Every screen should have:
+
+clear hierarchy
+strong typography
+purposeful spacing
+restrained visual language
+consistent interaction patterns
+intentional empty space
+excellent responsive behavior
+
+The product should look designed, not assembled.
+
+93. MOTION
+
+Use subtle motion for:
+
+page transitions
+progress changes
+achievement unlock
+hover states
+modal transitions
+navigation
+leaderboard changes
+
+Do not animate everything.
+
+Respect:
+
+prefers-reduced-motion.
+
+Animation must never hurt performance.
+
+94. MICROINTERACTIONS
+
+Use subtle feedback for:
+
+lesson completion
+lab completion
+XP gain
+achievement unlock
+rank movement
+saving content
+publishing content
+
+The user should feel that the platform responds to them.
+
+But keep it sophisticated.
+
+95. MOBILE UX
+
+On mobile:
+
+navigation becomes appropriate mobile navigation
+cards remain readable
+tables become responsive
+leaderboard is usable
+profile is usable
+lessons are comfortable
+videos work correctly
+buttons remain touch-friendly
+
+Do not simply shrink the desktop design.
+
+96. CORE USER JOURNEY TO TEST
+
+The final implementation must support this entire flow:
+
+Visitor
+ ↓
+Landing Page
+ ↓
+Explore Suraksha Labs
+ ↓
+See learning journey
+ ↓
+Click Start Learning
+ ↓
+Signup
+ ↓
+Google or Email
+ ↓
+Email verification where required
+ ↓
+Onboarding
+ ↓
+Level 0
+ ↓
+First lesson
+ ↓
+Video
+ ↓
+Text
+ ↓
+Practice
+ ↓
+Complete
+ ↓
+XP
+ ↓
+Next lesson
+ ↓
+Related lab
+ ↓
+Download local lab
+ ↓
+Run Docker locally
+ ↓
+Find flag
+ ↓
+Submit flag
+ ↓
+Server verifies
+ ↓
+Lab completed
+ ↓
+XP awarded
+ ↓
+Achievement unlocked
+ ↓
+Performance statistics
+ ↓
+Share achievement
+ ↓
+Profile updated
+ ↓
+Leaderboard updated
+ ↓
+Recommended next challenge
+
+Every part of this journey must actually work.
+
+97. ADMIN JOURNEY TO TEST
+
+Also test:
+
+Admin login
+ ↓
+Admin dashboard
+ ↓
+Create module
+ ↓
+Create lesson
+ ↓
+Add text
+ ↓
+Add YouTube video
+ ↓
+Add practice
+ ↓
+Save draft
+ ↓
+Preview
+ ↓
+Publish
+ ↓
+Create lab
+ ↓
+Upload lab package
+ ↓
+Configure metadata
+ ↓
+Configure hints
+ ↓
+Configure flag
+ ↓
+Publish
+ ↓
+Learner sees content
+ ↓
+Learner solves lab
+ ↓
+Admin sees analytics
+
+This must work without source-code changes.
+
+98. PERFORMANCE BUDGET
+
+Treat performance as a product requirement.
+
+Avoid loading:
+
+admin libraries on learner pages
+lab-management functionality on public pages
+analytics dashboards on normal pages
+unnecessary animations
+unnecessary third-party scripts
+
+Use lazy loading and code splitting.
+
+99. FUTURE-PROOFING
+
+The architecture should make it straightforward to add:
+
+more learning paths
+more labs
+competitions
+seasonal events
+dynamic assessments
+VDP integration
+certificates
+researcher profiles
+organizations
+teams
+tournaments
+browser-based labs
+cloud-based labs
+community features
+
+But do not clutter V1 with these features.
+
+Build the underlying abstractions cleanly.
+
+100. FINAL PRODUCT REQUIREMENT
+
+At the end of the implementation, I should be able to:
+
+Install dependencies.
+Configure environment variables.
+Start the database.
+Run migrations.
+Seed development data.
+Start the application.
+Create an account.
+Log in with email.
+Log in with Google.
+Learn.
+Watch embedded videos.
+Complete practice.
+Download a lab.
+Run the lab locally.
+Find the flag.
+Submit the flag.
+Receive XP.
+Unlock an achievement.
+See leaderboard changes.
+Share the achievement.
+View the profile.
+Receive appropriate notifications/email.
+Log into the admin panel.
+Create/edit/publish learning content.
+Add videos without code changes.
+Create/edit/publish labs without code changes.
+Upload lab packages.
+Configure hints.
+Configure flag validation.
+View users.
+View learning statistics.
+View lab statistics.
+View engagement statistics.
+View audit logs.
+Manage roles.
+Manage achievements.
+Manage leaderboard configuration.
+
+All of this must be functional.
+
+101. DEVELOPMENT RULE
+
+Do not stop after generating the initial UI.
+
+Build the application completely.
+
+If something is unspecified, make the best reasonable product/engineering decision based on the goals in this specification.
+
+Do not ask questions.
+
+Do not wait for clarification.
+
+Do not replace difficult functionality with placeholders.
+
+If an external credential/provider cannot be configured in the current environment, implement the complete integration and provide a clear .env.example and deployment setup so the integration becomes active when credentials are supplied.
+
+102. FINAL QUALITY CHECK
+
+Before declaring the project finished, independently inspect the entire implementation as if you were:
+
+A beginner
+
+Would I understand where to start?
+
+A cybersecurity learner
+
+Does this actually help me learn?
+
+A competitive learner
+
+Do achievements and rankings feel meaningful?
+
+A content editor
+
+Can I add content without developers?
+
+A lab author
+
+Can I create and publish labs without changing application code?
+
+An administrator
+
+Can I understand what's happening across the platform?
+
+A security engineer
+
+Is the platform itself securely designed?
+
+A product designer
+
+Does this feel like a real product rather than a generated website?
+
+A founder
+
+Can this realistically grow into the Suraksha ecosystem?
+
+Fix anything that fails these tests.
+
+103. FINAL COMMAND
+
+Build Suraksha Labs by Shadow Security completely from the empty repository.
+
+Use the provided logo asset.
+
+Create the white brand treatment.
+
+Build the complete frontend, backend, database, authentication, authorization, content management system, lab management system, local CTF workflow, flag verification, XP, achievements, leaderboard, profiles, analytics, notifications, email architecture, admin dashboard, security controls, testing, seed data, deployment configuration and documentation described above.
+
+Do not ask questions.
+
+Make the decisions yourself.
+
+Prioritize:
+
+UX > visual gimmicks
+
+modularity > hardcoding
+
+security > convenience
+
+performance > unnecessary animation
+
+learning quality > gamification
+
+real functionality > mockups
+
+maintainability > clever complexity
+
+The final application must feel like:
+
+A world-class cybersecurity learning product built by Shadow Security.
+
+Not a template.
+
+Not a demo.
+
+Not a hackathon project.
+
+Not a generic LMS.
+
+Build it as the foundation on which Suraksha Labs can continue growing for years.

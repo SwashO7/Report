@@ -1,0 +1,32 @@
+# dependencies
+node_modules/
+.bun/
+
+# build output
+dist/
+build/
+*.tsbuildinfo
+
+# env
+.env
+.env.local
+.env.*.local
+
+# storage (uploaded lab packages, generated zips)
+apps/api/storage/
+!apps/api/storage/.gitkeep
+
+# logs
+*.log
+logs/
+
+# editor
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# temp
+tmp/
+.cache/
+coverage/

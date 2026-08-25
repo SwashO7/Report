@@ -1,0 +1,18 @@
+id: port-discovery
+version: 1.0.0
+title: Port Discovery - The Silent Admin Service
+category: networking
+difficulty: beginner
+runtime:
+  type: docker
+  compose_file: docker-compose.yml
+metadata:
+  estimated_time: 20
+  xp: 150
+objectives:
+  - Discover the hidden service listening on the host
+  - Retrieve the data it protects and submit the flag
+hints:
+  - "Services listen on ports. Not all of them are advertised."
+  - "Tools like nmap can enumerate open ports on a host: nmap -p- localhost or scan common ranges."
+  - "You found an unexpected open port near the main one. Request its /flag path."

@@ -1,0 +1,31 @@
+{
+  "name": "@suraksha/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot src/index.ts",
+    "start": "bun src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "bun src/db/migrate.ts",
+    "db:seed": "bun src/db/seed/index.ts",
+    "db:studio": "drizzle-kit studio",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@suraksha/shared": "workspace:*",
+    "drizzle-orm": "^0.38.3",
+    "fflate": "^0.8.2",
+    "hono": "^4.6.14",
+    "nodemailer": "^6.9.16",
+    "postgres": "^3.4.5",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0",
+    "@types/nodemailer": "^6.4.17",
+    "drizzle-kit": "^0.30.1",
+    "typescript": "^5.7.2"
+  }
+}
