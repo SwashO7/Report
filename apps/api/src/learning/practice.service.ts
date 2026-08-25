@@ -1,8 +1,50 @@
-import { and, eq, sql } from 'drizzle-orm';
+import { and, asc, eq, sql } from 'drizzle-orm';
 import { db } from '../db/client';
-import { lessons, practiceCompletions, practiceExercises, users } from '../db/schema';
+import { learningPaths, lessons, modules, practiceCompletions, practiceExercises, users } from '../db/schema';
 import { errors } from '../core/errors';
 import type { ExerciseResult } from '@suraksha/shared';
+
+/** Practice hub: all published exercises with location + completion state. */
+export async function listPublishedExercises(userId: string | null) {
+  const rows = await db
+    .select({
+      id: practiceExercises.id,
+      slug: practiceExercises.slug,
+      title: practiceExercises.title,
+      instructions: practiceExercises.instructions,
+      questionCount: sql<number>`jsonb_array_length(${practiceExercises.questions})`,
+      xpReward: practiceExercises.xpReward,
+      lessonSlug: lessons.slug,
+      lessonTitle: lessons.title,
+      moduleTitle: modules.title,
+      pathSlug: learningPaths.slug,
+      pathName: learningPaths.name,
+      levelNumber: learningPaths.levelNumber,
+    })
+    .from(practiceExercises)
+    .innerJoin(lessons, eq(practiceExercises.lessonId, lessons.id))
+    .innerJoin(modules, eq(lessons.moduleId, modules.id))
+    .innerJoin(learningPaths, eq(modules.pathId, learningPaths.id))
+    .where(and(eq(practiceExercises.status, 'published'), eq(lessons.status, 'published'), eq(learningPaths.published, true)))
+    .orderBy(asc(learningPaths.sortOrder), asc(lessons.sortOrder), asc(practiceExercises.createdAt));
+
+  const doneSet = new Set<string>();
+  if (userId) {
+    const done = await db
+      .select({ exerciseId: practiceCompletions.exerciseId })
+      .from(practiceCompletions)
+      .where(eq(practiceCompletions.userId, userId));
+    for (const d of done) doneSet.add(d.exerciseId);
+  }
+
+  return {
+    exercises: rows.map((r) => ({
+      ...r,
+      questionCount: Number(r.questionCount),
+      completed: doneSet.has(r.id),
+    })),
+  };
+}
 
 /**
  * Server-side exercise validation. Correct answers never leave the backend —

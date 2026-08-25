@@ -92,6 +92,9 @@ async function main() {
   const continueRes = await call('GET', '/learn/continue');
   check('continue returns next lesson', Boolean((continueRes as { next?: { slug: string } }).next?.slug), continueRes);
 
+  const practice = await call('GET', '/learn/exercises');
+  check('practice hub lists exercises', ((practice as { exercises: unknown[] }).exercises ?? []).length > 0, practice);
+
   /* ------------------------------- Lab flow ------------------------------ */
   const labDetail = await call('GET', '/labs/port-discovery');
   check('lab detail hides flag value', !JSON.stringify(labDetail).includes('p0rt_sc4nn1ng_101'));

@@ -2,7 +2,7 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Bell, Menu, X, ShieldCheck, LayoutDashboard, BookOpen, Flag, Trophy, Settings, LogOut, User } from 'lucide-react';
+import { Bell, Menu, X, ShieldCheck, LayoutDashboard, BookOpen, PencilLine, Flag, Trophy, Settings, LogOut, User } from 'lucide-react';
 import { useAuth, isAdminRole } from '@/lib/auth';
 import { api } from '@/lib/api';
 import { qk } from '@/lib/queries';
@@ -14,6 +14,7 @@ import type { NotificationItem } from '@suraksha/shared';
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/learn', label: 'Learn', icon: BookOpen },
+  { to: '/practice', label: 'Practice', icon: PencilLine },
   { to: '/labs', label: 'Labs', icon: Flag },
   { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
 ];

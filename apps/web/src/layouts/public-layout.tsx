@@ -22,6 +22,7 @@ function BrandMark({ light }: { light?: boolean }) {
 
 const navItems = [
   { to: '/learn', label: 'Learn' },
+  { to: '/practice', label: 'Practice' },
   { to: '/labs', label: 'Labs' },
   { to: '/leaderboard', label: 'Leaderboard' },
 ];

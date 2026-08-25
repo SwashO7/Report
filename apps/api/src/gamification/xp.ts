@@ -32,12 +32,15 @@ export function invalidateLevelsCache() {
   cache = null;
 }
 
-/** Pure: resolve the level for a given XP amount against ordered thresholds. */
+/** Pure: resolve the level for a given XP amount. Robust to unsorted input. */
 export function resolveLevel(xp: number, ordered: LevelRow[]): LevelRow | null {
   let current: LevelRow | null = null;
+  let bestThreshold = -Infinity;
   for (const lvl of ordered) {
-    if (xp >= lvl.xpThreshold) current = lvl;
-    else break;
+    if (xp >= lvl.xpThreshold && lvl.xpThreshold >= bestThreshold) {
+      current = lvl;
+      bestThreshold = lvl.xpThreshold;
+    }
   }
   return current;
 }

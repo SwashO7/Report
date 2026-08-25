@@ -16,6 +16,7 @@ const LeaderboardPage = lazy(() => import('@/pages/leaderboard'));
 const ProfilePage = lazy(() => import('@/pages/profile/profile-page'));
 const ShareCardPage = lazy(() => import('@/pages/achievements/share-card-page'));
 const LearnHomePage = lazy(() => import('@/pages/learn/learn-home-page'));
+const PracticePage = lazy(() => import('@/pages/practice/practice-page'));
 const PathPage = lazy(() => import('@/pages/learn/path-page'));
 
 /* --------------------------------- Auth ----------------------------------- */
@@ -88,6 +89,7 @@ function AppRoutes() {
         <Route path="profile/:username" element={suspense(<ProfilePage />)} />
         <Route path="achievements/:shareSlug" element={suspense(<ShareCardPage />)} />
         <Route path="learn" element={suspense(<LearnHomePage />)} />
+        <Route path="practice" element={suspense(<PracticePage />)} />
         <Route path="learn/:pathSlug" element={suspense(<PathPage />)} />
 
         <Route path="login" element={<PublicOnly>{suspense(<LoginPage />)}</PublicOnly>} />

@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { ZodError } from 'zod';
 import { env, isProd, googleOAuthEnabled } from '../config/env';
 import { csrfOriginCheck } from './middleware';
 import { toSafeErrorResponse } from './errors';
@@ -46,6 +47,14 @@ export function createApp() {
   app.notFound((c) => c.json({ error: { code: 'NOT_FOUND', message: 'The requested endpoint does not exist.' } }, 404));
 
   app.onError((err, c) => {
+    // Validation errors: safe, client-facing 400 with field details.
+    if (err instanceof ZodError) {
+      const details = err.issues.map((i) => ({ path: i.path.join('.'), message: i.message }));
+      return c.json(
+        { error: { code: 'VALIDATION_ERROR', message: 'Please check the highlighted fields.', details } },
+        400,
+      );
+    }
     const { status, body } = toSafeErrorResponse(err);
     if (status >= 500) {
       // Structured application log — no stack traces to clients, full detail to server logs.

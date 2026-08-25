@@ -90,7 +90,8 @@ export const labCreateSchema = z.object({
   setupInstructions: z.string().max(20000).default(''),
   skills: z.array(z.string().min(1).max(80)).max(20).default([]),
   hints: z.array(hintSchema).max(8).default([]),
-  flagHash: z.string().min(32).max(128),
+  /** Carries the plaintext flag on create; stored server-side as an HMAC only. */
+  flagHash: z.string().min(4).max(500),
   flagCaseSensitive: z.boolean().default(true),
   prerequisiteLabIds: z.array(z.string().uuid()).max(10).default([]),
   relatedLessonIds: z.array(z.string().uuid()).max(10).default([]),

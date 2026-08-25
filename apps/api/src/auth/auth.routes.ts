@@ -22,7 +22,6 @@ import {
   revokeCurrentSession,
   revokeSession,
 } from '../core/auth';
-import { flagHmac } from '../core/crypto';
 import { hashPassword, verifyPassword } from '../core/password';
 import { getAuthUser } from '../core/auth';
 import * as authService from './auth.service';
@@ -295,13 +294,4 @@ export const authRoutes = new Hono()
     } catch {
       return c.redirect(`${env.APP_URL}/login?error=oauth_failed`);
     }
-  })
-
-  /* --------------------- Dev-only flag hash utility ---------------------- */
-  .post('/dev/flag-hash', async (c) => {
-    if (!isProd) {
-      const { flag } = z.object({ flag: z.string().min(1).max(500) }).parse(await c.req.json());
-      return c.json({ hmac: flagHmac(flag) });
-    }
-    throw errors.notFound();
   });

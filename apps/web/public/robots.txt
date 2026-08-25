@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+# Private learner surfaces: keep out of search indexes.
+Disallow: /settings
+Disallow: /dashboard
+Disallow: /onboarding
+Disallow: /admin
+Disallow: /verify-email
+Disallow: /reset-password

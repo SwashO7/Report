@@ -8,6 +8,7 @@ export const qk = {
   path: (slug: string) => ['learn', 'path', slug] as const,
   lesson: (slug: string) => ['learn', 'lesson', slug] as const,
   continue: ['learn', 'continue'] as const,
+  practice: ['learn', 'practice'] as const,
   labs: (params: string) => ['labs', params] as const,
   lab: (slug: string) => ['labs', 'detail', slug] as const,
   labMeta: ['labs', 'meta'] as const,
