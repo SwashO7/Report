@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { AlertTriangle, Chrome } from 'lucide-react';
 import { loginSchema, type LoginInput } from '@suraksha/shared';
 import { api, ApiError } from '@/lib/api';
-import { useAuth } from '@/lib/auth';
+import { useAuth, homeForRole } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { FieldError, Input, Label } from '@/components/ui/input';
@@ -44,10 +44,11 @@ export default function LoginPage() {
   const onSubmit = async (values: LoginInput) => {
     setSubmitError(null);
     try {
-      await api('/auth/login', { method: 'POST', body: values });
+      const res = await api<{ user: { role: string } }>('/auth/login', { method: 'POST', body: values });
       await refresh();
       const from = (location.state as { from?: string } | null)?.from;
-      navigate(from ?? '/dashboard');
+      // Staff land directly in the admin console; learners continue their journey.
+      navigate(from ?? homeForRole(res.user.role));
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.status === 401) setSubmitError('Incorrect email or password.');
@@ -68,7 +69,7 @@ export default function LoginPage() {
         <img src="/brand/logo-white.png" alt="" className="hidden size-10 dark:block" aria-hidden />
         <span className="flex flex-col leading-none">
           <span className="text-lg font-bold tracking-tight text-text">Suraksha Labs</span>
-          <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-text-tertiary">by Shadow Security</span>
+          <span className="mt-1 text-[10px] font-medium uppercase tracking-[0.14em] text-text-tertiary">by Shadow Security</span>
         </span>
       </div>
 

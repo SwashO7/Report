@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+﻿import { useEffect } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'motion/react';
@@ -109,7 +109,7 @@ export default function PathPage() {
         {[0, 1].map((m) => (
           <section key={m} className="space-y-3">
             <Skeleton className="h-6 w-48" />
-            <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface">
+            <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="flex items-center gap-4 px-5 py-4">
                   <Skeleton className="size-5 rounded-full" />
@@ -171,7 +171,7 @@ export default function PathPage() {
       </header>
 
       {user && totalCount > 0 && (
-        <section aria-label="Path progress" className="mt-7 rounded-xl border border-border bg-surface p-4 shadow-xs sm:p-5">
+        <section aria-label="Path progress" className="mt-7 rounded-lg border border-border bg-surface p-4 sm:p-5">
           <div className="flex items-center justify-between gap-4 text-sm">
             <span className="text-text-secondary">
               <span className="font-semibold text-text">{completedCount}</span> of{' '}
@@ -199,7 +199,7 @@ export default function PathPage() {
               {module.description && (
                 <p className="mt-1 text-sm leading-relaxed text-text-tertiary">{module.description}</p>
               )}
-              <div className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface shadow-xs">
+              <div className="mt-3 divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
                 {[...module.lessons]
                   .sort((a, b) => a.orderIndex - b.orderIndex)
                   .map((lesson) => (

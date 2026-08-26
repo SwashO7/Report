@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Megaphone, Save } from 'lucide-react';
 import { api, ApiError } from '@/lib/api';
@@ -119,8 +119,8 @@ export default function AdminSettings() {
 
       {settingsQ.isLoading || !settingsQ.data ? (
         <div className="space-y-4">
-          <Skeleton className="h-64 w-full rounded-xl" />
-          <Skeleton className="h-80 w-full rounded-xl" />
+          <Skeleton className="h-64 w-full rounded-lg" />
+          <Skeleton className="h-80 w-full rounded-lg" />
         </div>
       ) : (
         <div className="space-y-5">
@@ -260,7 +260,7 @@ export default function AdminSettings() {
                         setPlatform({ ...platform, announcement: { ...platform.announcement, message: e.target.value } })
                       }
                       className="min-h-[70px]"
-                      placeholder="Scheduled maintenance this Saturday 02:00–04:00 UTC."
+                      placeholder="Scheduled maintenance this Saturday 02:00â€“04:00 UTC."
                     />
                   </div>
                 )}

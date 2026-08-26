@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, useLocation, Routes, Route, BrowserRouter } from 'react-router-dom';
-import { AuthProvider, useAuth, isAdminRole } from '@/lib/auth';
+import { AuthProvider, useAuth, isStaffRole, homeForRole } from '@/lib/auth';
 import { ToastProvider } from '@/components/ui/toast';
 import { PublicLayout } from '@/layouts/public-layout';
 import { LearnerShell } from '@/layouts/learner-shell';
@@ -65,14 +65,14 @@ function RequireStaff({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   if (loading) return <PageLoader />;
   if (!user) return <Navigate to="/login" replace />;
-  if (!isAdminRole(user.role)) return <NotFoundPage />;
+  if (!isStaffRole(user.role)) return <NotFoundPage />;
   return <>{children}</>;
 }
 
 function PublicOnly({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   if (loading) return <PageLoader />;
-  if (user) return <Navigate to="/dashboard" replace />;
+  if (user) return <Navigate to={homeForRole(user.role)} replace />;
   return <>{children}</>;
 }
 

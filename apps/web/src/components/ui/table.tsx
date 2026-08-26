@@ -10,7 +10,7 @@ export function Table({ className, ...props }: HTMLAttributes<HTMLTableElement>)
 }
 
 export function THead({ className, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
-  return <thead className={cn('border-b border-border', className)} {...props} />;
+  return <thead className={cn('border-b border-border bg-surface-2/50', className)} {...props} />;
 }
 
 export function TBody({ className, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
@@ -22,14 +22,22 @@ export function TR({ className, ...props }: HTMLAttributes<HTMLTableRowElement>)
 }
 
 export function TH({ className, ...props }: ThHTMLAttributes<HTMLTableCellElement>) {
-  return <th className={cn('px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-text-tertiary', className)} {...props} />;
+  return (
+    <th
+      className={cn(
+        'px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-text-tertiary',
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 
 export function TD({ className, ...props }: TdHTMLAttributes<HTMLTableCellElement>) {
   return <td className={cn('px-4 py-3 align-middle text-text', className)} {...props} />;
 }
 
-/** Responsive wrapper: tables become stacked cards on small screens. */
+/** Bordered container that turns any table/list into a panel. */
 export function TableCard({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={cn('overflow-hidden rounded-xl border border-border bg-surface', className)}>{children}</div>;
+  return <div className={cn('overflow-hidden rounded-lg border border-border bg-surface', className)}>{children}</div>;
 }

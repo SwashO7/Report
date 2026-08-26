@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Compass, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,14 +8,14 @@ export function NotFoundPage() {
   useSeo('Page not found — Suraksha Labs');
 
   return (
-    <div className="hero-texture flex min-h-[70vh] flex-col items-center justify-center px-4 py-16 text-center">
+    <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-16 text-center">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
         className="flex flex-col items-center"
       >
-        <div className="flex size-14 items-center justify-center rounded-2xl border border-border bg-surface shadow-sm">
+        <div className="flex size-14 items-center justify-center rounded-lg border border-border bg-surface shadow-sm">
           <Compass className="size-6 text-accent" aria-hidden />
         </div>
 

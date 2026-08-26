@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+﻿import { useQuery } from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CalendarDays, ChevronLeft, ChevronRight, Flag, Medal, Trophy } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -28,8 +28,8 @@ function RankChip({ rank, size = 'md' }: { rank: number; size?: 'md' | 'lg' }) {
   return (
     <span
       className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded-full font-bold tabular-nums',
-        size === 'lg' ? 'size-10 text-base' : 'size-7 text-xs',
+        'inline-flex shrink-0 items-center justify-center rounded-md font-bold tabular-nums',
+        size === 'lg' ? 'size-10 rounded-lg text-base' : 'size-7 text-xs',
         RANK_STYLES[rank] ?? 'bg-surface-2 text-text-tertiary',
       )}
       aria-label={`Rank ${rank}`}
@@ -48,17 +48,12 @@ function Podium({ entries, valueLabel }: { entries: LeaderboardEntry[]; valueLab
   const third = byRank.get(3);
   if (!first && !second && !third) return null;
 
-  const slot = (entry: LeaderboardEntry | undefined, elevated: boolean) => (
-    <div
-      className={cn(
-        'flex min-w-0 flex-col items-center gap-2.5 rounded-xl border bg-surface px-3 pt-5 pb-6 text-center shadow-xs transition-all sm:px-4',
-        elevated ? 'z-10 -translate-y-4 border-accent/40 shadow-md sm:-translate-y-5' : 'border-border',
-      )}
-    >
+  const slot = (entry: LeaderboardEntry | undefined) => (
+    <div className="flex min-w-0 flex-col items-center gap-2.5 rounded-lg border border-border bg-surface px-3 pb-5 pt-5 text-center sm:px-4">
       {entry ? (
         <>
           <RankChip rank={entry.rank} size="lg" />
-          <Avatar name={entry.user.name} src={entry.user.avatarUrl} size="lg" className="ring-2 ring-border" />
+          <Avatar name={entry.user.name} src={entry.user.avatarUrl} size="lg" />
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-text">{entry.user.name}</p>
             <p className="truncate text-xs text-text-tertiary">@{entry.user.username}</p>
@@ -77,10 +72,10 @@ function Podium({ entries, valueLabel }: { entries: LeaderboardEntry[]; valueLab
   );
 
   return (
-    <div className="mx-auto mt-8 grid max-w-2xl grid-cols-3 items-end gap-3 sm:gap-4" aria-label="Top three">
-      {slot(second, false)}
-      {slot(first, true)}
-      {slot(third, false)}
+    <div className="mx-auto mt-8 grid max-w-2xl grid-cols-3 gap-3 sm:gap-4" aria-label="Top three">
+      {slot(second)}
+      {slot(first)}
+      {slot(third)}
     </div>
   );
 }
@@ -113,7 +108,7 @@ export default function LeaderboardPage() {
   const page = Math.max(1, Number(searchParams.get('page')) || 1);
 
   useSeo(
-    'Leaderboard — Suraksha Labs',
+    'Leaderboard â€” Suraksha Labs',
     'See the top cybersecurity learners on Suraksha Labs. Global and per-category rankings by XP.',
   );
 
@@ -180,7 +175,7 @@ export default function LeaderboardPage() {
       {boardQuery.isLoading ? (
         <div className="mt-8 space-y-3">
           {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-14 w-full rounded-xl" />
+            <Skeleton key={i} className="h-14 w-full rounded-lg" />
           ))}
         </div>
       ) : boardQuery.isError ? (
@@ -245,7 +240,7 @@ export default function LeaderboardPage() {
                       </TD>
                       {showLabsColumn && (
                         <TD className="text-right tabular-nums text-text-secondary">
-                          {entry.labsSolved !== undefined ? formatXp(entry.labsSolved) : '—'}
+                          {entry.labsSolved !== undefined ? formatXp(entry.labsSolved) : 'â€”'}
                         </TD>
                       )}
                       <TD className="text-right font-semibold tabular-nums">{formatXp(entry.value)}</TD>
@@ -269,7 +264,7 @@ export default function LeaderboardPage() {
                     </TD>
                     {showLabsColumn && (
                       <TD className="text-right tabular-nums text-text-secondary">
-                        {me.labsSolved !== undefined ? formatXp(me.labsSolved) : '—'}
+                        {me.labsSolved !== undefined ? formatXp(me.labsSolved) : 'â€”'}
                       </TD>
                     )}
                     <TD className="text-right font-semibold tabular-nums">{formatXp(me.value)}</TD>
@@ -280,7 +275,7 @@ export default function LeaderboardPage() {
           </TableCard>
 
           {/* ------------------------------- Mobile ------------------------------ */}
-          <ul className="mt-8 divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface md:hidden">
+          <ul className="mt-8 divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface md:hidden">
             {entries.map((entry) => {
               const isMe = me !== null && entry.user.username === me.user.username;
               return (

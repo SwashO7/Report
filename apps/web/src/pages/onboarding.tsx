@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { AlertTriangle, ArrowLeft, ArrowRight, BookOpen, Network, Sprout, Swords } from 'lucide-react';
@@ -114,7 +114,7 @@ export default function OnboardingPage() {
                         aria-checked={selected}
                         onClick={() => setExperienceLevel(value)}
                         className={cn(
-                          'flex items-start gap-3 rounded-xl border p-4 text-left transition-colors',
+                          'flex items-start gap-3 rounded-lg border p-4 text-left transition-colors',
                           selected
                             ? 'border-accent bg-accent-subtle ring-1 ring-accent'
                             : 'border-border bg-surface hover:border-border-strong hover:bg-surface-2',
@@ -146,7 +146,7 @@ export default function OnboardingPage() {
                 className="mt-8"
               >
                 <h2 className="text-lg font-medium text-text">What do you want to focus on?</h2>
-                <p className="mt-1 text-sm text-text-secondary">Pick as many as you like — or skip this step.</p>
+                <p className="mt-1 text-sm text-text-secondary">Pick as many as you like â€” or skip this step.</p>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {INTEREST_OPTIONS.map((interest) => {
                     const selected = interests.includes(interest);

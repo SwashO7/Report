@@ -1,5 +1,40 @@
 import { z } from 'zod';
 
+/**
+ * Bun auto-loads `.env` from the current working directory. Tests and tools
+ * may run from the repo root, so fall back to this package's own `.env`.
+ */
+async function loadPackageEnv() {
+  const needed = ['DATABASE_URL', 'SESSION_SECRET', 'FLAG_HMAC_SECRET'];
+  if (needed.every((k) => process.env[k])) return;
+  const candidates = [
+    new URL('../../.env', import.meta.url),
+    new URL('../../../.env', import.meta.url),
+  ];
+  for (const url of candidates) {
+    try {
+      const file = Bun.file(url);
+      if (!(await file.exists())) continue;
+      const text = await file.text();
+      for (const line of text.split('\n')) {
+        const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
+        if (!m) continue;
+        const key = m[1];
+        let value = m[2];
+        if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+          value = value.slice(1, -1);
+        }
+        if (!(key in process.env) && needed.includes(key)) process.env[key] = value;
+      }
+      if (needed.every((k) => process.env[k])) return;
+    } catch {
+      /* ignore unreadable candidate */
+    }
+  }
+}
+
+await loadPackageEnv();
+
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   APP_URL: z.string().url().default('http://localhost:5173'),

@@ -69,7 +69,7 @@ export default function SignupPage() {
         <img src="/brand/logo-white.png" alt="" className="hidden size-10 dark:block" aria-hidden />
         <span className="flex flex-col leading-none">
           <span className="text-lg font-bold tracking-tight text-text">Suraksha Labs</span>
-          <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-text-tertiary">by Shadow Security</span>
+          <span className="mt-1 text-[10px] font-medium uppercase tracking-[0.14em] text-text-tertiary">by Shadow Security</span>
         </span>
       </div>
 

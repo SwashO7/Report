@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+﻿import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
 import {
   Activity,
@@ -69,8 +69,8 @@ function activityIcon(kind: string) {
 
 function StatTile({ icon: Icon, label, value, sub }: { icon: typeof Flag; label: string; value: React.ReactNode; sub?: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-border bg-surface p-4 shadow-xs">
-      <p className="flex items-center gap-1.5 text-xs font-medium text-text-tertiary">
+    <div className="rounded-lg border border-border bg-surface px-4 py-3.5">
+      <p className="micro-label flex items-center gap-1.5">
         <Icon className="size-3.5" aria-hidden />
         {label}
       </p>
@@ -125,8 +125,8 @@ function AchievementsSection({ achievements }: { achievements: ProfileAchievemen
             key={a.slug}
             className={
               locked
-                ? 'flex items-start gap-3.5 rounded-xl border border-dashed border-border bg-surface p-4'
-                : 'flex items-start gap-3.5 rounded-xl border border-border bg-surface p-4 shadow-xs'
+                ? 'flex items-start gap-3.5 rounded-lg border border-dashed border-border bg-surface p-4'
+                : 'flex items-start gap-3.5 rounded-lg border border-border bg-surface p-4'
             }
           >
             <span className="relative shrink-0">
@@ -144,7 +144,7 @@ function AchievementsSection({ achievements }: { achievements: ProfileAchievemen
               </div>
               <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-text-tertiary">{a.description}</p>
               <p className="mt-1.5 text-[11px] capitalize text-text-tertiary">
-                {locked ? 'Locked' : `Unlocked ${timeAgo(a.unlockedAt as string)} · ${a.rarity}`}
+                {locked ? 'Locked' : `Unlocked ${timeAgo(a.unlockedAt as string)} Â· ${a.rarity}`}
               </p>
             </div>
           </li>
@@ -200,14 +200,14 @@ export default function ProfilePage() {
   const profile = profileQuery.data;
 
   useSeo(
-    profile ? `${profile.user.name} (@${profile.user.username}) — Suraksha Labs` : 'Profile — Suraksha Labs',
+    profile ? `${profile.user.name} (@${profile.user.username}) â€” Suraksha Labs` : 'Profile â€” Suraksha Labs',
     profile?.user.bio ?? undefined,
   );
 
   if (username === 'me' && authLoading) {
     return (
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <Skeleton className="mx-auto h-48 w-full rounded-xl" />
+        <Skeleton className="mx-auto h-48 w-full rounded-lg" />
       </div>
     );
   }
@@ -231,7 +231,7 @@ export default function ProfilePage() {
   if (profileQuery.isPending || (profileQuery.isLoading && !profile)) {
     return (
       <div className="mx-auto max-w-5xl space-y-8 px-4 py-10 sm:px-6">
-        <div className="flex items-center gap-5 rounded-xl border border-border bg-surface p-6">
+        <div className="flex items-center gap-5 rounded-lg border border-border bg-surface p-6">
           <Skeleton className="size-20 rounded-full" />
           <div className="space-y-2.5">
             <Skeleton className="h-6 w-44" />
@@ -241,7 +241,7 @@ export default function ProfilePage() {
         </div>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-24 rounded-xl" />
+            <Skeleton key={i} className="h-24 rounded-lg" />
           ))}
         </div>
       </div>
@@ -272,7 +272,7 @@ export default function ProfilePage() {
           <EmptyState
             icon={EyeOff}
             title="Profile not found"
-            description={`No learner with the username “${effectiveUsername}” exists.`}
+            description={`No learner with the username â€œ${effectiveUsername}â€ exists.`}
             action={
               <Link to="/labs">
                 <Button variant="outline">Explore labs</Button>
@@ -307,7 +307,7 @@ export default function ProfilePage() {
       <Card>
         <CardContent className="sm:px-7 sm:py-6">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-            <Avatar name={profile.user.name} src={profile.user.avatarUrl} size="xl" className="ring-4 ring-border" />
+            <Avatar name={profile.user.name} src={profile.user.avatarUrl} size="xl" />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
                 <h1 className="truncate text-2xl font-bold tracking-tight text-text">{profile.user.name}</h1>
@@ -343,7 +343,7 @@ export default function ProfilePage() {
           sub={
             <>
               {profile.globalRank !== null && <>Rank #{formatXp(profile.globalRank)}</>}
-              {profile.globalRank !== null && profile.percentile !== null && ' · '}
+              {profile.globalRank !== null && profile.percentile !== null && ' Â· '}
               {profile.percentile !== null && <>Top {profile.percentile}%</>}
             </>
           }
@@ -356,7 +356,7 @@ export default function ProfilePage() {
           label="First-attempt rate"
           value={`${Math.round(s.firstAttemptRate * 100)}%`}
         />
-        <StatTile icon={Timer} label="Avg solve time" value={s.avgSolveMinutes > 0 ? formatMinutes(s.avgSolveMinutes) : '—'} />
+        <StatTile icon={Timer} label="Avg solve time" value={s.avgSolveMinutes > 0 ? formatMinutes(s.avgSolveMinutes) : 'â€”'} />
       </div>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">

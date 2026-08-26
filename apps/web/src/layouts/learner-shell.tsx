@@ -1,12 +1,11 @@
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+﻿import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 import { Bell, Menu, X, ShieldCheck, LayoutDashboard, BookOpen, PencilLine, Flag, Trophy, Settings, LogOut, User } from 'lucide-react';
-import { useAuth, isAdminRole } from '@/lib/auth';
+import { useAuth, isStaffRole } from '@/lib/auth';
 import { api } from '@/lib/api';
 import { qk } from '@/lib/queries';
-import { Avatar, Badge } from '@/components/ui/card';
+import { Avatar } from '@/components/ui/card';
 import { Dropdown, DropdownItem } from '@/components/ui/overlay';
 import { cn, timeAgo } from '@/lib/utils';
 import type { NotificationItem } from '@suraksha/shared';
@@ -42,12 +41,10 @@ function NotificationsMenu() {
   return (
     <Dropdown
       trigger={
-        <span className="relative block rounded-lg p-2 text-text-secondary transition-colors hover:bg-surface-2 hover:text-text">
-          <Bell className="size-5" aria-hidden />
+        <span className="relative block rounded-md p-2 text-text-secondary transition-colors hover:bg-surface-2 hover:text-text">
+          <Bell className="size-[18px]" aria-hidden />
           {unread > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-accent text-[9px] font-bold text-accent-foreground">
-              {unread > 9 ? '9+' : unread}
-            </span>
+            <span className="absolute right-1 top-1 flex size-2 items-center justify-center rounded-full bg-accent" aria-label={`${unread} unread`} />
           )}
         </span>
       }
@@ -68,7 +65,10 @@ function NotificationsMenu() {
             <button
               key={n.id}
               onClick={() => !n.readAt && markOne.mutate(n.id)}
-              className={cn('flex w-full flex-col items-start gap-0.5 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-surface-2', !n.readAt && 'bg-accent-subtle/50')}
+              className={cn(
+                'flex w-full flex-col items-start gap-0.5 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-surface-2',
+                !n.readAt && 'bg-accent-subtle/40',
+              )}
             >
               <span className="flex w-full items-center justify-between gap-2">
                 <span className={cn('truncate text-sm', n.readAt ? 'text-text-secondary' : 'font-semibold text-text')}>{n.title}</span>
@@ -100,15 +100,17 @@ export function LearnerShell() {
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
-      <header className="sticky top-0 z-40 border-b border-border bg-bg/85 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-          <div className="flex items-center gap-6">
+      <header className="sticky top-0 z-40 border-b border-border bg-bg">
+        <div className="mx-auto flex h-[60px] max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+          <div className="flex items-center gap-7">
             <Link to="/dashboard" className="flex items-center gap-2.5" aria-label="Suraksha Labs dashboard">
               <img src="/brand/logo-dark.png" alt="" className="size-7 dark:hidden" aria-hidden />
               <img src="/brand/logo-white.png" alt="" className="hidden size-7 dark:block" aria-hidden />
               <span className="hidden flex-col leading-none sm:flex">
                 <span className="text-[15px] font-bold tracking-tight text-text">Suraksha Labs</span>
-                <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-text-tertiary">by Shadow Security</span>
+                <span className="mt-[7px] text-[9.5px] font-medium uppercase tracking-[0.16em] text-text-tertiary">
+                  by Shadow Security
+                </span>
               </span>
             </Link>
             <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
@@ -118,8 +120,8 @@ export function LearnerShell() {
                   to={item.to}
                   className={({ isActive }) =>
                     cn(
-                      'flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors',
-                      isActive ? 'bg-surface-2 text-text' : 'text-text-secondary hover:text-text',
+                      'relative flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors',
+                      isActive ? 'bg-surface-2 font-semibold text-text' : 'font-medium text-text-secondary hover:text-text',
                     )
                   }
                 >
@@ -130,9 +132,12 @@ export function LearnerShell() {
             </nav>
           </div>
 
-          <div className="flex items-center gap-1.5">
-            {isAdminRole(user.role) && (
-              <Link to="/admin" className="hidden items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-2 hover:text-text sm:flex">
+          <div className="flex items-center gap-1">
+            {isStaffRole(user.role) && (
+              <Link
+                to="/admin"
+                className="hidden items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-2 hover:text-text sm:flex"
+              >
                 <ShieldCheck className="size-4" aria-hidden />
                 Admin
               </Link>
@@ -140,7 +145,7 @@ export function LearnerShell() {
             <NotificationsMenu />
             <Dropdown
               trigger={
-                <span className="flex items-center gap-2 rounded-lg p-1 pr-2 transition-colors hover:bg-surface-2">
+                <span className="flex items-center gap-2 rounded-md p-1 pr-2 transition-colors hover:bg-surface-2">
                   <Avatar name={user.name} src={user.avatarUrl} size="sm" />
                   <span className="hidden text-sm font-medium text-text md:block">{user.name.split(' ')[0]}</span>
                 </span>
@@ -150,9 +155,9 @@ export function LearnerShell() {
                 <p className="text-sm font-semibold text-text">{user.name}</p>
                 <p className="text-xs text-text-tertiary">@{user.username}</p>
                 {user.level && (
-                  <Badge variant="accent" className="mt-1.5">
+                  <p className="mt-1 text-xs font-medium text-accent">
                     Level {user.level.order} — {user.level.name}
-                  </Badge>
+                  </p>
                 )}
               </div>
               <div className="pt-1.5">
@@ -171,7 +176,7 @@ export function LearnerShell() {
               </div>
             </Dropdown>
             <button
-              className="rounded-lg p-2 text-text-secondary hover:bg-surface-2 lg:hidden"
+              className="rounded-md p-2 text-text-secondary hover:bg-surface-2 lg:hidden"
               onClick={() => setMobileOpen((o) => !o)}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             >
@@ -183,13 +188,22 @@ export function LearnerShell() {
         {mobileOpen && (
           <nav className="border-t border-border bg-surface px-4 py-3 lg:hidden" aria-label="Mobile">
             {navItems.map((item) => (
-              <NavLink key={item.to} to={item.to} className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-text-secondary hover:bg-surface-2 hover:text-text">
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm',
+                    isActive ? 'bg-surface-2 font-semibold text-text' : 'font-medium text-text-secondary hover:bg-surface-2 hover:text-text',
+                  )
+                }
+              >
                 <item.icon className="size-4" aria-hidden />
                 {item.label}
               </NavLink>
             ))}
-            {isAdminRole(user.role) && (
-              <NavLink to="/admin" className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-text-secondary hover:bg-surface-2 hover:text-text">
+            {isStaffRole(user.role) && (
+              <NavLink to="/admin" className="flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium text-text-secondary hover:bg-surface-2 hover:text-text">
                 <ShieldCheck className="size-4" aria-hidden />
                 Admin panel
               </NavLink>
@@ -198,7 +212,7 @@ export function LearnerShell() {
         )}
       </header>
 
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
         <Outlet />
       </main>
     </div>

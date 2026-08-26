@@ -1,8 +1,11 @@
 import { forwardRef, type HTMLAttributes } from 'react';
 import { cn, initials } from '@/lib/utils';
 
+/* --------------------------------- Panel ---------------------------------- */
+
+/** Flat surface with a hairline rule — the system's primary container. */
 export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn('rounded-xl border border-border bg-surface shadow-xs', className)} {...props} />
+  <div ref={ref} className={cn('rounded-lg border border-border bg-surface', className)} {...props} />
 ));
 Card.displayName = 'Card';
 
@@ -11,7 +14,7 @@ export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElemen
 }
 
 export function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={cn('text-base font-semibold tracking-tight', className)} {...props} />;
+  return <h3 className={cn('text-[0.95rem] font-semibold tracking-tight', className)} {...props} />;
 }
 
 export function CardDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
@@ -31,24 +34,42 @@ export function CardFooter({ className, ...props }: HTMLAttributes<HTMLDivElemen
 export type BadgeVariant = 'default' | 'accent' | 'success' | 'warning' | 'danger' | 'outline';
 
 const badgeVariants: Record<BadgeVariant, string> = {
-  default: 'bg-surface-3 text-text-secondary',
+  default: 'bg-surface-2 text-text-secondary',
   accent: 'bg-accent-subtle text-accent',
   success: 'bg-success-subtle text-success',
   warning: 'bg-warning-subtle text-warning',
   danger: 'bg-danger-subtle text-danger',
-  outline: 'border border-border-strong text-text-secondary',
+  outline: 'border border-border text-text-secondary',
 };
 
 export function Badge({ variant = 'default', className, ...props }: HTMLAttributes<HTMLSpanElement> & { variant?: BadgeVariant }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium tracking-tight',
+        'inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium tracking-tight',
         badgeVariants[variant],
         className,
       )}
       {...props}
     />
+  );
+}
+
+/** LeetCode-style difficulty dot + label. Order: beginner → expert. */
+const DIFFICULTY_DOT: Record<number, string> = {
+  0: 'bg-success',
+  1: 'bg-warning',
+  2: 'bg-danger',
+  3: 'bg-danger',
+};
+
+export function DifficultyDot({ orderIndex, label, className }: { orderIndex: number; label?: string; className?: string }) {
+  const clamped = Math.min(Math.max(Math.round(orderIndex), 0), 3);
+  return (
+    <span className={cn('inline-flex items-center gap-1.5 text-xs font-medium text-text-secondary', className)}>
+      <span aria-hidden className={cn('size-2 rounded-full', DIFFICULTY_DOT[clamped])} />
+      {label && <span className="capitalize">{label}</span>}
+    </span>
   );
 }
 
@@ -62,7 +83,7 @@ export function Avatar({ name, src, size = 'md', className }: { name: string; sr
   return (
     <span
       aria-hidden
-      className={cn('inline-flex shrink-0 items-center justify-center rounded-full bg-accent-subtle font-semibold text-accent', sizes[size], className)}
+      className={cn('inline-flex shrink-0 items-center justify-center rounded-full bg-surface-3 font-semibold text-text-secondary', sizes[size], className)}
     >
       {initials(name)}
     </span>
@@ -80,7 +101,7 @@ export function Progress({ value, className, label }: { value: number; className
       aria-valuemin={0}
       aria-valuemax={100}
       aria-label={label ?? 'Progress'}
-      className={cn('h-2 w-full overflow-hidden rounded-full bg-surface-3', className)}
+      className={cn('h-1.5 w-full overflow-hidden rounded-full bg-surface-3', className)}
     >
       <div className="progress-animate h-full rounded-full bg-accent transition-[width] duration-500" style={{ width: `${pct}%` }} />
     </div>
@@ -95,7 +116,7 @@ export function Skeleton({ className }: { className?: string }) {
 
 export function SkeletonCard() {
   return (
-    <div className="space-y-3 rounded-xl border border-border bg-surface p-5">
+    <div className="space-y-3 rounded-lg border border-border bg-surface p-5">
       <Skeleton className="h-5 w-2/3" />
       <Skeleton className="h-4 w-full" />
       <Skeleton className="h-4 w-4/5" />
@@ -117,9 +138,9 @@ export function EmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border-strong bg-surface px-6 py-14 text-center">
+    <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border-strong bg-surface px-6 py-14 text-center">
       {Icon && (
-        <div className="flex size-11 items-center justify-center rounded-full bg-surface-3 text-text-tertiary">
+        <div className="flex size-11 items-center justify-center rounded-full bg-surface-2 text-text-tertiary">
           <Icon className="size-5" aria-hidden />
         </div>
       )}
@@ -136,7 +157,7 @@ export function EmptyState({
 
 export function ErrorState({ title = 'Something went wrong', description, action }: { title?: string; description?: string; action?: React.ReactNode }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-border bg-surface px-6 py-14 text-center">
+    <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-border bg-surface px-6 py-14 text-center">
       <div className="flex size-11 items-center justify-center rounded-full bg-danger-subtle text-danger">
         <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
           <path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" strokeLinecap="round" strokeLinejoin="round" />

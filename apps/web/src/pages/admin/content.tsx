@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -191,7 +191,7 @@ function PathsTab() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[340px_minmax(0,1fr)]">
         <div className="space-y-3">
           {pathsQ.isLoading &&
-            Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 w-full rounded-xl" />)}
+            Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 w-full rounded-lg" />)}
           {!pathsQ.isLoading && paths.length === 0 && (
             <EmptyState icon={BookOpen} title="No paths yet" description="Create your first learning path to get started." />
           )}
@@ -201,7 +201,7 @@ function PathsTab() {
               type="button"
               onClick={() => setSelectedId(p.id)}
               className={cn(
-                'w-full rounded-xl border bg-surface p-4 text-left shadow-xs transition-colors',
+                'w-full rounded-lg border bg-surface p-4 text-left transition-colors',
                 p.id === selectedId ? 'border-accent ring-2 ring-ring/25' : 'border-border hover:border-border-strong',
               )}
             >
@@ -240,7 +240,7 @@ function PathsTab() {
                 <div className="min-w-0">
                   <h3 className="truncate font-semibold tracking-tight">{selected.name}</h3>
                   <p className="mt-0.5 text-sm text-text-secondary">
-                    Modules · updated {timeAgo(selected.updatedAt)}
+                    Modules Â· updated {timeAgo(selected.updatedAt)}
                   </p>
                 </div>
                 <Button variant="secondary" size="sm" onClick={() => setAddModuleOpen(true)}>
@@ -508,7 +508,7 @@ function LessonsTab() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search lessons…"
+            placeholder="Search lessonsâ€¦"
             className="pl-9"
             aria-label="Search lessons"
           />
@@ -691,7 +691,7 @@ function NewLessonModal({
         },
       }),
     onSuccess: (res) => {
-      toast('success', 'Lesson created', 'Opening the editor…');
+      toast('success', 'Lesson created', 'Opening the editorâ€¦');
       onClose();
       navigate(`/admin/content/lessons/${res.lesson.id}`);
     },
@@ -715,7 +715,7 @@ function NewLessonModal({
           <div>
             <Label htmlFor="nl-module">Module</Label>
             <Select id="nl-module" value={moduleId} onChange={(e) => setModuleId(e.target.value)}>
-              <option value="">Select module…</option>
+              <option value="">Select moduleâ€¦</option>
               {modules.map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.title}

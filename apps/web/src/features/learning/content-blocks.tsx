@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   AlertTriangle,
@@ -69,16 +69,16 @@ function CopyButton({ value }: { value: string }) {
       type="button"
       onClick={copy}
       aria-label={copied ? 'Copied' : 'Copy to clipboard'}
-      className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
+      className="rounded-md p-1.5 text-stone-400 transition-colors hover:bg-white/10 hover:text-white"
     >
       {copied ? <Check className="size-3.5" aria-hidden /> : <Copy className="size-3.5" aria-hidden />}
     </button>
   );
 }
 
-const PANEL_CLASS = 'my-6 overflow-hidden rounded-xl border border-black/20 bg-[#0d1424]';
+const PANEL_CLASS = 'my-6 overflow-hidden rounded-lg border border-black/30 bg-[#1b1a17]';
 const PANEL_HEADER_CLASS =
-  'flex items-center justify-between gap-3 border-b border-white/[0.07] px-4 py-2';
+  'flex items-center justify-between gap-3 border-b border-white/[0.08] px-4 py-2';
 
 function Heading({ block }: { block: HeadingBlockData }) {
   const id = slugify(block.text);
@@ -110,7 +110,7 @@ function VideoFigure({ block }: { block: VideoBlockData }) {
   return (
     <figure className="my-6">
       {embed ? (
-        <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-border bg-black">
+        <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-black">
           <iframe
             src={embed}
             title={block.title ?? 'Lesson video'}
@@ -125,7 +125,7 @@ function VideoFigure({ block }: { block: VideoBlockData }) {
           controls
           preload="metadata"
           src={block.url}
-          className="aspect-video w-full rounded-xl border border-border bg-black"
+          className="aspect-video w-full rounded-lg border border-border bg-black"
         />
       )}
       {block.title && <figcaption className="mt-2 text-center text-sm text-text-tertiary">{block.title}</figcaption>}
@@ -136,7 +136,7 @@ function VideoFigure({ block }: { block: VideoBlockData }) {
 function ImageFigure({ block }: { block: Extract<ContentBlock, { type: 'image' }> }) {
   return (
     <figure className="my-6">
-      <img src={block.src} alt={block.alt} loading="lazy" className="w-full rounded-xl border border-border bg-surface-2" />
+      <img src={block.src} alt={block.alt} loading="lazy" className="w-full rounded-lg border border-border bg-surface-2" />
       {block.caption && <figcaption className="mt-2 text-center text-sm text-text-tertiary">{block.caption}</figcaption>}
     </figure>
   );
@@ -146,13 +146,13 @@ function CodePanel({ block }: { block: Extract<ContentBlock, { type: 'code' }> }
   return (
     <div className={PANEL_CLASS}>
       <div className={PANEL_HEADER_CLASS}>
-        <span className="truncate font-mono text-xs text-slate-300">{block.filename ?? 'snippet'}</span>
+        <span className="truncate font-mono text-xs text-stone-300">{block.filename ?? 'snippet'}</span>
         <span className="flex items-center gap-2">
-          <span className="text-[10px] font-medium uppercase tracking-widest text-slate-500">{block.language}</span>
+          <span className="text-[10px] font-medium uppercase tracking-widest text-stone-500">{block.language}</span>
           <CopyButton value={block.code} />
         </span>
       </div>
-      <pre className="overflow-x-auto p-4 font-mono text-[13px] leading-relaxed text-slate-200">
+      <pre className="overflow-x-auto p-4 font-mono text-[13px] leading-relaxed text-stone-200">
         <code>{block.code}</code>
       </pre>
     </div>
@@ -167,13 +167,13 @@ function CommandPanel({ block }: { block: Extract<ContentBlock, { type: 'command
       )}
       <div className={PANEL_CLASS}>
         <div className={PANEL_HEADER_CLASS}>
-          <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Shell</span>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-stone-500">Shell</span>
           <CopyButton value={block.commands.join('\n')} />
         </div>
         <div className="space-y-1.5 overflow-x-auto p-4">
           {block.commands.map((cmd, i) => (
-            <p key={i} className="whitespace-pre-wrap break-all font-mono text-[13px] leading-relaxed text-slate-100">
-              <span className="mr-3 select-none text-slate-500" aria-hidden>
+            <p key={i} className="whitespace-pre-wrap break-all font-mono text-[13px] leading-relaxed text-stone-100">
+              <span className="mr-3 select-none text-stone-600" aria-hidden>
                 $
               </span>
               {cmd}
@@ -242,10 +242,10 @@ function QuizCard({ block }: { block: QuizBlockData }) {
   };
 
   return (
-    <section className="my-6 rounded-xl border border-border bg-surface p-5 shadow-xs">
+    <section className="my-6 rounded-lg border border-border bg-surface">
       <div className="flex items-center gap-2 text-text-tertiary">
         <HelpCircle className="size-4 text-accent" aria-hidden />
-        <span className="text-xs font-semibold uppercase tracking-widest">Knowledge check</span>
+        <span className="micro-label text-accent">Knowledge check</span>
       </div>
       <p className="mt-3 text-sm font-medium text-text">{block.question}</p>
       <div role="radiogroup" aria-label={block.question} className="mt-3 space-y-2">
@@ -292,7 +292,7 @@ function QuizCard({ block }: { block: QuizBlockData }) {
                 </>
               ) : (
                 <>
-                  <XCircle className="size-3.5" aria-hidden /> Not quite — the answer is{' '}
+                  <XCircle className="size-3.5" aria-hidden /> Not quite â€” the answer is{' '}
                   {String.fromCharCode(65 + block.correctIndex)}
                 </>
               )}
@@ -338,7 +338,7 @@ export function LabRefCard({
   return (
     <Link
       to={`/labs/${labSlug}`}
-      className="group flex items-center gap-3.5 rounded-xl border border-border bg-surface p-4 transition-all hover:border-border-strong hover:shadow-md"
+      className="group flex items-center gap-3.5 rounded-lg border border-border bg-surface p-4 transition-all hover:border-border-strong hover:shadow-md"
     >
       <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent-subtle text-accent" aria-hidden>
         <Flag className="size-4.5" />
@@ -384,13 +384,13 @@ function PracticeRef({ block, context }: { block: Extract<ContentBlock, { type: 
     );
   }
   return (
-    <div className="my-6 flex items-center gap-3.5 rounded-xl border border-dashed border-border-strong bg-surface-2/60 p-4">
+    <div className="my-6 flex items-center gap-3.5 rounded-lg border border-dashed border-border-strong bg-surface-2/60 p-4">
       <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface-3 text-text-tertiary" aria-hidden>
         <BookOpenCheck className="size-4.5" />
       </span>
       <span className="min-w-0">
         <span className="block truncate text-sm font-medium text-text">{block.title}</span>
-        <span className="block text-xs text-text-tertiary">Practice exercise — part of this lesson</span>
+        <span className="block text-xs text-text-tertiary">Practice exercise â€” part of this lesson</span>
       </span>
     </div>
   );
@@ -403,7 +403,7 @@ function ResourceRow({ block }: { block: Extract<ContentBlock, { type: 'resource
     <a
       href={block.url}
       {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : { download: true })}
-      className="group my-6 flex items-center gap-3.5 rounded-xl border border-border bg-surface px-4 py-3 transition-colors hover:border-border-strong hover:bg-surface-2"
+      className="group my-6 flex items-center gap-3.5 rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:border-border-strong hover:bg-surface-2"
     >
       <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface-3 text-text-secondary group-hover:text-accent" aria-hidden>
         <Icon className="size-4" />
@@ -431,7 +431,7 @@ function RelatedLessonRow({ block, context }: { block: Extract<ContentBlock, { t
     </>
   );
   const classes =
-    'group my-6 flex items-center gap-3.5 rounded-xl border border-border bg-surface px-4 py-3 transition-colors hover:border-border-strong hover:bg-surface-2';
+    'group my-6 flex items-center gap-3.5 rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:border-border-strong hover:bg-surface-2';
   if (!href) return <div className={classes}>{inner}</div>;
   return (
     <Link to={href} className={classes}>

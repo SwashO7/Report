@@ -39,21 +39,21 @@ export function Modal({
       {open && (
         <div
           ref={overlayRef}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px] sm:p-6"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-ink/45 p-4 sm:p-6"
           onMouseDown={(e) => e.target === overlayRef.current && onClose()}
         >
           <motion.div
             role="dialog"
             aria-modal="true"
             aria-label={title}
-            initial={{ opacity: 0, scale: 0.97, y: 6 }}
+            initial={{ opacity: 0, scale: 0.98, y: 4 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98, y: 4 }}
-            transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
-            className={cn('w-full rounded-xl border border-border bg-surface shadow-lg', sizes[size])}
+            exit={{ opacity: 0, scale: 0.99, y: 2 }}
+            transition={{ duration: 0.14, ease: [0.22, 1, 0.36, 1] }}
+            className={cn('w-full rounded-lg border border-border bg-surface shadow-lg', sizes[size])}
           >
             {title && (
-              <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
+              <div className="flex items-center justify-between border-b border-border px-5 py-3">
                 <h2 className="font-semibold tracking-tight">{title}</h2>
                 <button
                   onClick={onClose}
@@ -87,7 +87,7 @@ export function Tabs<T extends string>({
   className?: string;
 }) {
   return (
-    <div role="tablist" className={cn('flex items-center gap-1 overflow-x-auto rounded-lg bg-surface-2 p-1', className)}>
+    <div role="tablist" className={cn('flex items-center gap-4 overflow-x-auto border-b border-border', className)}>
       {tabs.map((t) => (
         <button
           key={t.value}
@@ -95,12 +95,47 @@ export function Tabs<T extends string>({
           aria-selected={value === t.value}
           onClick={() => onChange(t.value)}
           className={cn(
-            'relative whitespace-nowrap rounded-md px-3.5 py-1.5 text-sm font-medium transition-colors',
-            value === t.value ? 'bg-surface text-text shadow-xs' : 'text-text-secondary hover:text-text',
+            'relative whitespace-nowrap border-b-2 px-1 pb-2.5 pt-1 text-sm font-medium transition-colors',
+            value === t.value ? 'border-accent text-text' : 'border-transparent text-text-secondary hover:text-text',
           )}
         >
           {t.label}
-          {t.count !== undefined && <span className="ml-1.5 text-xs text-text-tertiary">{t.count}</span>}
+          {t.count !== undefined && <span className="ml-1.5 text-xs text-text-tertiary tabular-nums">{t.count}</span>}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** Segmented control — for compact filter groups. */
+export function SegmentedControl<T extends string>({
+  options,
+  value,
+  onChange,
+  className,
+  label,
+}: {
+  options: { value: T; label: string }[];
+  value: T;
+  onChange: (v: T) => void;
+  className?: string;
+  label?: string;
+}) {
+  return (
+    <div role="radiogroup" aria-label={label} className={cn('inline-flex rounded-md border border-border bg-surface p-0.5', className)}>
+      {options.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          role="radio"
+          aria-checked={value === o.value}
+          onClick={() => onChange(o.value)}
+          className={cn(
+            'whitespace-nowrap rounded-[5px] px-3 py-1 text-xs font-medium transition-colors',
+            value === o.value ? 'bg-surface-3 text-text shadow-xs' : 'text-text-secondary hover:text-text',
+          )}
+        >
+          {o.label}
         </button>
       ))}
     </div>
@@ -136,12 +171,12 @@ export function Dropdown({ trigger, children, align = 'right' }: { trigger: Reac
         {open && (
           <motion.div
             role="menu"
-            initial={{ opacity: 0, y: -4, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -4, scale: 0.98 }}
-            transition={{ duration: 0.12 }}
+            initial={{ opacity: 0, y: -3 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -3 }}
+            transition={{ duration: 0.11 }}
             className={cn(
-              'absolute top-full z-40 mt-2 min-w-48 rounded-xl border border-border bg-surface p-1.5 shadow-lg',
+              'absolute top-full z-40 mt-1.5 min-w-48 rounded-lg border border-border bg-surface p-1 shadow-lg',
               align === 'right' ? 'right-0' : 'left-0',
             )}
             onClick={() => setOpen(false)}
@@ -170,7 +205,7 @@ export function DropdownItem({
       role="menuitem"
       onClick={onClick}
       className={cn(
-        'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+        'flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors',
         danger ? 'text-danger hover:bg-danger-subtle' : 'text-text-secondary hover:bg-surface-2 hover:text-text',
       )}
     >
@@ -189,7 +224,7 @@ export function Tooltip({ label, children, side = 'top' }: { label: string; chil
       <span
         role="tooltip"
         className={cn(
-          'pointer-events-none absolute left-1/2 z-30 -translate-x-1/2 whitespace-nowrap rounded-md border border-border bg-surface-2 px-2 py-1 text-xs text-text-secondary opacity-0 shadow-sm transition-opacity delay-300 group-hover/tt:opacity-100',
+          'pointer-events-none absolute left-1/2 z-30 -translate-x-1/2 whitespace-nowrap rounded-md border border-border bg-surface px-2 py-1 text-xs text-text-secondary opacity-0 shadow-md transition-opacity delay-300 group-hover/tt:opacity-100',
           side === 'top' ? 'bottom-full mb-1.5' : 'top-full mt-1.5',
         )}
       >

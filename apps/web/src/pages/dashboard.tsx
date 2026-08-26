@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+﻿import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -92,12 +92,12 @@ function AchievementIcon({ name }: { name: string }) {
 
 function StatCard({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-border bg-surface p-4 shadow-xs">
-      <div className="flex items-center gap-1.5 text-text-tertiary">
+    <div className="rounded-lg border border-border bg-surface px-4 py-3.5">
+      <p className="micro-label flex items-center gap-1.5">
         <Icon className="size-3.5" aria-hidden />
-        <span className="text-[11px] font-medium uppercase tracking-wider">{label}</span>
-      </div>
-      <p className="mt-2 text-2xl font-bold tracking-tight text-text">{value}</p>
+        {label}
+      </p>
+      <p className="mt-1.5 text-2xl font-bold tabular-nums tracking-tight text-text">{value}</p>
     </div>
   );
 }
@@ -123,8 +123,8 @@ function ContinueHero({ data }: { data: DashboardData }) {
 
   if (!continueLesson) {
     return (
-      <section className="hero-texture rounded-xl border border-border bg-surface p-6 shadow-xs sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-widest text-accent">Get started</p>
+      <section className="rounded-lg border border-border bg-surface p-6 sm:p-8">
+        <p className="micro-label">Get started</p>
         <h2 className="mt-2 text-2xl font-bold tracking-tight text-text sm:text-[1.7rem]">
           Start your security journey
         </h2>
@@ -144,8 +144,8 @@ function ContinueHero({ data }: { data: DashboardData }) {
   const resumeHref = detail.data ? `/learn/${detail.data.pathSlug}/${detail.data.slug}` : '/learn';
 
   return (
-    <section className="hero-texture rounded-xl border border-border bg-surface p-6 shadow-xs sm:p-8">
-      <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-accent">
+    <section className="rounded-lg border border-border bg-surface p-6 sm:p-8">
+      <p className="micro-label flex items-center gap-2">
         <span className="relative flex size-2" aria-hidden>
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-40" />
           <span className="relative inline-flex size-2 rounded-full bg-accent" />
@@ -185,13 +185,13 @@ export default function DashboardPage() {
         <Skeleton className="h-9 w-72" />
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
-            <Skeleton className="h-52 w-full rounded-xl" />
-            <Skeleton className="h-24 w-full rounded-xl" />
-            <Skeleton className="h-40 w-full rounded-xl" />
+            <Skeleton className="h-52 w-full rounded-lg" />
+            <Skeleton className="h-24 w-full rounded-lg" />
+            <Skeleton className="h-40 w-full rounded-lg" />
           </div>
           <div className="space-y-6">
-            <Skeleton className="h-44 w-full rounded-xl" />
-            <Skeleton className="h-56 w-full rounded-xl" />
+            <Skeleton className="h-44 w-full rounded-lg" />
+            <Skeleton className="h-56 w-full rounded-lg" />
           </div>
         </div>
       </div>
@@ -236,15 +236,15 @@ export default function DashboardPage() {
             <StatCard icon={Flag} label="Labs solved" value={formatXp(stats.labsSolved)} />
             <StatCard icon={BookOpen} label="Lessons done" value={formatXp(stats.lessonsCompleted)} />
             <StatCard icon={Award} label="Achievements" value={formatXp(stats.achievements)} />
-            <StatCard icon={TrendingUp} label="Global rank" value={stats.globalRank != null ? `#${formatXp(stats.globalRank)}` : '—'} />
+            <StatCard icon={TrendingUp} label="Global rank" value={stats.globalRank != null ? `#${formatXp(stats.globalRank)}` : 'â€”'} />
           </section>
 
           {data.recommendedLab && (
             <section
               aria-label="Recommended lab"
-              className="rounded-xl border border-border bg-surface p-5 shadow-xs"
+              className="rounded-lg border border-border bg-surface p-4"
             >
-              <p className="text-xs font-semibold uppercase tracking-widest text-text-tertiary">Recommended for you</p>
+              <p className="micro-label">Recommended for you</p>
               <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
                 <div className="min-w-0 flex-1">
                   <h3 className="truncate text-base font-semibold tracking-tight text-text">
@@ -274,13 +274,13 @@ export default function DashboardPage() {
             </section>
           )}
 
-          <section aria-label="Recent activity" className="rounded-xl border border-border bg-surface shadow-xs">
+          <section aria-label="Recent activity" className="rounded-lg border border-border bg-surface">
             <div className="border-b border-border px-5 py-4">
               <h2 className="text-base font-semibold tracking-tight text-text">Recent activity</h2>
             </div>
             {data.recentActivity.length === 0 ? (
               <p className="px-5 py-8 text-center text-sm text-text-tertiary">
-                No activity yet — complete a lesson or solve a lab to get started.
+                No activity yet â€” complete a lesson or solve a lab to get started.
               </p>
             ) : (
               <ul className="divide-y divide-border">
@@ -314,12 +314,12 @@ export default function DashboardPage() {
         </main>
 
         <aside className="space-y-6">
-          <section aria-label="XP progress" className="rounded-xl border border-border bg-surface p-5 shadow-xs">
+          <section aria-label="XP progress" className="rounded-lg border border-border bg-surface p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-text-tertiary">Level</p>
+                <p className="micro-label">Level</p>
                 <p className="mt-1 font-semibold tracking-tight text-text">
-                  {xp.level ? `Level ${xp.level.order} — ${xp.level.name}` : 'Unranked'}
+                  {xp.level ? `Level ${xp.level.order} â€” ${xp.level.name}` : 'Unranked'}
                 </p>
                 {xp.level && <p className="text-xs text-text-tertiary">{xp.level.title}</p>}
               </div>
@@ -345,7 +345,7 @@ export default function DashboardPage() {
             </p>
           </section>
 
-          <section aria-label="Recent achievements" className="rounded-xl border border-border bg-surface p-5 shadow-xs">
+          <section aria-label="Recent achievements" className="rounded-lg border border-border bg-surface p-4">
             <h2 className="text-base font-semibold tracking-tight text-text">Recent achievements</h2>
             {data.recentAchievements.length === 0 ? (
               <p className="mt-4 text-sm leading-relaxed text-text-tertiary">
@@ -398,7 +398,7 @@ export default function DashboardPage() {
             )}
           </section>
 
-          <section aria-label="Leaderboard" className="rounded-xl border border-border bg-surface p-5 shadow-xs">
+          <section aria-label="Leaderboard" className="rounded-lg border border-border bg-surface p-4">
             <div className="flex items-center justify-between">
               <h2 className="text-base font-semibold tracking-tight text-text">Top learners</h2>
               <Link to="/leaderboard" className="text-xs font-medium text-accent hover:underline">

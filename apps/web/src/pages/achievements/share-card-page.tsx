@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+﻿import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
 import {
   BadgeCheck,
@@ -53,7 +53,7 @@ export default function ShareCardPage() {
 
   useSeo(
     achievement
-      ? `${achievement.title} — Achievement by ${data?.user.name} | Suraksha Labs`
+      ? `${achievement.title} â€” Achievement by ${data?.user.name} | Suraksha Labs`
       : 'Verified achievement | Suraksha Labs',
     achievement
       ? `${data?.user.name} earned "${achievement.title}" on Suraksha Labs by Shadow Security.`
@@ -92,7 +92,7 @@ export default function ShareCardPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center px-4">
-        <div className="w-full max-w-md space-y-4 rounded-xl border border-border bg-surface p-8 shadow-xs">
+        <div className="w-full max-w-md space-y-4 rounded-lg border border-border bg-surface p-8">
           <div className="skeleton h-10 w-40 self-center" />
           <div className="skeleton mx-auto size-24 rounded-full" />
           <div className="skeleton h-6 w-3/4" />
@@ -145,7 +145,7 @@ export default function ShareCardPage() {
   ];
 
   return (
-    <div className="hero-texture min-h-[70vh] px-4 py-14 sm:py-20">
+    <div className="min-h-[70vh] bg-bg-subtle px-4 py-14 sm:py-20">
       <div className="mx-auto max-w-md">
         {/* --------------------------- Verification bar -------------------------- */}
         <p className="mb-5 flex items-center justify-center gap-1.5 text-center text-xs font-medium text-success">
@@ -153,7 +153,7 @@ export default function ShareCardPage() {
           Verified achievement · Suraksha Labs
         </p>
 
-        <article className="overflow-hidden rounded-2xl border border-border bg-surface shadow-lg">
+        <article className="overflow-hidden rounded-lg border border-border bg-surface shadow-md">
           <div className="px-7 pt-7 sm:px-8">
             <BrandHeader />
 
@@ -165,7 +165,7 @@ export default function ShareCardPage() {
               <h1 className="mt-2 text-2xl font-bold tracking-tight text-text">{ach.title}</h1>
               <p className="mt-2 text-sm leading-relaxed text-text-secondary">{ach.description}</p>
 
-              <div className="mt-6 flex items-center justify-center gap-3 rounded-xl bg-surface-2 px-4 py-3">
+              <div className="mt-6 flex items-center justify-center gap-3 rounded-lg bg-surface-2 px-4 py-3">
                 <Avatar name={card.user.name} src={card.user.avatarUrl} size="md" />
                 <div className="min-w-0 text-left leading-tight">
                   <p className="truncate text-sm font-semibold text-text">Earned by {card.user.name}</p>
@@ -191,10 +191,10 @@ export default function ShareCardPage() {
                 </Link>
               )}
 
-              <dl className="mt-5 grid grid-cols-3 divide-x divide-border overflow-hidden rounded-xl border border-border">
+              <dl className="mt-5 grid grid-cols-3 divide-x divide-border overflow-hidden rounded-lg border border-border">
                 {stats.map((stat) => (
                   <div key={stat.label} className="flex flex-col bg-surface px-2 py-3 text-center">
-                    <dd className="text-sm font-bold tabular-nums text-text">{stat.value ?? '—'}</dd>
+                    <dd className="text-sm font-bold tabular-nums text-text">{stat.value ?? 'â€”'}</dd>
                     <dt className="mt-1 text-[11px] font-medium text-text-tertiary">{stat.label}</dt>
                   </div>
                 ))}

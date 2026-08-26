@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+﻿import { useEffect } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'motion/react';
@@ -55,7 +55,7 @@ export default function LessonPage() {
       }),
     onSuccess: (res) => {
       if (res.firstCompletion && res.xpAwarded > 0) {
-        toast('success', `+${formatXp(res.xpAwarded)} XP`, `“${lesson?.title ?? 'Lesson'}” completed`);
+        toast('success', `+${formatXp(res.xpAwarded)} XP`, `â€œ${lesson?.title ?? 'Lesson'}â€ completed`);
       }
       invalidateProgress();
     },
@@ -72,7 +72,7 @@ export default function LessonPage() {
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-5/6" />
-          <Skeleton className="h-40 w-full rounded-xl" />
+          <Skeleton className="h-40 w-full rounded-lg" />
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-2/3" />
         </div>
@@ -162,7 +162,7 @@ export default function LessonPage() {
           </div>
 
           {!user ? (
-            <section className="mt-12 flex flex-col gap-3 rounded-xl border border-accent/25 bg-accent-subtle p-5 sm:flex-row sm:items-center sm:justify-between">
+            <section className="mt-12 flex flex-col gap-3 rounded-lg border border-accent/25 bg-accent-subtle p-5 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-text">Sign in to track your progress and earn XP for this lesson.</p>
               <Link to="/signup" state={{ from: location.pathname }} className="shrink-0">
                 <Button size="sm">
@@ -172,8 +172,8 @@ export default function LessonPage() {
               </Link>
             </section>
           ) : completed ? (
-            <section aria-label="What's next" className="mt-14 rounded-xl border border-border bg-surface p-6 shadow-xs sm:p-7">
-              <p className="text-xs font-semibold uppercase tracking-widest text-accent">What's next</p>
+            <section aria-label="What's next" className="mt-14 rounded-lg border border-border bg-surface p-6 sm:p-7">
+              <p className="micro-label">What's next</p>
               <h2 className="mt-2 text-xl font-bold tracking-tight text-text">Keep the momentum going</h2>
               {lesson.nextLesson && (
                 <Link to={`/learn/${lesson.pathSlug}/${lesson.nextLesson.slug}`} className="mt-5 inline-flex w-full sm:w-auto">
@@ -208,7 +208,7 @@ export default function LessonPage() {
               {lesson.prevLesson ? (
                 <Link
                   to={`/learn/${lesson.pathSlug}/${lesson.prevLesson.slug}`}
-                  className="group flex items-center gap-3 rounded-xl border border-border bg-surface p-4 transition-all hover:border-border-strong hover:shadow-md"
+                  className="group flex items-center gap-3 rounded-lg border border-border bg-surface p-4 transition-all hover:border-border-strong hover:shadow-md"
                 >
                   <ArrowLeft className="size-4 shrink-0 text-text-tertiary transition-transform group-hover:-translate-x-0.5 group-hover:text-accent" aria-hidden />
                   <span className="min-w-0">
@@ -224,7 +224,7 @@ export default function LessonPage() {
               {lesson.nextLesson && (
                 <Link
                   to={`/learn/${lesson.pathSlug}/${lesson.nextLesson.slug}`}
-                  className="group flex items-center justify-end gap-3 rounded-xl border border-border bg-surface p-4 text-right transition-all hover:border-border-strong hover:shadow-md"
+                  className="group flex items-center justify-end gap-3 rounded-lg border border-border bg-surface p-4 text-right transition-all hover:border-border-strong hover:shadow-md"
                 >
                   <span className="min-w-0">
                     <span className="block text-xs uppercase tracking-wider text-text-tertiary">Next</span>
@@ -241,7 +241,7 @@ export default function LessonPage() {
 
         <aside className="mt-12 hidden xl:block">
           <div className="sticky top-24 space-y-5">
-            <section aria-label="Lesson details" className="rounded-xl border border-border bg-surface p-5 shadow-xs">
+            <section aria-label="Lesson details" className="rounded-lg border border-border bg-surface">
               <h2 className="text-sm font-semibold tracking-tight text-text">Lesson details</h2>
               <ul className="mt-3 space-y-2.5 text-sm text-text-secondary">
                 <li className="flex items-center gap-2.5">
@@ -268,7 +268,7 @@ export default function LessonPage() {
               </div>
               {headings.length > 0 && (
                 <>
-                  <p className="mt-5 text-xs font-semibold uppercase tracking-widest text-text-tertiary">On this page</p>
+                  <p className="micro-label mt-5">On this page</p>
                   <ul className="mt-2.5 space-y-1.5 border-l border-border pl-3">
                     {headings.slice(0, 8).map((h, i) =>
                       h.type === 'heading' ? (
@@ -288,7 +288,7 @@ export default function LessonPage() {
             </section>
 
             {lesson.relatedLabs.length > 0 && (
-              <section aria-label="Related labs" className="rounded-xl border border-border bg-surface p-5 shadow-xs">
+              <section aria-label="Related labs" className="rounded-lg border border-border bg-surface">
                 <h2 className="text-sm font-semibold tracking-tight text-text">Related labs</h2>
                 <div className="mt-3 -mx-2 space-y-2">
                   {lesson.relatedLabs.slice(0, 4).map((lab) => (

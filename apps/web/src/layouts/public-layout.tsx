@@ -1,20 +1,22 @@
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Menu, X, ShieldCheck } from 'lucide-react';
-import { useAuth, isAdminRole } from '@/lib/auth';
+import { useAuth, isStaffRole } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Avatar } from '@/components/ui/card';
 import { Dropdown, DropdownItem } from '@/components/ui/overlay';
 import { cn } from '@/lib/utils';
 
-function BrandMark({ light }: { light?: boolean }) {
+function BrandMark() {
   return (
     <span className="flex items-center gap-2.5">
-      <img src={light ? '/brand/logo-white.png' : '/brand/logo-dark.png'} alt="" className="size-7 dark:hidden" aria-hidden />
-      <img src="/brand/logo-white.png" alt="" className={cn('size-7', light ? 'hidden' : 'hidden dark:block')} aria-hidden />
+      <img src="/brand/logo-dark.png" alt="" className="size-7 dark:hidden" aria-hidden />
+      <img src="/brand/logo-white.png" alt="" className="hidden size-7 dark:block" aria-hidden />
       <span className="flex flex-col leading-none">
         <span className="text-[15px] font-bold tracking-tight text-text">Suraksha Labs</span>
-        <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-text-tertiary">by Shadow Security</span>
+        <span className="mt-[7px] text-[9.5px] font-medium uppercase tracking-[0.16em] text-text-tertiary">
+          by Shadow Security
+        </span>
       </span>
     </span>
   );
@@ -36,21 +38,21 @@ export function PublicLayout() {
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
-      <header className="sticky top-0 z-40 border-b border-border bg-bg/85 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+      <header className="sticky top-0 z-40 border-b border-border bg-bg">
+        <div className="mx-auto flex h-[60px] max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
           <Link to="/" aria-label="Suraksha Labs home" className="shrink-0">
             <BrandMark />
           </Link>
 
-          <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+          <nav className="hidden items-center gap-6 md:flex" aria-label="Primary">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
                   cn(
-                    'rounded-lg px-3.5 py-2 text-sm font-medium transition-colors',
-                    isActive ? 'text-text' : 'text-text-secondary hover:bg-surface-2 hover:text-text',
+                    'text-sm transition-colors',
+                    isActive ? 'font-semibold text-text' : 'font-medium text-text-secondary hover:text-text',
                   )
                 }
               >
@@ -59,11 +61,14 @@ export function PublicLayout() {
             ))}
           </nav>
 
-          <div className="hidden items-center gap-2.5 md:flex">
+          <div className="hidden items-center gap-2 md:flex">
             {loading ? null : user ? (
               <>
-                {isAdminRole(user.role) && (
-                  <Link to="/admin" className="mr-1 flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-2 hover:text-text">
+                {isStaffRole(user.role) && (
+                  <Link
+                    to="/admin"
+                    className="mr-1 flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-2 hover:text-text"
+                  >
                     <ShieldCheck className="size-4" aria-hidden />
                     Admin
                   </Link>
@@ -72,7 +77,7 @@ export function PublicLayout() {
                   <Button size="sm">Dashboard</Button>
                 </Link>
                 <Dropdown
-                  trigger={<Avatar name={user.name} src={user.avatarUrl} size="sm" className="ring-2 ring-border transition hover:ring-accent/50" />}
+                  trigger={<Avatar name={user.name} src={user.avatarUrl} size="sm" className="ring-2 ring-border transition hover:ring-accent/40" />}
                 >
                   <div className="border-b border-border px-3 py-2">
                     <p className="text-sm font-semibold text-text">{user.name}</p>
@@ -80,7 +85,7 @@ export function PublicLayout() {
                   </div>
                   <div className="pt-1.5">
                     <Link to={`/profile/${user.username}`}>
-                      <DropdownItem icon={undefined}>My profile</DropdownItem>
+                      <DropdownItem>My profile</DropdownItem>
                     </Link>
                     <Link to="/settings">
                       <DropdownItem>Settings</DropdownItem>
@@ -106,7 +111,7 @@ export function PublicLayout() {
           </div>
 
           <button
-            className="rounded-lg p-2 text-text-secondary hover:bg-surface-2 md:hidden"
+            className="rounded-md p-2 text-text-secondary hover:bg-surface-2 md:hidden"
             onClick={() => setMobileOpen((o) => !o)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}
@@ -117,9 +122,18 @@ export function PublicLayout() {
 
         {mobileOpen && (
           <div className="border-t border-border bg-surface px-4 py-3 md:hidden">
-            <nav className="flex flex-col gap-1" aria-label="Mobile">
+            <nav className="flex flex-col gap-0.5" aria-label="Mobile">
               {navItems.map((item) => (
-                <NavLink key={item.to} to={item.to} className="rounded-lg px-3 py-2.5 text-sm font-medium text-text-secondary hover:bg-surface-2 hover:text-text">
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    cn(
+                      'rounded-md px-3 py-2.5 text-sm',
+                      isActive ? 'bg-surface-2 font-semibold text-text' : 'font-medium text-text-secondary hover:bg-surface-2 hover:text-text',
+                    )
+                  }
+                >
                   {item.label}
                 </NavLink>
               ))}
@@ -157,15 +171,26 @@ export function PublicLayout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-border">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row sm:px-6">
-          <BrandMark />
-          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-text-secondary" aria-label="Footer">
+      <footer className="mt-16 border-t border-border">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-10 sm:flex-row sm:items-center sm:px-6">
+          <div>
+            <BrandMark />
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-text-tertiary">
+              Free, practical cybersecurity training. Learn responsibly.
+            </p>
+          </div>
+          <nav className="flex flex-wrap items-center gap-x-7 gap-y-2 text-sm text-text-secondary" aria-label="Footer">
             <Link to="/learn" className="hover:text-text">Learn</Link>
+            <Link to="/practice" className="hover:text-text">Practice</Link>
             <Link to="/labs" className="hover:text-text">Labs</Link>
             <Link to="/leaderboard" className="hover:text-text">Leaderboard</Link>
-            <span className="text-text-tertiary">Free forever. Learn responsibly.</span>
           </nav>
+        </div>
+        <div className="border-t border-border">
+          <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 text-xs text-text-tertiary sm:px-6">
+            <span>© {new Date().getFullYear()} Shadow Security</span>
+            <span>Suraksha Labs is free forever.</span>
+          </div>
         </div>
       </footer>
     </div>

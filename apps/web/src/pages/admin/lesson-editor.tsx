@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -365,9 +365,9 @@ export default function LessonEditor() {
     return (
       <div className="space-y-4">
         <BackLink />
-        <Skeleton className="h-14 w-full rounded-xl" />
-        <Skeleton className="h-40 w-full rounded-xl" />
-        <Skeleton className="h-96 w-full rounded-xl" />
+        <Skeleton className="h-14 w-full rounded-lg" />
+        <Skeleton className="h-40 w-full rounded-lg" />
+        <Skeleton className="h-96 w-full rounded-lg" />
       </div>
     );
   }
@@ -409,7 +409,7 @@ export default function LessonEditor() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-surface p-5 shadow-xs">
+      <div className="rounded-lg border border-border bg-surface">
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -427,7 +427,7 @@ export default function LessonEditor() {
             )}
           >
             <span className={cn('size-1.5 rounded-full', saveMut.isPending ? 'bg-text-tertiary' : dirty ? 'bg-warning' : 'bg-success')} />
-            {saveMut.isPending ? 'Saving…' : dirty ? 'Unsaved changes' : 'Saved'}
+            {saveMut.isPending ? 'Savingâ€¦' : dirty ? 'Unsaved changes' : 'Saved'}
           </span>
           <Button size="sm" disabled={!dirty} loading={saveMut.isPending} onClick={() => setSaveOpen(true)}>
             <Save className="size-4" aria-hidden />
@@ -463,7 +463,7 @@ export default function LessonEditor() {
             <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
               <div>
                 <h3 className="font-semibold tracking-tight">Content blocks</h3>
-                <p className="mt-0.5 text-sm text-text-secondary">{blocks.length} block{blocks.length === 1 ? '' : 's'} · empty blocks are dropped on save</p>
+                <p className="mt-0.5 text-sm text-text-secondary">{blocks.length} block{blocks.length === 1 ? '' : 's'} Â· empty blocks are dropped on save</p>
               </div>
               <Dropdown
                 trigger={
@@ -492,7 +492,7 @@ export default function LessonEditor() {
                 <EmptyState
                   icon={Plus}
                   title="No content blocks yet"
-                  description="Use the Add block menu to build the lesson — headings, paragraphs, code, quizzes and more."
+                  description="Use the Add block menu to build the lesson â€” headings, paragraphs, code, quizzes and more."
                 />
               )}
               {blocks.map((b, i) => (
@@ -582,7 +582,7 @@ export default function LessonEditor() {
                   </div>
                   <p className="mt-1 line-clamp-2 text-sm text-text">{v.changeNote || 'No change note'}</p>
                   <p className="mt-0.5 text-xs text-text-tertiary">
-                    {v.changedByName ?? 'Unknown'} · {timeAgo(v.createdAt)}
+                    {v.changedByName ?? 'Unknown'} Â· {timeAgo(v.createdAt)}
                   </p>
                 </li>
               ))}
@@ -720,8 +720,8 @@ function BlockCard({
   const meta = TYPE_META[block.type];
 
   return (
-    <div className="rounded-xl border border-border bg-surface">
-      <div className="flex items-center gap-2 border-b border-border px-3 py-2">
+    <div className="group/blk rounded-lg border border-border bg-surface transition-colors focus-within:border-border-strong hover:border-border-strong">
+      <div className="flex items-center gap-2 px-3 py-2">
         <button
           type="button"
           onClick={() => setCollapsed((c) => !c)}
@@ -735,7 +735,7 @@ function BlockCard({
           {meta.label}
         </Badge>
         {!collapsed && <p className="hidden min-w-0 flex-1 truncate text-sm text-text-tertiary sm:block">{blockSnippet(block)}</p>}
-        <div className="ml-auto flex items-center gap-0.5">
+        <div className={cn('ml-auto flex items-center gap-0.5 transition-opacity', confirming ? 'opacity-100' : 'opacity-0 group-hover/blk:opacity-100 focus-within:opacity-100')}>
           {!confirming ? (
             <>
               <IconBtn label="Move up" disabled={index === 0} onClick={() => onMove(-1)}>
@@ -753,7 +753,7 @@ function BlockCard({
             </>
           ) : (
             <>
-              <span className="mr-1 text-xs text-danger">Delete?</span>
+              <span className="mr-1 text-xs font-medium text-danger">Delete?</span>
               <Button variant="danger" size="sm" onClick={onDelete}>
                 Yes
               </Button>
@@ -765,7 +765,7 @@ function BlockCard({
         </div>
       </div>
       {!collapsed && (
-        <div className="space-y-3 p-4">
+        <div className="space-y-3 border-t border-border p-4">
           <BlockFields block={block} exercises={exercises} onChange={onChange} />
         </div>
       )}
@@ -841,7 +841,7 @@ function BlockFields({
             value={block.text}
             onChange={(e) => onChange({ ...block, text: e.target.value })}
             className="min-h-[120px]"
-            placeholder="Supports **bold**, *italic*, `inline code` and [links](https://…)"
+            placeholder="Supports **bold**, *italic*, `inline code` and [links](https://â€¦)"
           />
         </div>
       );
@@ -861,7 +861,7 @@ function BlockFields({
           </div>
           <div className="sm:col-span-2">
             <Label>URL</Label>
-            <Input value={block.url} onChange={(e) => onChange({ ...block, url: e.target.value })} placeholder="https://…" className="font-mono" />
+            <Input value={block.url} onChange={(e) => onChange({ ...block, url: e.target.value })} placeholder="https://â€¦" className="font-mono" />
           </div>
           <div className="w-40">
             <Label>Start at (seconds)</Label>
@@ -881,7 +881,7 @@ function BlockFields({
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <Label>Image URL</Label>
-            <Input value={block.src} onChange={(e) => onChange({ ...block, src: e.target.value })} placeholder="/uploads/… or https://…" className="font-mono" />
+            <Input value={block.src} onChange={(e) => onChange({ ...block, src: e.target.value })} placeholder="/uploads/â€¦ or https://â€¦" className="font-mono" />
           </div>
           <div>
             <Label>Alt text</Label>
@@ -1033,14 +1033,14 @@ function BlockFields({
           <div>
             <Label>Exercise</Label>
             <Select value={block.exerciseSlug} onChange={(e) => onChange({ ...block, exerciseSlug: e.target.value })}>
-              <option value="">Select exercise…</option>
+              <option value="">Select exerciseâ€¦</option>
               {exercises.map((ex) => (
                 <option key={ex.id} value={ex.slug}>
                   {ex.title} ({ex.slug})
                 </option>
               ))}
             </Select>
-            {exercises.length === 0 && <FormHint>No exercises exist yet — create one below.</FormHint>}
+            {exercises.length === 0 && <FormHint>No exercises exist yet â€” create one below.</FormHint>}
           </div>
           <div>
             <Label>Display title</Label>
@@ -1396,7 +1396,7 @@ function VersionBlocks({ blocks }: { blocks: ContentBlock[] }) {
                 <ul className="mt-2 space-y-1 text-sm text-text-secondary">
                   {b.options.map((o, oi) => (
                     <li key={oi} className={cn(oi === b.correctIndex && 'font-medium text-success')}>
-                      {oi === b.correctIndex ? '✓' : '·'} {o}
+                      {oi === b.correctIndex ? 'âœ“' : 'Â·'} {o}
                     </li>
                   ))}
                 </ul>

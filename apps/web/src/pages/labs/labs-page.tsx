@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Search, SlidersHorizontal } from 'lucide-react';
@@ -8,8 +8,8 @@ import { useAuth } from '@/lib/auth';
 import { useSeo } from '@/lib/seo';
 import { Button } from '@/components/ui/button';
 import { EmptyState, Skeleton } from '@/components/ui/card';
-import { Input, Label, Select } from '@/components/ui/input';
-import { LabCardView } from '@/features/labs/lab-card';
+import { Input, Select } from '@/components/ui/input';
+import { LabRowList } from '@/features/labs/lab-card';
 import type { Pagination } from '@suraksha/shared';
 
 interface LabsResponse {
@@ -22,7 +22,7 @@ interface LabMeta {
   difficulties: { slug: string; label: string; sortOrder: number }[];
 }
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 20;
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest' },
@@ -54,6 +54,7 @@ export default function LabsPage() {
   const sort = searchParams.get('sort') ?? 'newest';
   const page = Math.max(1, Number(searchParams.get('page')) || 1);
   const qParam = searchParams.get('q') ?? '';
+  const hasFilters = Boolean(category || difficulty || qParam || (user && status !== 'all') || sort !== 'newest');
 
   const update = (patch: Record<string, string | null>) => {
     const next = new URLSearchParams(searchParams);
@@ -102,41 +103,46 @@ export default function LabsPage() {
   const labs = data?.labs ?? [];
   const pagination = data?.pagination;
 
-  const clearFilters = () => setSearchParams(new URLSearchParams());
-
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-      <header className="max-w-2xl">
-        <h1 className="text-3xl font-bold tracking-tight text-text sm:text-4xl">Labs</h1>
-        <p className="mt-3 text-base leading-relaxed text-text-secondary">
-          Real environments, real flags. Pick a lab, download the package, and prove your skills.
-        </p>
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
+      <header className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+        <div className="max-w-xl">
+          <h1 className="text-3xl font-bold tracking-tight">Labs</h1>
+          <p className="mt-2.5 text-base leading-relaxed text-text-secondary">
+            Real environments, real flags. Pick a lab, run it locally, capture the flag.
+          </p>
+        </div>
+        {pagination && pagination.total > 0 && (
+          <p className="text-sm tabular-nums text-text-tertiary" aria-live="polite">
+            {pagination.total} lab{pagination.total === 1 ? '' : 's'}
+            {qParam && <> matching “{qParam}”</>}
+          </p>
+        )}
       </header>
 
       {/* ------------------------------- Toolbar ------------------------------ */}
-      <div className="mt-8 grid gap-3 lg:grid-cols-[minmax(0,1fr)_11rem_11rem_11rem_11rem]">
-        <div>
-          <Label htmlFor="lab-search" className="sr-only">
-            Search labs
-          </Label>
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-tertiary" aria-hidden />
-            <Input
-              id="lab-search"
-              type="search"
-              placeholder="Search labs…"
-              className="pl-9"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
-          </div>
+      <div className="mt-7 flex flex-wrap items-center gap-2.5">
+        <div className="relative min-w-[13rem] flex-1 sm:max-w-xs">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-tertiary" aria-hidden />
+          <Input
+            id="lab-search"
+            type="search"
+            placeholder="Search labs…"
+            className="pl-9"
+            aria-label="Search labs"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
         </div>
 
         <div>
-          <Label htmlFor="lab-category" className="lg:sr-only">
-            Category
-          </Label>
-          <Select id="lab-category" value={category} onChange={(e) => update({ category: e.target.value })}>
+          <Select
+            id="lab-category"
+            aria-label="Filter by category"
+            value={category}
+            onChange={(e) => update({ category: e.target.value })}
+            className="w-40"
+          >
             <option value="">All categories</option>
             {(metaQuery.data?.categories ?? []).map((c) => (
               <option key={c.slug} value={c.slug}>
@@ -147,11 +153,14 @@ export default function LabsPage() {
         </div>
 
         <div>
-          <Label htmlFor="lab-difficulty" className="lg:sr-only">
-            Difficulty
-          </Label>
-          <Select id="lab-difficulty" value={difficulty} onChange={(e) => update({ difficulty: e.target.value })}>
-            <option value="">All difficulties</option>
+          <Select
+            id="lab-difficulty"
+            aria-label="Filter by difficulty"
+            value={difficulty}
+            onChange={(e) => update({ difficulty: e.target.value })}
+            className="w-36"
+          >
+            <option value="">All levels</option>
             {(metaQuery.data?.difficulties ?? [])
               .slice()
               .sort((a, b) => a.sortOrder - b.sortOrder)
@@ -165,10 +174,13 @@ export default function LabsPage() {
 
         {user && (
           <div>
-            <Label htmlFor="lab-status" className="lg:sr-only">
-              Status
-            </Label>
-            <Select id="lab-status" value={status} onChange={(e) => update({ status: e.target.value })}>
+            <Select
+              id="lab-status"
+              aria-label="Filter by your status"
+              value={status}
+              onChange={(e) => update({ status: e.target.value })}
+              className="w-36"
+            >
               {STATUS_OPTIONS.map((s) => (
                 <option key={s.value} value={s.value}>
                   {s.label}
@@ -179,30 +191,27 @@ export default function LabsPage() {
         )}
 
         <div>
-          <Label htmlFor="lab-sort" className="lg:sr-only">
-            Sort
-          </Label>
-          <Select id="lab-sort" value={sort} onChange={(e) => update({ sort: e.target.value })}>
+          <Select id="lab-sort" aria-label="Sort labs" value={sort} onChange={(e) => update({ sort: e.target.value })} className="w-36">
             {SORT_OPTIONS.map((s) => (
               <option key={s.value} value={s.value}>
-                {s.label}
+                Sort: {s.label}
               </option>
             ))}
           </Select>
         </div>
+
+        {hasFilters && (
+          <Button variant="ghost" size="sm" onClick={() => setSearchParams(new URLSearchParams())}>
+            Clear
+          </Button>
+        )}
       </div>
 
       {/* ------------------------------- Results ------------------------------ */}
       {isLoading ? (
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="space-y-3 rounded-xl border border-border bg-surface p-5">
-              <Skeleton className="h-3 w-28" />
-              <Skeleton className="h-5 w-3/4" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-4/5" />
-              <Skeleton className="h-6 w-full" />
-            </div>
+        <div className="mt-6 space-y-px overflow-hidden rounded-lg border border-border">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <Skeleton key={i} className="h-[68px] w-full rounded-none border-b border-border bg-surface" />
           ))}
         </div>
       ) : isError ? (
@@ -225,53 +234,31 @@ export default function LabsPage() {
             title="No labs match your filters"
             description="Try a different search term or loosen a filter — new labs are added regularly."
             action={
-              <Button variant="outline" onClick={clearFilters}>
-                Clear filters
-              </Button>
+              hasFilters ? (
+                <Button variant="outline" onClick={() => setSearchParams(new URLSearchParams())}>
+                  Clear filters
+                </Button>
+              ) : undefined
             }
           />
         </div>
       ) : (
         <>
-          <p className="mt-6 text-sm text-text-tertiary" aria-live="polite">
-            {pagination && pagination.total > 0 && (
-              <>
-                {pagination.total} lab{pagination.total === 1 ? '' : 's'}
-                {qParam && <> matching “{qParam}”</>}
-              </>
-            )}
-          </p>
-
-          <div className="mt-3 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {labs.map((lab) => (
-              <LabCardView key={lab.id} lab={lab} />
-            ))}
+          <div className="mt-6">
+            <LabRowList labs={labs} />
           </div>
 
           {/* ----------------------------- Pagination ---------------------------- */}
           {pagination && pagination.totalPages > 1 && (
-            <nav
-              className="mt-10 flex items-center justify-center gap-4"
-              aria-label="Labs pagination"
-            >
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => update({ page: String(page - 1) })}
-              >
+            <nav className="mt-8 flex items-center justify-center gap-4" aria-label="Labs pagination">
+              <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => update({ page: String(page - 1) })}>
                 <ChevronLeft className="size-4" aria-hidden />
                 Previous
               </Button>
               <span className="text-sm tabular-nums text-text-secondary">
                 Page {page} of {pagination.totalPages}
               </span>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page >= pagination.totalPages}
-                onClick={() => update({ page: String(page + 1) })}
-              >
+              <Button variant="outline" size="sm" disabled={page >= pagination.totalPages} onClick={() => update({ page: String(page + 1) })}>
                 Next
                 <ChevronRight className="size-4" aria-hidden />
               </Button>

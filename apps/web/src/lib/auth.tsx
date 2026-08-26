@@ -54,5 +54,16 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
-export const STAFF_ROUTES = ['moderator', 'administrator', 'super_admin'] as const;
+/** Roles that moderate or administer the platform. */
 export const isAdminRole = (role?: string) => role === 'moderator' || role === 'administrator' || role === 'super_admin';
+/** Any role with console access — including content editors and lab managers. */
+export const isStaffRole = (role?: string) => role !== undefined && role !== null && role !== '' && role !== 'learner';
+export const isEditorRole = (role?: string) =>
+  isAdminRole(role) || role === 'content_editor';
+export const isLabManagerRole = (role?: string) =>
+  isAdminRole(role) || role === 'lab_manager';
+
+/** Where a signed-in user should land by default — staff go straight to the console. */
+export function homeForRole(role?: string): string {
+  return isStaffRole(role) ? '/admin' : '/dashboard';
+}

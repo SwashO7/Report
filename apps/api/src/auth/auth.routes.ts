@@ -289,7 +289,9 @@ export const authRoutes = new Hono()
 
       await createSession(c, user.id);
       await audit({ actorId: user.id, action: 'login', entityType: 'session', metadata: { method: 'google' } });
-      const dest = user.onboardedAt ? '/dashboard' : '/onboarding';
+      // Staff land directly in the admin console; learners continue their journey.
+      const staffRole = user.role !== 'learner';
+      const dest = !user.onboardedAt ? '/onboarding' : staffRole ? '/admin' : '/dashboard';
       return c.redirect(`${env.APP_URL}${dest}`);
     } catch {
       return c.redirect(`${env.APP_URL}/login?error=oauth_failed`);

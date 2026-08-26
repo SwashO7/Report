@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, motion, useAnimationControls } from 'motion/react';
@@ -28,13 +28,12 @@ import { qk } from '@/lib/queries';
 import { useAuth } from '@/lib/auth';
 import { useSeo } from '@/lib/seo';
 import { cn, formatDuration, formatMinutes, formatXp } from '@/lib/utils';
-import { Badge, Card, CardContent, EmptyState, Skeleton } from '@/components/ui/card';
+import { Badge, DifficultyDot, Card, CardContent, EmptyState, Skeleton } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input, Label } from '@/components/ui/input';
 import { Modal } from '@/components/ui/overlay';
 import { useToast } from '@/components/ui/toast';
 import { AchievementMedallion } from '@/features/achievements/achievement-icon';
-import { DifficultyBadge } from '@/features/labs/lab-card';
 import type { FlagSubmitResult, LabDetail as LabDetailType } from '@suraksha/shared';
 
 function formatSize(bytes: number): string {
@@ -263,7 +262,7 @@ function CelebrationModal({
         </div>
 
         {result.newAchievements.length > 0 && (
-          <div className="mt-6 space-y-2.5 rounded-xl border border-border bg-surface-2 p-4 text-left">
+          <div className="mt-6 space-y-2.5 rounded-lg border border-border bg-surface-2 p-4 text-left">
             <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">New achievements</p>
             {result.newAchievements.map((a) => (
               <div key={a.slug} className="flex items-center gap-3">
@@ -380,7 +379,7 @@ function FlagSubmissionCard({ lab }: { lab: LabDetailType }) {
       {lab.attempt?.completedAt && (
         <p className="mt-1 text-xs text-success/80">
           Solved with {lab.attempt.submissionCount} submission{lab.attempt.submissionCount === 1 ? '' : 's'}
-          {lab.attempt.hintsUsed > 0 && <> · {lab.attempt.hintsUsed} hint{lab.attempt.hintsUsed === 1 ? '' : 's'} used</>}
+          {lab.attempt.hintsUsed > 0 && <> Â· {lab.attempt.hintsUsed} hint{lab.attempt.hintsUsed === 1 ? '' : 's'} used</>}
         </p>
       )}
       <button
@@ -465,7 +464,7 @@ export default function LabDetailPage() {
   });
 
   useSeo(
-    lab ? `${lab.title} — Suraksha Labs` : 'Lab — Suraksha Labs',
+    lab ? `${lab.title} â€” Suraksha Labs` : 'Lab â€” Suraksha Labs',
     lab?.shortDescription,
   );
 
@@ -477,10 +476,10 @@ export default function LabDetailPage() {
         <Skeleton className="mt-3 h-4 w-40" />
         <div className="mt-10 grid gap-8 xl:grid-cols-3">
           <div className="space-y-3 xl:col-span-2">
-            <Skeleton className="h-24 w-full rounded-xl" />
-            <Skeleton className="h-40 w-full rounded-xl" />
+            <Skeleton className="h-24 w-full rounded-lg" />
+            <Skeleton className="h-40 w-full rounded-lg" />
           </div>
-          <Skeleton className="h-72 w-full rounded-xl" />
+          <Skeleton className="h-72 w-full rounded-lg" />
         </div>
       </div>
     );
@@ -532,7 +531,7 @@ export default function LabDetailPage() {
       <header className="mt-5">
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="default">{lab.category.name}</Badge>
-          <DifficultyBadge label={lab.difficulty.label} orderIndex={lab.difficulty.orderIndex} />
+          <DifficultyDot orderIndex={lab.difficulty.orderIndex} label={lab.difficulty.label} className="text-sm [&>span:first-child]:size-2.5" />
           <Badge variant="accent">
             <Zap className="size-3.5" aria-hidden />+{formatXp(lab.xpReward)} XP
           </Badge>
@@ -610,7 +609,7 @@ export default function LabDetailPage() {
           {lab.prerequisites.length > 0 && (
             <section>
               <h2 className="text-lg font-semibold tracking-tight text-text">Prerequisites</h2>
-              <ul className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border">
+              <ul className="mt-3 divide-y divide-border overflow-hidden rounded-lg border border-border">
                 {lab.prerequisites.map((p) => (
                   <li key={p.slug}>
                     <Link
@@ -634,7 +633,7 @@ export default function LabDetailPage() {
           {lab.relatedLessons.length > 0 && (
             <section>
               <h2 className="text-lg font-semibold tracking-tight text-text">Related lessons</h2>
-              <ul className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border">
+              <ul className="mt-3 divide-y divide-border overflow-hidden rounded-lg border border-border">
                 {lab.relatedLessons.map((lesson) => (
                   <li key={lesson.slug}>
                     <Link
