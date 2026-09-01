@@ -144,7 +144,18 @@ export function SegmentedControl<T extends string>({
 
 /* -------------------------------- Dropdown --------------------------------- */
 
-export function Dropdown({ trigger, children, align = 'right' }: { trigger: ReactNode; children: ReactNode; align?: 'left' | 'right' }) {
+export function Dropdown({
+  trigger,
+  children,
+  align = 'right',
+  openUp = false,
+}: {
+  trigger: ReactNode;
+  children: ReactNode;
+  align?: 'left' | 'right';
+  /** Open above the trigger instead of below it (for triggers pinned to the bottom of the viewport). */
+  openUp?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -163,20 +174,21 @@ export function Dropdown({ trigger, children, align = 'right' }: { trigger: Reac
   }, [open]);
 
   return (
-    <div ref={ref} className="relative">
-      <button onClick={() => setOpen((o) => !o)} aria-haspopup="menu" aria-expanded={open} className="block">
+    <div ref={ref} className="relative w-full">
+      <button onClick={() => setOpen((o) => !o)} aria-haspopup="menu" aria-expanded={open} className="block w-full">
         {trigger}
       </button>
       <AnimatePresence>
         {open && (
           <motion.div
             role="menu"
-            initial={{ opacity: 0, y: -3 }}
+            initial={{ opacity: 0, y: openUp ? 3 : -3 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -3 }}
+            exit={{ opacity: 0, y: openUp ? 3 : -3 }}
             transition={{ duration: 0.11 }}
             className={cn(
-              'absolute top-full z-40 mt-1.5 min-w-48 rounded-lg border border-border bg-surface p-1 shadow-lg',
+              'absolute z-40 min-w-48 rounded-lg border border-border bg-surface p-1 shadow-lg',
+              openUp ? 'bottom-full mb-1.5' : 'top-full mt-1.5',
               align === 'right' ? 'right-0' : 'left-0',
             )}
             onClick={() => setOpen(false)}

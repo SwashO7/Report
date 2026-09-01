@@ -3,7 +3,7 @@ import { leaderboardQuerySchema } from '@suraksha/shared';
 import { requireAuth,  resolveSessionUser, getAuthUser } from '../core/auth';
 import { errors } from '../core/errors';
 import { globalLeaderboard, categoryLeaderboard, seasonLeaderboard, currentSeasonLeaderboard } from './leaderboard';
-import { achievementCatalog, learnerDashboard, myAchievements, publicProfile, xpProgressFor } from './profile.service';
+import { achievementCatalog, learnerDashboard, myAchievements, publicProfile, xpProgressFor } from './profile-redesign.service';
 
 export const gamificationRoutes = new Hono()
 

@@ -636,7 +636,7 @@ export default function SettingsPage() {
   useSeo('Settings — Suraksha Labs');
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-10">
       <header>
         <h1 className="text-3xl font-bold tracking-tight text-text">Settings</h1>
         <p className="mt-2 text-base text-text-secondary">Manage your profile, security, and notifications.</p>

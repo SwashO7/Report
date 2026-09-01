@@ -8,6 +8,7 @@ WORKDIR /app
 FROM base AS deps
 COPY package.json bun.lock ./
 COPY apps/api/package.json apps/api/
+COPY apps/web/package.json apps/web/
 COPY packages/shared/package.json packages/shared/
 RUN bun install --frozen-lockfile
 
@@ -16,12 +17,20 @@ FROM base AS runtime
 ENV NODE_ENV=production
 
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/package.json /app/bun.lock ./
 COPY packages/shared ./packages/shared
 COPY apps/api/package.json ./apps/api/
 COPY apps/api/src ./apps/api/src
 COPY apps/api/drizzle ./apps/api/drizzle
 COPY apps/api/drizzle.config.ts ./apps/api/drizzle.config.ts
 COPY apps/api/tsconfig.json ./apps/api/tsconfig.json
+
+# Re-run install now that full API source is present: bun's isolated install
+# (.bin/exports -> node_modules/.bun/<pkg>/node_modules/<pkg> symlinks) can
+# leave dangling package subpath resolution when the deps-only layer above
+# runs before the workspace's own source tree exists. This second pass is a
+# no-op on a healthy install and repairs it when needed.
+RUN bun install --frozen-lockfile
 
 WORKDIR /app/apps/api
 

@@ -7,6 +7,7 @@ import { AlertTriangle, Chrome } from 'lucide-react';
 import { loginSchema, type LoginInput } from '@suraksha/shared';
 import { api, ApiError } from '@/lib/api';
 import { useAuth, homeForRole } from '@/lib/auth';
+import { offerToSavePassword } from '@/lib/credentials';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { FieldError, Input, Label } from '@/components/ui/input';
@@ -45,6 +46,7 @@ export default function LoginPage() {
     setSubmitError(null);
     try {
       const res = await api<{ user: { role: string } }>('/auth/login', { method: 'POST', body: values });
+      await offerToSavePassword(values.email, values.password);
       await refresh();
       const from = (location.state as { from?: string } | null)?.from;
       // Staff land directly in the admin console; learners continue their journey.

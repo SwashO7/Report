@@ -1,8 +1,11 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { App } from './app';
+import { App } from './app-v2';
 import './styles/globals.css';
+import './styles/redesign.css';
+
+document.documentElement.classList.add('dark');
 
 const queryClient = new QueryClient({
   defaultOptions: {

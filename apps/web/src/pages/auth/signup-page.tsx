@@ -7,6 +7,7 @@ import { AlertTriangle, Chrome, Eye, EyeOff } from 'lucide-react';
 import { signupSchema, type SignupInput } from '@suraksha/shared';
 import { api, ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { offerToSavePassword } from '@/lib/credentials';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { FieldError, Input, Label } from '@/components/ui/input';
@@ -46,6 +47,7 @@ export default function SignupPage() {
     setSubmitError(null);
     try {
       await api('/auth/signup', { method: 'POST', body: values });
+      await offerToSavePassword(values.email, values.password, values.name);
       await refresh();
       navigate('/onboarding');
     } catch (err) {
