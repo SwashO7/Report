@@ -52,6 +52,28 @@ surakshaLabs/
 └── docs/                  Deployment, architecture, lab authoring guides
 ```
 
+## Quick start (one command)
+
+**Prerequisite**: [Docker](https://docs.docker.com/get-docker/) with Compose v2 (Docker Desktop includes it).
+
+```bash
+bun run up
+```
+
+This builds and starts the whole stack (PostgreSQL, API, web) behind nginx on port 80, generates a `.env` with random secrets on first run, waits for the API to become healthy, and seeds demo data if the database is empty. Same command on your laptop or a fresh server VM.
+
+Open **http://localhost**.
+
+| Command | Description |
+|---|---|
+| `bun run up` | Build + start everything (idempotent — safe to re-run) |
+| `bun run down` | Stop the stack |
+| `bun run restart` | Restart all services |
+| `bun run logs` | Tail logs from all services |
+| `bun run ps` | Show container status |
+
+Edit the generated `.env` to change the port (`WEB_PORT`), add SMTP/Google OAuth, or point at a real domain (`APP_URL`/`API_URL`), then `bun run restart`.
+
 ## Quick start (local development)
 
 **Prerequisites**: [Bun](https://bun.sh) 1.1+, Docker (for PostgreSQL and labs)

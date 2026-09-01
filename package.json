@@ -15,7 +15,12 @@
     "db:generate": "bun run --cwd apps/api db:generate",
     "db:migrate": "bun run --cwd apps/api db:migrate",
     "db:seed": "bun run --cwd apps/api db:seed",
-    "db:studio": "bun run --cwd apps/api db:studio"
+    "db:studio": "bun run --cwd apps/api db:studio",
+    "up": "node scripts/up.mjs && node scripts/seed-if-empty.mjs",
+    "down": "docker compose -f docker-compose.prod.yml down",
+    "restart": "docker compose -f docker-compose.prod.yml restart",
+    "logs": "docker compose -f docker-compose.prod.yml logs -f",
+    "ps": "docker compose -f docker-compose.prod.yml ps"
   },
   "devDependencies": {
     "fflate": "^0.8.3",

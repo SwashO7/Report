@@ -105,7 +105,7 @@ export default function LessonPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className={cn('mx-auto w-full max-w-3xl xl:max-w-5xl xl:grid xl:grid-cols-[minmax(0,1fr)_260px] xl:gap-10', !completed && user && 'pb-28')}
+        className={cn('mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 xl:max-w-5xl xl:grid xl:grid-cols-[minmax(0,1fr)_260px] xl:gap-10 lg:px-10', !completed && user && 'pb-28')}
       >
         <article className="min-w-0">
           <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-text-tertiary">
@@ -241,7 +241,7 @@ export default function LessonPage() {
 
         <aside className="mt-12 hidden xl:block">
           <div className="sticky top-24 space-y-5">
-            <section aria-label="Lesson details" className="rounded-lg border border-border bg-surface">
+            <section aria-label="Lesson details" className="rounded-lg border border-border bg-surface p-4">
               <h2 className="text-sm font-semibold tracking-tight text-text">Lesson details</h2>
               <ul className="mt-3 space-y-2.5 text-sm text-text-secondary">
                 <li className="flex items-center gap-2.5">
@@ -288,13 +288,11 @@ export default function LessonPage() {
             </section>
 
             {lesson.relatedLabs.length > 0 && (
-              <section aria-label="Related labs" className="rounded-lg border border-border bg-surface">
+              <section aria-label="Related labs" className="rounded-lg border border-border bg-surface p-4">
                 <h2 className="text-sm font-semibold tracking-tight text-text">Related labs</h2>
-                <div className="mt-3 -mx-2 space-y-2">
+                <div className="mt-3 space-y-2">
                   {lesson.relatedLabs.slice(0, 4).map((lab) => (
-                    <div key={lab.slug} className="px-0 [&>a]:border-0 [&>a]:px-2 [&>a]:shadow-none hover:[&>a]:bg-surface-2">
-                      <LabRefCard labSlug={lab.slug} related={lab} compact />
-                    </div>
+                    <LabRefCard key={lab.slug} labSlug={lab.slug} related={lab} compact />
                   ))}
                 </div>
               </section>

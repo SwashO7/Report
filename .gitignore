@@ -30,3 +30,6 @@ Thumbs.db
 tmp/
 .cache/
 coverage/
+
+# local agent tooling config (not project source)
+.kiro/

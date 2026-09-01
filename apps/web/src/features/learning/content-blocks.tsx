@@ -242,7 +242,7 @@ function QuizCard({ block }: { block: QuizBlockData }) {
   };
 
   return (
-    <section className="my-6 rounded-lg border border-border bg-surface">
+    <section className="my-6 rounded-lg border border-border bg-surface p-4 sm:p-5">
       <div className="flex items-center gap-2 text-text-tertiary">
         <HelpCircle className="size-4 text-accent" aria-hidden />
         <span className="micro-label text-accent">Knowledge check</span>
@@ -292,7 +292,7 @@ function QuizCard({ block }: { block: QuizBlockData }) {
                 </>
               ) : (
                 <>
-                  <XCircle className="size-3.5" aria-hidden /> Not quite â€” the answer is{' '}
+                  <XCircle className="size-3.5" aria-hidden /> Not quite. The answer is{' '}
                   {String.fromCharCode(65 + block.correctIndex)}
                 </>
               )}
