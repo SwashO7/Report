@@ -67,7 +67,17 @@ function RunLabCard({ lab }: { lab: LabDetailType }) {
       }
       if (!lab.attempt) await startAttempt.mutateAsync();
       const res = await fetch(`/api/v1/labs/${lab.slug}/download`, { credentials: 'include' });
-      if (!res.ok) throw new Error('Download failed');
+      if (!res.ok) {
+        // The API answers with a JSON error envelope; surface its message
+        // instead of a generic retry hint, which hides real causes such as a
+        // package that was never uploaded.
+        const body = (await res.json().catch(() => null)) as { error?: { code?: string; message?: string } } | null;
+        throw new ApiError(
+          res.status,
+          body?.error?.code ?? 'UNKNOWN',
+          body?.error?.message ?? `Download failed (HTTP ${res.status}).`,
+        );
+      }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -82,7 +92,7 @@ function RunLabCard({ lab }: { lab: LabDetailType }) {
       toast(
         'error',
         'Could not download lab package',
-        err instanceof ApiError ? err.message : 'Please try again in a moment.',
+        err instanceof Error && err.message ? err.message : 'Please try again in a moment.',
       );
     } finally {
       setDownloading(false);
