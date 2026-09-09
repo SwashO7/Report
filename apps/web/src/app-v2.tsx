@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-route
 import { AuthProvider, homeForRole, isStaffRole, useAuth } from '@/lib/auth';
 import { ToastProvider } from '@/components/ui/toast';
 import { PageLoader } from '@/components/page-loader';
+import { ErrorBoundary } from '@/components/error-boundary';
 import { NotFoundPage } from '@/pages/not-found';
 import { LearnerShellV2 } from '@/layouts/learner-shell-v2';
 import { PublicLayoutV2 } from '@/layouts/public-layout-v2';
@@ -74,7 +75,22 @@ function AdaptiveContentLayout() {
   return user ? <LearnerShellV2 /> : <PublicLayoutV2 />;
 }
 
-const suspense = (node: React.ReactNode) => <Suspense fallback={<PageLoader />}>{node}</Suspense>;
+const suspense = (node: React.ReactNode) => (
+  <RouteBoundary>
+    <Suspense fallback={<PageLoader />}>{node}</Suspense>
+  </RouteBoundary>
+);
+
+/**
+ * Per-route error boundary. Keyed on the pathname so navigating away from a
+ * failed route clears the error instead of leaving the boundary stuck. Without
+ * this, a lazy chunk that fails to load unmounts the tree and the user sees a
+ * blank screen with nothing to act on.
+ */
+function RouteBoundary({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  return <ErrorBoundary key={location.pathname}>{children}</ErrorBoundary>;
+}
 
 function AppRoutes() {
   return (
@@ -126,12 +142,14 @@ function AppRoutes() {
 
 export function App() {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </ToastProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ToastProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </ToastProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

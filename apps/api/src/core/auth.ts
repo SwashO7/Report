@@ -97,12 +97,20 @@ export async function resolveSessionUser(c: Context): Promise<AuthedUser | null>
       .set({
         lastActiveAt: new Date(),
         lastActiveDate: today,
-        // streak: consecutive active days
-        streakCount: sql`CASE WHEN ${users.lastActiveDate} = ${today} THEN ${users.streakCount}
-          WHEN ${users.lastActiveDate} = (CURRENT_DATE - INTERVAL '1 day')::date::text THEN ${users.streakCount} + 1
+        // Streak: consecutive active days. last_active_date is a Postgres
+        // `date`, so every comparison against the JS string must carry an
+        // explicit ::date cast -- an uncast parameter binds as text and
+        // Postgres rejects the whole statement with
+        // "operator does not exist: date = text". Anchoring "yesterday" to
+        // ${today}::date - 1 rather than CURRENT_DATE also keeps both sides on
+        // the same reference day, instead of mixing this process's UTC date
+        // with the database session's timezone.
+        streakCount: sql`CASE
+          WHEN ${users.lastActiveDate} = ${today}::date THEN ${users.streakCount}
+          WHEN ${users.lastActiveDate} = ${today}::date - 1 THEN ${users.streakCount} + 1
           ELSE 1 END`,
       })
-      .where(and(eq(users.id, row.user.id), sql`${users.lastActiveDate} IS DISTINCT FROM ${today}`));
+      .where(and(eq(users.id, row.user.id), sql`${users.lastActiveDate} IS DISTINCT FROM ${today}::date`));
   }
   return toAuthedUser(row.user);
 }
