@@ -9,7 +9,7 @@ import { hasRole } from '../core/rbac';
 import { audit } from '../audit/audit.service';
 import { labCreateSchema, labUpdateSchema } from '@suraksha/shared';
 import { flagHmacFor } from '../core/crypto';
-import { saveLabPackage, STORAGE_ROOT } from '../storage/labs.storage';
+import { saveLabPackage, STORAGE_ROOT, labPackageSize, resolveLabPackage } from '../storage/labs.storage';
 import { join, resolve } from 'node:path';
 import { mkdirSync, writeFileSync } from 'node:fs';
 
@@ -98,12 +98,23 @@ export const adminLabRoutes = new Hono()
   .get('/:id', async (c) => {
     const row = (await db.select().from(labs).where(eq(labs.id, c.req.param('id'))).limit(1))[0];
     if (!row) throw errors.notFound('Lab not found.');
+    // hasPackage is disk-aware, not just a package_path NULL check: a zip can be
+    // present in storage while the column was never linked (built by the package
+    // script or synced in by the entrypoint rather than uploaded through here).
+    // The editor's completion checklist reads this field, so omitting it — as
+    // this endpoint used to — pinned "Docker package uploaded" to permanently
+    // incomplete even straight after a successful upload.
+    const resolvedPackage = resolveLabPackage(row.slug, row.packageVersion, row.packagePath);
+    const { packagePath, ...safe } = row;
     return c.json({
       lab: {
-        ...row,
+        ...safe,
         // Plaintext flag never leaves the server; client sends it fresh on change.
         flagHmac: undefined,
         hasFlag: true,
+        hasPackage: resolvedPackage !== null,
+        packageLinked: Boolean(row.packagePath),
+        packageSizeBytes: row.packageSizeBytes ?? (resolvedPackage ? labPackageSize(resolvedPackage) : null),
         createdAt: row.createdAt.toISOString(),
         updatedAt: row.updatedAt.toISOString(),
         publishedAt: row.publishedAt?.toISOString() ?? null,
@@ -182,9 +193,24 @@ export const adminLabRoutes = new Hono()
     const current = (await db.select().from(labs).where(eq(labs.id, id)).limit(1))[0];
     if (!current) throw errors.notFound('Lab not found.');
 
-    // Publishing gates: must have a package and be reviewed by a publisher role.
+    // Resolve the package from DISK, not just from package_path. A zip is often
+    // present in storage without the column being linked — built by
+    // scripts/build-lab-packages.ts, or synced in from the image by the API
+    // entrypoint. The download route already resolves this way, so gating the
+    // workflow on the raw column alone stranded such a lab in draft forever,
+    // telling the author to upload a package that was already sitting there.
+    const resolvedPackage = resolveLabPackage(current.slug, current.packageVersion, current.packagePath);
+    const needsPackage = input.status === 'published' || input.status === 'security_review' || input.status === 'ready';
+    if (needsPackage && !resolvedPackage) {
+      throw errors.badRequest(
+        input.status === 'published'
+          ? 'Upload the lab package before publishing.'
+          : 'Upload the lab package before requesting review.',
+      );
+    }
+
+    // Publishing gates: reviewed by a publisher role.
     if (input.status === 'published') {
-      if (!current.packagePath) throw errors.badRequest('Upload the lab package before publishing.');
       if (!['lab_manager', 'administrator', 'super_admin'].includes(user.role)) throw errors.forbidden();
       if (current.status === 'draft' || current.status === 'internal_testing') {
         // Publishing from early stages requires a publisher role (security gate).
@@ -193,15 +219,20 @@ export const adminLabRoutes = new Hono()
         }
       }
     }
-    if ((input.status === 'security_review' || input.status === 'ready') && !current.packagePath) {
-      throw errors.badRequest('Upload the lab package before requesting review.');
-    }
+
+    // Link a package we found on disk but that was never recorded, so the row
+    // stops depending on the fallback and the editor reports it as present.
+    const packageLink =
+      resolvedPackage && resolvedPackage !== current.packagePath
+        ? { packagePath: resolvedPackage, packageSizeBytes: labPackageSize(resolvedPackage) ?? current.packageSizeBytes }
+        : {};
 
     const [row] = await db
       .update(labs)
       .set({
         status: input.status,
         reviewerId: user.id,
+        ...packageLink,
         ...(input.status === 'security_review' ? { securityReviewedAt: new Date() } : {}),
         ...(input.status === 'published' ? { publishedAt: current.publishedAt ?? new Date() } : {}),
         ...(input.status === 'archived' ? { archivedAt: new Date() } : {}),
