@@ -167,6 +167,11 @@ export interface LabDetail extends LabCard {
   relatedLessons: { slug: string; title: string; completed: boolean }[];
   packageVersion: string;
   packageSizeBytes: number;
+  /** Lifecycle state. Only ever non-'published' for staff previewing a lab. */
+  status: string;
+  visibility: string;
+  /** False when learners cannot see this lab yet, whatever staff can see. */
+  visibleToLearners: boolean;
 }
 
 export interface FlagSubmitResult {

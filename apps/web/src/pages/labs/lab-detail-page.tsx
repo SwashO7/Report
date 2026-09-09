@@ -537,6 +537,31 @@ export default function LabDetailPage() {
         All labs
       </Link>
 
+      {/*
+        Staff-preview warning. Only staff can load a lab that is not published,
+        so reaching this branch means the lab is invisible to every learner.
+        Without it this page looks exactly like a live lab and an author has no
+        way to tell that the publish step never completed.
+      */}
+      {!lab.visibleToLearners && (
+        <div
+          role="status"
+          className="mt-5 rounded-lg border border-warning/40 bg-warning-subtle px-4 py-3.5"
+        >
+          <p className="flex items-center gap-2 text-sm font-semibold text-warning">
+            <Lock className="size-4" aria-hidden />
+            Staff preview — learners cannot see this lab
+          </p>
+          <p className="mt-1 text-xs text-warning/80">
+            Status is <span className="font-mono">{lab.status.replace(/_/g, ' ')}</span>. A lab only appears in
+            the learner catalogue once its status is <span className="font-mono">published</span>.
+          </p>
+          <Link to="/admin/labs" className="mt-2 inline-block text-xs font-medium text-warning underline-offset-2 hover:underline">
+            Finish the publish workflow in the admin panel
+          </Link>
+        </div>
+      )}
+
       {/* ------------------------------- Header ------------------------------- */}
       <header className="mt-5">
         <div className="flex flex-wrap items-center gap-2">
