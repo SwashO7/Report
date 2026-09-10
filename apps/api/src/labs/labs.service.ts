@@ -222,6 +222,15 @@ export async function getLabDetail(slug: string, user: AuthedUser | null): Promi
     packageVersion: lab.packageVersion,
     packageSizeBytes: lab.packageSizeBytes ?? 0,
     publishedAt: lab.publishedAt?.toISOString() ?? null,
+    // Lifecycle state. Non-staff can only ever load a published lab (the query
+    // above enforces it), so this is only ever anything else for staff, who
+    // reach this endpoint through the status bypass. Surfacing it is what lets
+    // the UI distinguish a staff PREVIEW of an unpublished lab from a lab that
+    // is genuinely live for learners -- without it the two render identically
+    // and an unpublished lab looks successfully published to its author.
+    status: lab.status,
+    visibility: lab.visibility,
+    visibleToLearners: lab.status === 'published',
   };
 }
 

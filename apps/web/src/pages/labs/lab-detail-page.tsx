@@ -67,7 +67,17 @@ function RunLabCard({ lab }: { lab: LabDetailType }) {
       }
       if (!lab.attempt) await startAttempt.mutateAsync();
       const res = await fetch(`/api/v1/labs/${lab.slug}/download`, { credentials: 'include' });
-      if (!res.ok) throw new Error('Download failed');
+      if (!res.ok) {
+        // The API answers with a JSON error envelope; surface its message
+        // instead of a generic retry hint, which hides real causes such as a
+        // package that was never uploaded.
+        const body = (await res.json().catch(() => null)) as { error?: { code?: string; message?: string } } | null;
+        throw new ApiError(
+          res.status,
+          body?.error?.code ?? 'UNKNOWN',
+          body?.error?.message ?? `Download failed (HTTP ${res.status}).`,
+        );
+      }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -82,7 +92,7 @@ function RunLabCard({ lab }: { lab: LabDetailType }) {
       toast(
         'error',
         'Could not download lab package',
-        err instanceof ApiError ? err.message : 'Please try again in a moment.',
+        err instanceof Error && err.message ? err.message : 'Please try again in a moment.',
       );
     } finally {
       setDownloading(false);
@@ -526,6 +536,31 @@ export default function LabDetailPage() {
         <ArrowLeft className="size-4" aria-hidden />
         All labs
       </Link>
+
+      {/*
+        Staff-preview warning. Only staff can load a lab that is not published,
+        so reaching this branch means the lab is invisible to every learner.
+        Without it this page looks exactly like a live lab and an author has no
+        way to tell that the publish step never completed.
+      */}
+      {!lab.visibleToLearners && (
+        <div
+          role="status"
+          className="mt-5 rounded-lg border border-warning/40 bg-warning-subtle px-4 py-3.5"
+        >
+          <p className="flex items-center gap-2 text-sm font-semibold text-warning">
+            <Lock className="size-4" aria-hidden />
+            Staff preview — learners cannot see this lab
+          </p>
+          <p className="mt-1 text-xs text-warning/80">
+            Status is <span className="font-mono">{lab.status.replace(/_/g, ' ')}</span>. A lab only appears in
+            the learner catalogue once its status is <span className="font-mono">published</span>.
+          </p>
+          <Link to="/admin/labs" className="mt-2 inline-block text-xs font-medium text-warning underline-offset-2 hover:underline">
+            Finish the publish workflow in the admin panel
+          </Link>
+        </div>
+      )}
 
       {/* ------------------------------- Header ------------------------------- */}
       <header className="mt-5">

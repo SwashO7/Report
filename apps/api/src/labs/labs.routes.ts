@@ -9,8 +9,8 @@ import { hashIp } from '../core/crypto';
 import { flagSubmitSchema, labQuerySchema } from '@suraksha/shared';
 import { listPublishedLabs, getLabDetail, startAttempt, revealHint, submitFlag, categoriesWithCounts, difficulties } from './labs.service';
 import { getClientIp } from '../core/errors';
-import { existsSync } from 'node:fs';
 import { pathToFileStorage } from '../storage/storage.service';
+import { labPackageFilename, labPackagePath, labPackageSize, resolveLabPackage } from '../storage/labs.storage';
 
 export const labRoutes = new Hono()
 
@@ -99,8 +99,26 @@ export const labRoutes = new Hono()
         .limit(1)
     )[0];
     if (!lab) throw errors.notFound('Lab not found.');
-    if (!lab.packagePath || !existsSync(lab.packagePath)) {
+
+    // package_path can be null (never uploaded) or stale (recorded against a
+    // different working directory / STORAGE_DIR than this process runs with).
+    // Fall back to the conventional storage location before giving up.
+    const packagePath = resolveLabPackage(lab.slug, lab.packageVersion, lab.packagePath);
+    if (!packagePath) {
+      console.error(
+        `[labs] package missing for ${lab.slug} v${lab.packageVersion}: stored=${lab.packagePath ?? 'null'} expected=${labPackagePath(lab.slug, lab.packageVersion)}`,
+      );
       throw errors.notFound('The lab package is not available yet. The team is preparing it.');
+    }
+
+    // Heal the row when we recovered the file at the conventional path, so the
+    // next request (and the detail page's size field) do not need the fallback.
+    if (packagePath !== lab.packagePath) {
+      const sizeBytes = labPackageSize(packagePath);
+      await db
+        .update(labs)
+        .set({ packagePath, ...(sizeBytes !== null ? { packageSizeBytes: sizeBytes } : {}) })
+        .where(eq(labs.id, lab.id));
     }
 
     await db.insert(labDownloads).values({
@@ -111,6 +129,6 @@ export const labRoutes = new Hono()
     });
     await db.update(labs).set({ downloadCount: sql`${labs.downloadCount} + 1` }).where(eq(labs.id, lab.id));
 
-    const filename = `${lab.slug}-v${lab.packageVersion}.zip`;
-    return pathToFileStorage(c, lab.packagePath, filename);
+    const filename = labPackageFilename(lab.slug, lab.packageVersion);
+    return pathToFileStorage(c, packagePath, filename);
   });

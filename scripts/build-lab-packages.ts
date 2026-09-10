@@ -1,11 +1,15 @@
 import { mkdirSync, readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
-import { join, relative, sep } from "node:path";
+import { join, relative, resolve, sep } from "node:path";
 import { zipSync, strToU8 } from "fflate";
 
 const repoRoot = join(import.meta.dir, "..");
 const packagesDir = join(repoRoot, "labs", "packages");
-const storageDir = join(repoRoot, "apps", "api", "storage");
-const labsDir = join(storageDir, "labs");
+// Default output is the API's local storage dir. Overridable so the container
+// image can stage packages outside the storage volume mount point.
+const labsDir = process.env.LAB_PACKAGE_OUT
+  ? resolve(process.env.LAB_PACKAGE_OUT)
+  : join(repoRoot, "apps", "api", "storage", "labs");
+const storageDir = join(labsDir, "..");
 
 function collectFiles(dir: string, base: string, out: Record<string, Uint8Array> = {}): Record<string, Uint8Array> {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {

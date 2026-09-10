@@ -1,0 +1,18 @@
+id: aliased-files
+version: 1.0.0
+title: Aliased Files - Static Vault
+category: web-security
+difficulty: beginner
+runtime:
+  type: docker
+  compose_file: docker-compose.yml
+metadata:
+  estimated_time: 25
+  xp: 150
+objectives:
+  - Explore how the site serves static files under an aliased path
+  - Reach a file the server never intended to expose
+hints:
+  - "The site serves files from a folder mapped to a URL prefix like /files/."
+  - "What happens if a filename contains ../ ? Try walking up out of the folder."
+  - "If ../ is blocked, servers have been tricked by its URL-encoded form %2e%2e/. The prize sits one directory above the served folder."
