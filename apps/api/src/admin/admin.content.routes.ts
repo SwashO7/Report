@@ -17,6 +17,9 @@ import {
   adminReorderLessons,
   adminUpsertExercise,
   adminDeleteExercise,
+  adminListExercises,
+  adminListLessonsForPicker,
+  adminGetExercise,
 } from './content.service';
 import { lessonCreateSchema, lessonSaveSchema, moduleCreateSchema } from '@suraksha/shared';
 
@@ -135,6 +138,21 @@ export const adminContentRoutes = new Hono()
   })
 
   /* ------------------------------- Exercises -------------------------------- */
+  .get('/exercises', async (c) => {
+    return c.json({
+      exercises: (await adminListExercises()).map((e) => ({ ...e, updatedAt: e.updatedAt.toISOString() })),
+    });
+  })
+
+  .get('/exercises/lessons', async (c) => {
+    return c.json({ lessons: await adminListLessonsForPicker() });
+  })
+
+  .get('/exercises/:id', async (c) => {
+    const row = await adminGetExercise(c.req.param('id'));
+    return c.json({ exercise: { ...row, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() } });
+  })
+
   .post('/exercises', async (c) => {
     const user = getAuthUser(c);
     const { exerciseUpsertSchema } = await import('@suraksha/shared');

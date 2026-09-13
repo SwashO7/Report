@@ -3,6 +3,7 @@ import {
   LayoutDashboard,
   Users,
   BookOpen,
+  ClipboardCheck,
   Flag,
   Award,
   BarChart3,
@@ -35,6 +36,7 @@ const navSections: { label: string; items: NavItem[] }[] = [
     label: 'Content',
     items: [
       { to: '/admin/content', label: 'Learning content', icon: BookOpen, visibleFor: 'editor' },
+      { to: '/admin/practice', label: 'Practice', icon: ClipboardCheck, visibleFor: 'editor' },
       { to: '/admin/labs', label: 'Labs', icon: Flag, visibleFor: 'labmgr' },
       { to: '/admin/achievements', label: 'Achievements', icon: Award, visibleFor: 'admin' },
     ],

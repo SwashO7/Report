@@ -17,6 +17,7 @@ const ProfilePage = lazy(() => import('@/pages/profile/profile-page'));
 const ShareCardPage = lazy(() => import('@/pages/achievements/share-card-page'));
 const LearnHomePage = lazy(() => import('@/pages/learn/learn-home-page'));
 const PracticePage = lazy(() => import('@/pages/practice/practice-page'));
+const PracticeAttemptPage = lazy(() => import('@/pages/practice/practice-attempt-page'));
 const PathPage = lazy(() => import('@/pages/learn/path-page'));
 
 /* --------------------------------- Auth ----------------------------------- */
@@ -36,6 +37,7 @@ const SettingsPage = lazy(() => import('@/pages/settings/settings-page'));
 const AdminDashboard = lazy(() => import('@/pages/admin/dashboard'));
 const AdminUsers = lazy(() => import('@/pages/admin/users'));
 const AdminContent = lazy(() => import('@/pages/admin/content'));
+const AdminPractice = lazy(() => import('@/pages/admin/practice'));
 const AdminLessonEditor = lazy(() => import('@/pages/admin/lesson-editor'));
 const AdminLabs = lazy(() => import('@/pages/admin/labs'));
 const AdminLabEditor = lazy(() => import('@/pages/admin/lab-editor'));
@@ -90,6 +92,7 @@ function AppRoutes() {
         <Route path="achievements/:shareSlug" element={suspense(<ShareCardPage />)} />
         <Route path="learn" element={suspense(<LearnHomePage />)} />
         <Route path="practice" element={suspense(<PracticePage />)} />
+        <Route path="practice/:slug" element={suspense(<PracticeAttemptPage />)} />
         <Route path="learn/:pathSlug" element={suspense(<PathPage />)} />
 
         <Route path="login" element={<PublicOnly>{suspense(<LoginPage />)}</PublicOnly>} />
@@ -110,6 +113,7 @@ function AppRoutes() {
         <Route index element={suspense(<AdminDashboard />)} />
         <Route path="users" element={suspense(<AdminUsers />)} />
         <Route path="content" element={suspense(<AdminContent />)} />
+        <Route path="practice" element={suspense(<AdminPractice />)} />
         <Route path="content/lessons/:id" element={suspense(<AdminLessonEditor />)} />
         <Route path="labs" element={suspense(<AdminLabs />)} />
         <Route path="labs/new" element={suspense(<AdminLabEditor />)} />

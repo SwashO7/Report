@@ -79,6 +79,13 @@ export const learnRoutes = new Hono()
     return c.json(await listPublishedExercises(user?.id ?? null));
   })
 
+  .get('/exercises/:slug', async (c) => {
+    const user = await optionalUser(c);
+    const { getExerciseDetail } = await import('./practice.service');
+    const exercise = await getExerciseDetail(c.req.param('slug'), user?.id ?? null);
+    return c.json({ exercise });
+  })
+
   .post('/exercises/:slug/submit', requireAuth, async (c) => {
     const user = getAuthUser(c);
     const input = exerciseSubmitSchema.parse(await c.req.json());

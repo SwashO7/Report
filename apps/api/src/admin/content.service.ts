@@ -228,6 +228,69 @@ export async function adminReorderLessons(c: Context, user: AuthedUser, orderedI
 
 /* ------------------------------ Exercises -------------------------------- */
 
+/** All exercises across every lesson, for the admin Practice hub — unlike the
+ *  learner-facing list this includes drafts/archived so editors can manage
+ *  everything, not just what's already published. */
+export async function adminListExercises() {
+  const rows = await db
+    .select({
+      id: practiceExercises.id,
+      slug: practiceExercises.slug,
+      title: practiceExercises.title,
+      status: practiceExercises.status,
+      xpReward: practiceExercises.xpReward,
+      questionCount: sql<number>`jsonb_array_length(${practiceExercises.questions})`,
+      updatedAt: practiceExercises.updatedAt,
+      lessonId: practiceExercises.lessonId,
+      lessonSlug: lessons.slug,
+      lessonTitle: lessons.title,
+      pathName: learningPaths.name,
+    })
+    .from(practiceExercises)
+    .innerJoin(lessons, eq(practiceExercises.lessonId, lessons.id))
+    .innerJoin(modules, eq(lessons.moduleId, modules.id))
+    .innerJoin(learningPaths, eq(modules.pathId, learningPaths.id))
+    .orderBy(desc(practiceExercises.updatedAt));
+
+  return rows.map((r) => ({ ...r, questionCount: Number(r.questionCount) }));
+}
+
+/** Lesson picker for the exercise form — id/title/path, published or not. */
+export async function adminListLessonsForPicker() {
+  return db
+    .select({
+      id: lessons.id,
+      title: lessons.title,
+      slug: lessons.slug,
+      pathName: learningPaths.name,
+    })
+    .from(lessons)
+    .innerJoin(modules, eq(lessons.moduleId, modules.id))
+    .innerJoin(learningPaths, eq(modules.pathId, learningPaths.id))
+    .orderBy(asc(learningPaths.sortOrder), asc(lessons.sortOrder));
+}
+
+/** Single exercise with full question bodies (incl. answer keys) for the admin editor. */
+export async function adminGetExercise(id: string) {
+  const row = (
+    await db
+      .select({
+        ex: practiceExercises,
+        lessonSlug: lessons.slug,
+        lessonTitle: lessons.title,
+        pathName: learningPaths.name,
+      })
+      .from(practiceExercises)
+      .innerJoin(lessons, eq(practiceExercises.lessonId, lessons.id))
+      .innerJoin(modules, eq(lessons.moduleId, modules.id))
+      .innerJoin(learningPaths, eq(modules.pathId, learningPaths.id))
+      .where(eq(practiceExercises.id, id))
+      .limit(1)
+  )[0];
+  if (!row) throw errors.notFound('Exercise not found.');
+  return { ...row.ex, lessonSlug: row.lessonSlug, lessonTitle: row.lessonTitle, pathName: row.pathName };
+}
+
 export async function adminUpsertExercise(c: Context, user: AuthedUser, input: { id?: string; lessonId: string; slug: string; title: string; instructions: string; questions: unknown[]; xpReward: number; status: string }) {
   if (input.id) {
     const [row] = await db

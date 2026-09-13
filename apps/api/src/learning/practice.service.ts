@@ -2,7 +2,7 @@ import { and, asc, eq, sql } from 'drizzle-orm';
 import { db } from '../db/client';
 import { learningPaths, lessons, modules, practiceCompletions, practiceExercises, users } from '../db/schema';
 import { errors } from '../core/errors';
-import type { ExerciseResult } from '@suraksha/shared';
+import type { ExercisePublic, ExerciseResult } from '@suraksha/shared';
 
 /** Practice hub: all published exercises with location + completion state. */
 export async function listPublishedExercises(userId: string | null) {
@@ -43,6 +43,55 @@ export async function listPublishedExercises(userId: string | null) {
       questionCount: Number(r.questionCount),
       completed: doneSet.has(r.id),
     })),
+  };
+}
+
+/**
+ * Single exercise, ready to attempt from the practice hub. Same public shape
+ * as the exercises embedded in a lesson (no answer keys) — lets the hub open
+ * the exercise directly instead of only deep-linking into the lesson page.
+ */
+export async function getExerciseDetail(slug: string, userId: string | null): Promise<ExercisePublic> {
+  const row = (
+    await db
+      .select({
+        ex: practiceExercises,
+        lessonSlug: lessons.slug,
+        lessonTitle: lessons.title,
+        pathSlug: learningPaths.slug,
+      })
+      .from(practiceExercises)
+      .innerJoin(lessons, eq(practiceExercises.lessonId, lessons.id))
+      .innerJoin(modules, eq(lessons.moduleId, modules.id))
+      .innerJoin(learningPaths, eq(modules.pathId, learningPaths.id))
+      .where(and(eq(practiceExercises.slug, slug), eq(practiceExercises.status, 'published')))
+      .limit(1)
+  )[0];
+  if (!row) throw errors.notFound('Practice exercise not found.');
+  const { ex, lessonSlug, lessonTitle, pathSlug } = row;
+
+  const completed = userId
+    ? Boolean(
+        (
+          await db
+            .select({ exerciseId: practiceCompletions.exerciseId })
+            .from(practiceCompletions)
+            .where(and(eq(practiceCompletions.userId, userId), eq(practiceCompletions.exerciseId, ex.id)))
+            .limit(1)
+        )[0],
+      )
+    : false;
+
+  return {
+    id: ex.id,
+    slug: ex.slug,
+    title: ex.title,
+    instructions: ex.instructions,
+    kind: 'quiz',
+    questions: (ex.questions ?? []).map((q) => ({ prompt: q.prompt, options: q.options })),
+    xpReward: ex.xpReward,
+    completed,
+    lesson: { slug: lessonSlug, title: lessonTitle, pathSlug },
   };
 }
 

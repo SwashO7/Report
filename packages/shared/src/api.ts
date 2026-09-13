@@ -93,6 +93,9 @@ export interface ExercisePublic {
   questions: { prompt: string; options: string[] }[];
   xpReward: number;
   completed: boolean;
+  /** Present when fetched standalone (e.g. from the practice hub), so the
+   *  attempt page can link back to the lesson the exercise belongs to. */
+  lesson?: { slug: string; title: string; pathSlug: string };
 }
 
 export interface ExerciseResult {

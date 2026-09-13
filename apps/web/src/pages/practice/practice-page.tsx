@@ -99,7 +99,7 @@ export default function PracticePage() {
                   {items.map((ex, i) => (
                     <Link
                       key={ex.id}
-                      to={`/learn/${ex.pathSlug}/${ex.lessonSlug}`}
+                      to={`/practice/${ex.slug}`}
                       className={cn(
                         'group flex items-center gap-4 px-4 py-3 transition-colors hover:bg-surface-2 sm:px-5',
                         i > 0 && 'border-t border-border',
