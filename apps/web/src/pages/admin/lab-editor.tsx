@@ -263,7 +263,26 @@ export default function LabEditor() {
         void qc.invalidateQueries({ queryKey: qk.adminLab(id ?? '') });
       }
     },
-    onError: (e) => toast('error', 'Save failed', errMsg(e)),
+    onError: (e) => {
+      // Server-side Zod validation returns per-field `details` (path + message).
+      // Map them onto the same `errors` state the client-side validate() uses,
+      // so a mismatch the client missed (e.g. a stricter server rule) still
+      // highlights the real field instead of a generic, actionless toast.
+      let detailMessage: string | undefined;
+      if (e instanceof ApiError && e.code === 'VALIDATION_ERROR' && Array.isArray(e.details)) {
+        const fieldErrors: Record<string, string> = {};
+        const summaries: string[] = [];
+        for (const d of e.details as { path?: string; message?: string }[]) {
+          if (d?.path) {
+            fieldErrors[d.path] = d.message ?? 'Invalid value.';
+            summaries.push(`${d.path}: ${d.message ?? 'Invalid value.'}`);
+          }
+        }
+        setErrors((prev) => ({ ...prev, ...fieldErrors }));
+        if (summaries.length > 0) detailMessage = summaries.join(' · ');
+      }
+      toast('error', 'Save failed', detailMessage ?? errMsg(e));
+    },
   });
 
   const validate = (): boolean => {
@@ -272,7 +291,7 @@ export default function LabEditor() {
     if (!SLUG_RE.test(effSlug)) e.slug = 'Lowercase letters, numbers and hyphens only.';
     if (!form.categoryId) e.categoryId = 'Pick a category.';
     if (!form.difficultyId) e.difficultyId = 'Pick a difficulty.';
-    if (isNew && form.flagInput.trim().length < 3) e.flag = 'A plaintext flag is required to create the lab.';
+    if (isNew && form.flagInput.trim().length < 4) e.flag = 'A plaintext flag is required (min 4 chars) to create the lab.';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -324,7 +343,7 @@ export default function LabEditor() {
   /* Checklist state for the rail */
   const detailsDone = form.title.trim().length >= 2 && !!form.categoryId && !!form.difficultyId && SLUG_RE.test(effSlug);
   const briefingDone = form.description.trim().length > 0 && linesOf(form.objectivesText).length > 0;
-  const flagDone = isNew ? form.flagInput.trim().length >= 3 : lab?.hasFlag ?? false;
+  const flagDone = isNew ? form.flagInput.trim().length >= 4 : lab?.hasFlag ?? false;
   const packageDone = !isNew && (lab?.hasPackage ?? false);
 
   const checklist: { label: string; done: boolean; href: string }[] = [
