@@ -3,10 +3,13 @@ import { contentBlockSchema } from './content';
 
 /** ---------- Learning ---------- */
 
+export const lessonImportanceSchema = z.enum(['essential', 'core', 'optional']);
+
 export const lessonSaveSchema = z.object({
   title: z.string().trim().min(2).max(200).optional(),
   summary: z.string().max(1000).optional(),
   estimatedMinutes: z.number().int().min(1).max(600).optional(),
+  importance: lessonImportanceSchema.optional(),
   blocks: z.array(contentBlockSchema).max(200).optional(),
   changeNote: z.string().max(500).optional(),
 });
@@ -21,6 +24,7 @@ export const lessonCreateSchema = z.object({
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Lowercase letters, numbers and hyphens only'),
   summary: z.string().max(1000).default(''),
   estimatedMinutes: z.number().int().min(1).max(600).default(10),
+  importance: lessonImportanceSchema.default('core'),
   blocks: z.array(contentBlockSchema).max(200).default([]),
 });
 export type LessonCreateInput = z.infer<typeof lessonCreateSchema>;

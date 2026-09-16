@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 380" width="880" height="380" role="img" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#a8a49c"/></marker>
+<marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#43bd97"/></marker>
+<marker id="aD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#e56767"/></marker>
+<marker id="aW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#dbaa3c"/></marker>
+</defs>
+<text x="440" y="24" text-anchor="middle" font-size="13" font-weight="600" fill="#77746c">Seven layers, and what actually breaks at each one</text>
+<rect x="30" y="44" width="250" height="38" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="155" y="68" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">7  Application</text>
+<text x="300" y="68" text-anchor="start" font-size="12" font-weight="400" fill="#a8a49c" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">HTTP, DNS, SMTP</text>
+<text x="560" y="68" text-anchor="start" font-size="12" font-weight="400" fill="#43bd97">XSS, SQLi, logic bugs</text>
+<rect x="30" y="88" width="250" height="38" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="155" y="112" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">6  Presentation</text>
+<text x="300" y="112" text-anchor="start" font-size="12" font-weight="400" fill="#a8a49c" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">TLS, encoding</text>
+<text x="560" y="112" text-anchor="start" font-size="12" font-weight="400" fill="#43bd97">weak ciphers, cert issues</text>
+<rect x="30" y="132" width="250" height="38" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="155" y="156" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">5  Session</text>
+<text x="300" y="156" text-anchor="start" font-size="12" font-weight="400" fill="#a8a49c" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">session setup</text>
+<text x="560" y="156" text-anchor="start" font-size="12" font-weight="400" fill="#43bd97">session hijacking</text>
+<rect x="30" y="176" width="250" height="38" rx="8" fill="#22261f" stroke="#dbaa3c" stroke-width="1.5"/><text x="155" y="200" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">4  Transport</text>
+<text x="300" y="200" text-anchor="start" font-size="12" font-weight="400" fill="#a8a49c" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">TCP, UDP, ports</text>
+<text x="560" y="200" text-anchor="start" font-size="12" font-weight="400" fill="#dbaa3c">port scans, SYN floods</text>
+<rect x="30" y="220" width="250" height="38" rx="8" fill="#22261f" stroke="#dbaa3c" stroke-width="1.5"/><text x="155" y="244" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">3  Network</text>
+<text x="300" y="244" text-anchor="start" font-size="12" font-weight="400" fill="#a8a49c" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">IP, routing, ICMP</text>
+<text x="560" y="244" text-anchor="start" font-size="12" font-weight="400" fill="#dbaa3c">spoofing, routing tricks</text>
+<rect x="30" y="264" width="250" height="38" rx="8" fill="#22261f" stroke="#a8a49c" stroke-width="1.5"/><text x="155" y="288" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">2  Data link</text>
+<text x="300" y="288" text-anchor="start" font-size="12" font-weight="400" fill="#a8a49c" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">Ethernet, MAC, ARP</text>
+<text x="560" y="288" text-anchor="start" font-size="12" font-weight="400" fill="#a8a49c">ARP spoofing, VLAN hopping</text>
+<rect x="30" y="308" width="250" height="38" rx="8" fill="#22261f" stroke="#a8a49c" stroke-width="1.5"/><text x="155" y="332" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">1  Physical</text>
+<text x="300" y="332" text-anchor="start" font-size="12" font-weight="400" fill="#a8a49c" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">cables, radio</text>
+<text x="560" y="332" text-anchor="start" font-size="12" font-weight="400" fill="#a8a49c">tapping, jamming</text>
+<text x="440" y="368" text-anchor="middle" font-size="12" font-weight="400" fill="#77746c">You do not memorise this. You use it to ask "which layer is this bug on?"</text>
+</svg>

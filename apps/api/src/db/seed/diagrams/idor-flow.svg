@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 280" width="880" height="280" role="img" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#a8a49c"/></marker>
+<marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#43bd97"/></marker>
+<marker id="aD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#e56767"/></marker>
+<marker id="aW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#dbaa3c"/></marker>
+</defs>
+<text x="440" y="24" text-anchor="middle" font-size="13" font-weight="600" fill="#77746c">IDOR: the app checks you are logged in, not that it is yours</text>
+<rect x="30" y="70" width="190" height="56" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="125" y="103" text-anchor="middle" font-size="12.5" font-weight="600" fill="#eceae6">Logged in as user 42</text>
+<rect x="310" y="60" width="260" height="40" rx="8" fill="#22261f" stroke="#52b788" stroke-width="1.5"/><text x="440" y="85" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">GET /invoice/1042</text>
+<rect x="660" y="55" width="190" height="50" rx="8" fill="#17281f" stroke="#52b788" stroke-width="1.5"/><text x="755" y="77" text-anchor="middle" font-size="12.5" font-weight="600" fill="#eceae6">Your invoice</text><text x="755" y="94" text-anchor="middle" font-size="11.5" fill="#a8a49c">correct</text>
+<line x1="220" y1="85" x2="310" y2="80" stroke="#52b788" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="570" y1="80" x2="660" y2="80" stroke="#52b788" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="310" y="150" width="260" height="40" rx="8" fill="#22261f" stroke="#e56767" stroke-width="1.5"/><text x="440" y="175" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">GET /invoice/1043</text>
+<rect x="660" y="145" width="190" height="50" rx="8" fill="#301718" stroke="#e56767" stroke-width="1.5"/><text x="755" y="167" text-anchor="middle" font-size="12.5" font-weight="600" fill="#eceae6">Someone else’s</text><text x="755" y="184" text-anchor="middle" font-size="11.5" fill="#a8a49c">that is the bug</text>
+<line x1="220" y1="105" x2="310" y2="170" stroke="#e56767" stroke-width="1.5" marker-end="url(#aD)"/>
+<line x1="570" y1="170" x2="660" y2="170" stroke="#e56767" stroke-width="1.5" marker-end="url(#aD)"/>
+<text x="440" y="230" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">Missing check:  "does invoice 1043 belong to user 42?"</text>
+<text x="440" y="258" text-anchor="middle" font-size="12" font-weight="400" fill="#43bd97">One number changed. No tools needed. Still one of the best-paying bug classes.</text>
+</svg>

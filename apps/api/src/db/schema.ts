@@ -252,6 +252,8 @@ export const lessons = pgTable(
     title: varchar('title', { length: 200 }).notNull(),
     summary: varchar('summary', { length: 1000 }).notNull().default(''),
     estimatedMinutes: integer('estimated_minutes').notNull().default(10),
+    /** Curriculum weight: 'core' = must-know, 'optional' = skippable side quest. */
+    importance: varchar('importance', { length: 20 }).notNull().default('core'),
     blocks: jsonb('blocks').$type<unknown[]>().notNull().default([]),
     status: varchar('status', { length: 20 }).notNull().default('draft'),
     version: integer('version').notNull().default(1),
@@ -312,6 +314,33 @@ export const practiceExercises = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [uniqueIndex('practice_exercises_slug_uq').on(t.slug), index('practice_exercises_lesson_idx').on(t.lessonId)],
+);
+
+/**
+ * Lesson diagrams. Stored in the database (not on disk) so content editors can
+ * add, edit and replace them from the admin panel without a deploy. SVG is kept
+ * as editable source text; raster uploads are kept base64-encoded.
+ */
+export const diagrams = pgTable(
+  'diagrams',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    slug: varchar('slug', { length: 140 }).notNull(),
+    title: varchar('title', { length: 200 }).notNull(),
+    description: varchar('description', { length: 500 }).notNull().default(''),
+    /** image/svg+xml, image/png, image/jpeg, image/webp, image/gif */
+    mimeType: varchar('mime_type', { length: 60 }).notNull().default('image/svg+xml'),
+    /** 'utf8' for SVG markup, 'base64' for raster bytes. */
+    encoding: varchar('encoding', { length: 10 }).notNull().default('utf8'),
+    content: text('content').notNull(),
+    sizeBytes: integer('size_bytes').notNull().default(0),
+    /** Free-form grouping label shown in the admin list, e.g. 'networking'. */
+    category: varchar('category', { length: 60 }).notNull().default('general'),
+    updatedById: uuid('updated_by_id').references(() => users.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex('diagrams_slug_uq').on(t.slug), index('diagrams_category_idx').on(t.category)],
 );
 
 export const practiceCompletions = pgTable(

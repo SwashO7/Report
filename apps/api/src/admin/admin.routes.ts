@@ -11,6 +11,7 @@ import { db } from '../db/client';
 import { auditLogs, users } from '../db/schema';
 import { adminUserRoutes } from './admin.users.routes';
 import { adminContentRoutes } from './admin.content.routes';
+import { adminDiagramRoutes } from './admin.diagrams.routes';
 import { adminLabRoutes } from './admin.labs.routes';
 import { adminAchievementRoutes } from './admin.achievements.routes';
 
@@ -97,5 +98,6 @@ export const adminRoutes = new Hono()
   /* ----------------------------- Sub-domains -------------------------------- */
   .route('/users', adminUserRoutes)
   .route('/content', adminContentRoutes)
+  .route('/diagrams', adminDiagramRoutes)
   .route('/labs', adminLabRoutes)
   .route('/achievements', adminAchievementRoutes);

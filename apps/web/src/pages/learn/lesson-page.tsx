@@ -137,6 +137,16 @@ export default function LessonPage() {
               <Badge variant="accent" className="tracking-widest">
                 Level {lesson.levelNumber}
               </Badge>
+              {lesson.importance === 'essential' && (
+                <span className="inline-flex items-center rounded-full border border-warning/40 bg-warning/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-warning">
+                  Must know
+                </span>
+              )}
+              {lesson.importance === 'optional' && (
+                <span className="inline-flex items-center rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-text-tertiary">
+                  Optional — skip if rushing
+                </span>
+              )}
               {completed && (
                 <Badge variant="success">
                   <CheckCircle2 className="size-3.5" aria-hidden />

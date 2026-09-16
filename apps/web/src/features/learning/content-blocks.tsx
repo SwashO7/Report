@@ -107,6 +107,24 @@ type VideoBlockData = Extract<ContentBlock, { type: 'video' }>;
 
 function VideoFigure({ block }: { block: VideoBlockData }) {
   const embed = block.provider === 'youtube' ? youtubeEmbedUrl(block.url, block.startAt) : null;
+  // Authored lessons reserve a video slot before the video exists. The sentinel
+  // host marks those so learners see a labelled placeholder instead of a broken
+  // player; swap the URL in the lesson editor once the video is published.
+  const isPlaceholder = block.url.includes('video.suraksha.local');
+  if (isPlaceholder) {
+    return (
+      <figure className="my-6">
+        <div className="flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-surface-2 px-6 text-center">
+          <span aria-hidden className="text-2xl">
+            🎬
+          </span>
+          <span className="text-sm font-semibold text-text-secondary">Video dropping soon</span>
+          {block.title && <span className="text-xs text-text-tertiary">{block.title}</span>}
+          <span className="text-[11px] text-text-tertiary/70">Read on — the text below covers everything.</span>
+        </div>
+      </figure>
+    );
+  }
   return (
     <figure className="my-6">
       {embed ? (

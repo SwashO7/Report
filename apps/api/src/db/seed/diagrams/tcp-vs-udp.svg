@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 320" width="880" height="320" role="img" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#a8a49c"/></marker>
+<marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#43bd97"/></marker>
+<marker id="aD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#e56767"/></marker>
+<marker id="aW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#dbaa3c"/></marker>
+</defs>
+<text x="440" y="24" text-anchor="middle" font-size="13" font-weight="600" fill="#77746c">TCP checks every letter arrived. UDP just shouts.</text>
+<rect x="20" y="40" width="410" height="260" rx="10" fill="none" stroke="#43bd97" stroke-width="1.2" stroke-dasharray="6 5"/><text x="30" y="58" text-anchor="start" font-size="11.5" font-weight="600" fill="#43bd97">TCP - reliable, ordered, slower</text>
+<rect x="50" y="80" width="140" height="44" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="120" y="107" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">Sender</text>
+<rect x="260" y="80" width="140" height="44" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="330" y="107" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">Receiver</text>
+<line x1="190" y1="102" x2="260" y2="102" stroke="#43bd97" stroke-width="1.5" marker-end="url(#aA)"/>
+<text x="225" y="140" text-anchor="middle" font-size="11" font-weight="400" fill="#a8a49c">packet 1</text>
+<line x1="260" y1="165" x2="190" y2="165" stroke="#43bd97" stroke-width="1.5" marker-end="url(#aA)"/><text x="225" y="159" text-anchor="middle" font-size="11.5" fill="#43bd97">got it</text>
+<text x="225" y="205" text-anchor="middle" font-size="11" font-weight="400" fill="#dbaa3c">packet 2 lost?</text>
+<line x1="50" y1="235" x2="400" y2="235" stroke="#43bd97" stroke-width="1.5" marker-end="url(#aA)"/><text x="225" y="227" text-anchor="middle" font-size="11.5" fill="#43bd97">resend until confirmed</text>
+<text x="225" y="275" text-anchor="middle" font-size="11.5" font-weight="400" fill="#a8a49c">Web pages, logins, file transfers</text>
+<rect x="450" y="40" width="410" height="260" rx="10" fill="none" stroke="#dbaa3c" stroke-width="1.2" stroke-dasharray="6 5"/><text x="460" y="58" text-anchor="start" font-size="11.5" font-weight="600" fill="#dbaa3c">UDP - fast, no guarantees</text>
+<rect x="480" y="80" width="140" height="44" rx="8" fill="#22261f" stroke="#dbaa3c" stroke-width="1.5"/><text x="550" y="107" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">Sender</text>
+<rect x="690" y="80" width="140" height="44" rx="8" fill="#22261f" stroke="#dbaa3c" stroke-width="1.5"/><text x="760" y="107" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">Receiver</text>
+<line x1="620" y1="102" x2="690" y2="102" stroke="#dbaa3c" stroke-width="1.5" marker-end="url(#aW)"/>
+<line x1="620" y1="145" x2="690" y2="145" stroke="#dbaa3c" stroke-width="1.5" marker-end="url(#aW)"/>
+<line x1="620" y1="188" x2="690" y2="188" stroke="#dbaa3c" stroke-width="1.5" marker-end="url(#aW)"/>
+<text x="655" y="122" text-anchor="middle" font-size="10.5" font-weight="400" fill="#77746c">no ACK</text>
+<text x="655" y="232" text-anchor="middle" font-size="11" font-weight="400" fill="#e56767">dropped packets stay dropped</text>
+<text x="655" y="275" text-anchor="middle" font-size="11.5" font-weight="400" fill="#a8a49c">Video calls, games, DNS</text>
+</svg>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 300" width="880" height="300" role="img" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#a8a49c"/></marker>
+<marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#43bd97"/></marker>
+<marker id="aD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#e56767"/></marker>
+<marker id="aW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#dbaa3c"/></marker>
+</defs>
+<text x="440" y="24" text-anchor="middle" font-size="13" font-weight="600" fill="#77746c">HTTP forgets you instantly. A cookie is the wristband.</text>
+<rect x="30" y="70" width="170" height="60" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="115" y="97" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">You log in</text><text x="115" y="114" text-anchor="middle" font-size="11.5" fill="#a8a49c">email + password</text>
+<rect x="280" y="70" width="200" height="60" rx="8" fill="#22261f" stroke="#3d443a" stroke-width="1.5"/><text x="380" y="97" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">Server checks it</text><text x="380" y="114" text-anchor="middle" font-size="11.5" fill="#a8a49c">stores a session row</text>
+<rect x="560" y="70" width="290" height="60" rx="8" fill="#1d2f28" stroke="#43bd97" stroke-width="1.5"/><text x="705" y="105" text-anchor="middle" font-size="12.5" font-weight="600" fill="#eceae6" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">Set-Cookie: session=abc123</text>
+<line x1="200" y1="100" x2="280" y2="100" stroke="#a8a49c" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="480" y1="100" x2="560" y2="100" stroke="#43bd97" stroke-width="1.5" marker-end="url(#aA)"/>
+<rect x="30" y="175" width="170" height="60" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="115" y="202" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">Next request</text><text x="115" y="219" text-anchor="middle" font-size="11.5" fill="#a8a49c">browser attaches it</text>
+<rect x="280" y="175" width="200" height="60" rx="8" fill="#22261f" stroke="#3d443a" stroke-width="1.5"/><text x="380" y="202" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">Server looks it up</text><text x="380" y="219" text-anchor="middle" font-size="11.5" fill="#a8a49c">abc123 = user 42</text>
+<rect x="560" y="175" width="290" height="60" rx="8" fill="#17281f" stroke="#52b788" stroke-width="1.5"/><text x="705" y="202" text-anchor="middle" font-size="12.5" font-weight="600" fill="#eceae6">You are still logged in</text><text x="705" y="219" text-anchor="middle" font-size="11.5" fill="#a8a49c">no password re-sent</text>
+<line x1="200" y1="205" x2="280" y2="205" stroke="#a8a49c" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="480" y1="205" x2="560" y2="205" stroke="#43bd97" stroke-width="1.5" marker-end="url(#aA)"/>
+<text x="440" y="272" text-anchor="middle" font-size="12" font-weight="400" fill="#dbaa3c">Steal that cookie and you ARE the user - which is what HttpOnly and Secure exist to stop.</text>
+</svg>

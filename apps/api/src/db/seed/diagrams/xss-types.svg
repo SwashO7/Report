@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 300" width="880" height="300" role="img" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#a8a49c"/></marker>
+<marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#43bd97"/></marker>
+<marker id="aD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#e56767"/></marker>
+<marker id="aW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#dbaa3c"/></marker>
+</defs>
+<text x="440" y="24" text-anchor="middle" font-size="13" font-weight="600" fill="#77746c">Three flavours of XSS, told apart by where the payload lives</text>
+<rect x="20" y="50" width="270" height="200" rx="8" fill="none" stroke="#dbaa3c" stroke-width="1.5"/><text x="155" y="155" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6"></text>
+<text x="155" y="76" text-anchor="middle" font-size="13" font-weight="600" fill="#dbaa3c">REFLECTED</text>
+<text x="155" y="100" text-anchor="middle" font-size="11.5" font-weight="400" fill="#a8a49c">payload rides in the URL</text>
+<rect x="45" y="115" width="220" height="40" rx="8" fill="#22261f" stroke="#3d443a" stroke-width="1.5"/><text x="155" y="140" text-anchor="middle" font-size="12" font-weight="600" fill="#eceae6" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">?q=&lt;script&gt;...</text>
+<text x="155" y="180" text-anchor="middle" font-size="11.5" font-weight="400" fill="#a8a49c">Needs the victim to click</text>
+<text x="155" y="200" text-anchor="middle" font-size="11.5" font-weight="400" fill="#a8a49c">your link</text>
+<text x="155" y="232" text-anchor="middle" font-size="11.5" font-weight="600" fill="#dbaa3c">Medium impact</text>
+<rect x="305" y="50" width="270" height="200" rx="8" fill="none" stroke="#e56767" stroke-width="1.5"/><text x="440" y="155" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6"></text>
+<text x="440" y="76" text-anchor="middle" font-size="13" font-weight="600" fill="#e56767">STORED</text>
+<text x="440" y="100" text-anchor="middle" font-size="11.5" font-weight="400" fill="#a8a49c">payload saved in the database</text>
+<rect x="330" y="115" width="220" height="40" rx="8" fill="#22261f" stroke="#3d443a" stroke-width="1.5"/><text x="440" y="140" text-anchor="middle" font-size="12" font-weight="600" fill="#eceae6">comment / profile bio</text>
+<text x="440" y="180" text-anchor="middle" font-size="11.5" font-weight="400" fill="#a8a49c">Fires for every visitor,</text>
+<text x="440" y="200" text-anchor="middle" font-size="11.5" font-weight="400" fill="#a8a49c">no clicking needed</text>
+<text x="440" y="232" text-anchor="middle" font-size="11.5" font-weight="600" fill="#e56767">Highest impact</text>
+<rect x="590" y="50" width="270" height="200" rx="8" fill="none" stroke="#43bd97" stroke-width="1.5"/><text x="725" y="155" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6"></text>
+<text x="725" y="76" text-anchor="middle" font-size="13" font-weight="600" fill="#43bd97">DOM</text>
+<text x="725" y="100" text-anchor="middle" font-size="11.5" font-weight="400" fill="#a8a49c">never touches the server</text>
+<rect x="615" y="115" width="220" height="40" rx="8" fill="#22261f" stroke="#3d443a" stroke-width="1.5"/><text x="725" y="140" text-anchor="middle" font-size="11" font-weight="600" fill="#eceae6" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">location.hash -&gt; innerHTML</text>
+<text x="725" y="180" text-anchor="middle" font-size="11.5" font-weight="400" fill="#a8a49c">Server logs show nothing.</text>
+<text x="725" y="200" text-anchor="middle" font-size="11.5" font-weight="400" fill="#a8a49c">Read the JavaScript.</text>
+<text x="725" y="232" text-anchor="middle" font-size="11.5" font-weight="600" fill="#43bd97">Easy to miss</text>
+<text x="440" y="285" text-anchor="middle" font-size="12" font-weight="400" fill="#77746c">Same root cause every time: input reached the page without being escaped.</text>
+</svg>

@@ -6,6 +6,7 @@ import { toSafeErrorResponse } from './errors';
 import { healthRoutes } from '../routes/health';
 import { authRoutes } from '../auth/auth.routes';
 import { learnRoutes } from '../learning/learning.routes';
+import { diagramRoutes } from '../diagrams/diagrams.routes';
 import { labRoutes } from '../labs/labs.routes';
 import { gamificationRoutes } from '../gamification/gamification.routes';
 import { settingsRoutes } from '../users/settings.routes';
@@ -37,6 +38,7 @@ export function createApp() {
   app.route('/api/v1/health', healthRoutes);
   app.route('/api/v1/auth', authRoutes);
   app.route('/api/v1/learn', learnRoutes);
+  app.route('/api/v1/diagrams', diagramRoutes);
   app.route('/api/v1/labs', labRoutes);
   app.route('/api/v1', gamificationRoutes);
   app.route('/api/v1/me', settingsRoutes);

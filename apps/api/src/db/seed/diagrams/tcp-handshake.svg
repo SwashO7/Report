@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 300" width="880" height="300" role="img" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#a8a49c"/></marker>
+<marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#43bd97"/></marker>
+<marker id="aD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#e56767"/></marker>
+<marker id="aW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#dbaa3c"/></marker>
+</defs>
+<text x="440" y="24" text-anchor="middle" font-size="13" font-weight="600" fill="#77746c">TCP three-way handshake: agree before you talk</text>
+<rect x="60" y="50" width="160" height="44" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="140" y="77" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">Client</text>
+<rect x="660" y="50" width="160" height="44" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="740" y="77" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">Server</text>
+<line x1="140" y1="94" x2="140" y2="270" stroke="#3d443a" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="740" y1="94" x2="740" y2="270" stroke="#3d443a" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="140" y1="130" x2="740" y2="130" stroke="#43bd97" stroke-width="1.5" marker-end="url(#aA)"/><text x="440" y="122" text-anchor="middle" font-size="11.5" fill="#43bd97">1. SYN  - "can we talk?"</text>
+<line x1="740" y1="180" x2="140" y2="180" stroke="#43bd97" stroke-width="1.5" marker-end="url(#aA)"/><text x="440" y="172" text-anchor="middle" font-size="11.5" fill="#43bd97">2. SYN-ACK  - "yes, and you?"</text>
+<line x1="140" y1="230" x2="740" y2="230" stroke="#43bd97" stroke-width="1.5" marker-end="url(#aA)"/><text x="440" y="222" text-anchor="middle" font-size="11.5" fill="#43bd97">3. ACK  - "confirmed"</text>
+<text x="440" y="268" text-anchor="middle" font-size="12" font-weight="400" fill="#77746c">Connection established. Now data flows.</text>
+</svg>

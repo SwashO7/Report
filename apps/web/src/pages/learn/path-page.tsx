@@ -54,13 +54,25 @@ function LessonRow({
         )}
       </span>
       <span className="min-w-0 flex-1">
-        <span
-          className={cn(
-            'block truncate text-sm',
-            lesson.completed ? 'font-medium text-text-secondary' : 'font-medium text-text',
+        <span className="flex items-center gap-2">
+          <span
+            className={cn(
+              'truncate text-sm',
+              lesson.completed ? 'font-medium text-text-secondary' : 'font-medium text-text',
+            )}
+          >
+            {lesson.title}
+          </span>
+          {lesson.importance === 'essential' && (
+            <span className="shrink-0 rounded-full border border-warning/40 bg-warning/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-warning">
+              Must know
+            </span>
           )}
-        >
-          {lesson.title}
+          {lesson.importance === 'optional' && (
+            <span className="shrink-0 rounded-full border border-border bg-surface-2 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-tertiary">
+              Optional
+            </span>
+          )}
         </span>
         {lesson.summary && (
           <span className="mt-0.5 hidden truncate text-xs text-text-tertiary sm:block">{lesson.summary}</span>

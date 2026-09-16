@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 330" width="880" height="330" role="img" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#a8a49c"/></marker>
+<marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#43bd97"/></marker>
+<marker id="aD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#e56767"/></marker>
+<marker id="aW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#dbaa3c"/></marker>
+</defs>
+<text x="440" y="24" text-anchor="middle" font-size="13" font-weight="600" fill="#77746c">Each layer wraps the one above it, like envelopes</text>
+<rect x="30" y="44" width="820" height="250" rx="8" fill="none" stroke="#77746c" stroke-width="1.5"/><text x="42" y="64" text-anchor="start" font-size="12.5" font-weight="600" fill="#77746c">Ethernet frame</text><text x="42" y="82" text-anchor="start" font-size="11" font-weight="400" fill="#77746c" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">MAC source + destination</text>
+<rect x="80" y="96" width="720" height="186" rx="8" fill="none" stroke="#a8a49c" stroke-width="1.5"/><text x="92" y="116" text-anchor="start" font-size="12.5" font-weight="600" fill="#a8a49c">IP packet</text><text x="92" y="134" text-anchor="start" font-size="11" font-weight="400" fill="#77746c" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">IP source + destination</text>
+<rect x="130" y="148" width="620" height="122" rx="8" fill="none" stroke="#43bd97" stroke-width="1.5"/><text x="142" y="168" text-anchor="start" font-size="12.5" font-weight="600" fill="#43bd97">TCP segment</text><text x="142" y="186" text-anchor="start" font-size="11" font-weight="400" fill="#77746c" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">ports, sequence numbers</text>
+<rect x="180" y="200" width="520" height="52" rx="8" fill="#1d2f28" stroke="#43bd97" stroke-width="1.5"/><text x="440" y="223" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">Your actual data</text><text x="440" y="240" text-anchor="middle" font-size="11.5" fill="#a8a49c">GET /login HTTP/1.1</text>
+<text x="440" y="316" text-anchor="middle" font-size="12" font-weight="400" fill="#77746c">Routers read the outside. Only the server opens the inside.</text>
+</svg>

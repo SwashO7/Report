@@ -4,6 +4,7 @@ import {
   Users,
   BookOpen,
   ClipboardCheck,
+  Image as ImageIcon,
   Flag,
   Award,
   BarChart3,
@@ -37,6 +38,7 @@ const navSections: { label: string; items: NavItem[] }[] = [
     items: [
       { to: '/admin/content', label: 'Learning content', icon: BookOpen, visibleFor: 'editor' },
       { to: '/admin/practice', label: 'Practice', icon: ClipboardCheck, visibleFor: 'editor' },
+      { to: '/admin/diagrams', label: 'Diagrams', icon: ImageIcon, visibleFor: 'editor' },
       { to: '/admin/labs', label: 'Labs', icon: Flag, visibleFor: 'labmgr' },
       { to: '/admin/achievements', label: 'Achievements', icon: Award, visibleFor: 'admin' },
     ],

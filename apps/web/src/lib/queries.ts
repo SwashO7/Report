@@ -28,6 +28,8 @@ export const qk = {
   adminLessons: (params: string) => ['admin', 'lessons', params] as const,
   adminLesson: (id: string) => ['admin', 'lesson', id] as const,
   adminExercises: ['admin', 'exercises'] as const,
+  adminDiagrams: ['admin', 'diagrams'] as const,
+  adminDiagram: (slug: string) => ['admin', 'diagram', slug] as const,
   adminExerciseLessons: ['admin', 'exercises', 'lessons'] as const,
   adminLabs: (params: string) => ['admin', 'labs', params] as const,
   adminLab: (id: string) => ['admin', 'lab', id] as const,

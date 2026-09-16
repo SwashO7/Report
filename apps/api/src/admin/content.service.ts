@@ -87,6 +87,7 @@ export async function adminListLessons(opts: { q?: string; status?: string; modu
       moduleTitle: modules.title,
       pathName: learningPaths.name,
       estimatedMinutes: lessons.estimatedMinutes,
+      importance: lessons.importance,
       updatedAt: lessons.updatedAt,
       publishedAt: lessons.publishedAt,
       viewCount: lessons.viewCount,
@@ -130,7 +131,7 @@ export async function adminGetLesson(id: string) {
   return { ...row, exercises, versions };
 }
 
-export async function adminCreateLesson(c: Context, user: AuthedUser, input: { moduleId: string; title: string; slug: string; summary: string; estimatedMinutes: number; blocks: unknown[] }) {
+export async function adminCreateLesson(c: Context, user: AuthedUser, input: { moduleId: string; title: string; slug: string; summary: string; estimatedMinutes: number; importance?: 'essential' | 'core' | 'optional'; blocks: unknown[] }) {
   const dup = (await db.select({ id: lessons.id }).from(lessons).where(eq(lessons.slug, input.slug)).limit(1))[0];
   if (dup) throw errors.conflict('A lesson with this slug already exists.');
   const [{ n }] = await db.select({ n: count() }).from(lessons).where(eq(lessons.moduleId, input.moduleId));
@@ -152,7 +153,7 @@ export async function adminCreateLesson(c: Context, user: AuthedUser, input: { m
   return row;
 }
 
-export async function adminSaveLesson(c: Context, user: AuthedUser, id: string, input: { title?: string; summary?: string; estimatedMinutes?: number; blocks?: unknown[]; changeNote?: string }) {
+export async function adminSaveLesson(c: Context, user: AuthedUser, id: string, input: { title?: string; summary?: string; estimatedMinutes?: number; importance?: 'essential' | 'core' | 'optional'; blocks?: unknown[]; changeNote?: string }) {
   const current = (await db.select().from(lessons).where(eq(lessons.id, id)).limit(1))[0];
   if (!current) throw errors.notFound('Lesson not found.');
 
@@ -163,6 +164,7 @@ export async function adminSaveLesson(c: Context, user: AuthedUser, id: string, 
       ...(input.title !== undefined ? { title: input.title } : {}),
       ...(input.summary !== undefined ? { summary: input.summary } : {}),
       ...(input.estimatedMinutes !== undefined ? { estimatedMinutes: input.estimatedMinutes } : {}),
+      ...(input.importance !== undefined ? { importance: input.importance } : {}),
       ...(input.blocks !== undefined ? { blocks: input.blocks } : {}),
       version: nextVersion,
       updatedAt: new Date(),

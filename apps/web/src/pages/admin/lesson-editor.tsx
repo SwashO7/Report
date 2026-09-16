@@ -34,6 +34,7 @@ import { qk } from '@/lib/queries';
 import { cn, timeAgo } from '@/lib/utils';
 import { StatusBadge } from '@/features/admin/status-badge';
 import { ExerciseModal, type AdminExercise } from '@/features/admin/exercise-modal';
+import { DiagramPicker } from '@/features/admin/diagram-picker';
 import type { ContentBlock } from '@suraksha/shared';
 import { Button } from '@/components/ui/button';
 import { FormHint, Input, Label, Select, Textarea } from '@/components/ui/input';
@@ -56,6 +57,7 @@ interface LessonEditorData {
     title: string;
     summary: string;
     estimatedMinutes: number;
+    importance?: 'essential' | 'core' | 'optional';
     blocks: ContentBlock[];
     status: string;
     version: number;
@@ -212,6 +214,7 @@ export default function LessonEditor() {
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
   const [minutes, setMinutes] = useState('10');
+  const [importance, setImportance] = useState<'essential' | 'core' | 'optional'>('core');
   const [blocks, setBlocks] = useState<ContentBlock[]>([]);
   const loadedKey = useRef<string | null>(null);
   const baseline = useRef('');
@@ -225,11 +228,18 @@ export default function LessonEditor() {
     setTitle(l.title);
     setSummary(l.summary);
     setMinutes(String(l.estimatedMinutes));
+    setImportance(l.importance === 'essential' || l.importance === 'optional' ? l.importance : 'core');
     setBlocks(l.blocks);
-    baseline.current = JSON.stringify({ t: l.title, s: l.summary, m: String(l.estimatedMinutes), b: l.blocks });
+    baseline.current = JSON.stringify({
+      t: l.title,
+      s: l.summary,
+      m: String(l.estimatedMinutes),
+      i: l.importance === 'essential' || l.importance === 'optional' ? l.importance : 'core',
+      b: l.blocks,
+    });
   }, [lessonQ.data]);
 
-  const serialized = JSON.stringify({ t: title, s: summary, m: minutes, b: blocks });
+  const serialized = JSON.stringify({ t: title, s: summary, m: minutes, i: importance, b: blocks });
   const dirty = loadedKey.current !== null && serialized !== baseline.current;
 
   const [saveOpen, setSaveOpen] = useState(false);
@@ -248,6 +258,7 @@ export default function LessonEditor() {
           title,
           summary,
           estimatedMinutes: Math.max(1, Math.trunc(Number(minutes)) || 10),
+          importance,
           blocks: blocks.map(cleanBlock).filter(blockFilled),
           changeNote: note.trim() || 'Content updated',
         },
@@ -423,6 +434,18 @@ export default function LessonEditor() {
                 <div className="w-36">
                   <Label htmlFor="le-minutes">Est. minutes</Label>
                   <Input id="le-minutes" type="number" min={1} max={600} value={minutes} onChange={(e) => setMinutes(e.target.value)} />
+                </div>
+                <div className="w-48">
+                  <Label htmlFor="le-importance">Importance</Label>
+                  <Select
+                    id="le-importance"
+                    value={importance}
+                    onChange={(e) => setImportance(e.target.value as 'essential' | 'core' | 'optional')}
+                  >
+                    <option value="essential">Must know (badged)</option>
+                    <option value="core">Normal (no badge)</option>
+                    <option value="optional">Optional (badged)</option>
+                  </Select>
                 </div>
                 <div className="flex-1">
                   <Label>Slug</Label>
@@ -855,8 +878,7 @@ function BlockFields({
       return (
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <Label>Image URL</Label>
-            <Input value={block.src} onChange={(e) => onChange({ ...block, src: e.target.value })} placeholder="/uploads/â€¦ or https://â€¦" className="font-mono" />
+            <DiagramPicker src={block.src} onChange={(src) => onChange({ ...block, src })} />
           </div>
           <div>
             <Label>Alt text</Label>

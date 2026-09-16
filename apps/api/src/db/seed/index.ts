@@ -5,6 +5,7 @@ import { db } from '../client';
 import {
   achievements,
   difficultyLevels,
+  diagrams,
   labCategories,
   labs,
   learningPaths,
@@ -20,6 +21,7 @@ import {
 import { env } from '../../config/env';
 import { flagHmacFor } from '../../core/crypto';
 import { EXERCISE_SEEDS, PATH_SEEDS } from './curriculum';
+import { loadDiagramSeeds } from './diagram-seeds';
 import { LAB_SEEDS } from './labs';
 import { ACHIEVEMENT_SEEDS } from './achievements';
 import {
@@ -101,6 +103,9 @@ type Counts = {
   modules: number;
   lessons: number;
   exercises: number;
+  diagrams: number;
+  hiddenEmptyModules: number;
+  hiddenEmptyPaths: number;
   labs: number;
   achievements: number;
   users: number;
@@ -120,6 +125,9 @@ async function main(): Promise<void> {
     modules: 0,
     lessons: 0,
     exercises: 0,
+    diagrams: 0,
+    hiddenEmptyModules: 0,
+    hiddenEmptyPaths: 0,
     labs: 0,
     achievements: 0,
     users: 0,
@@ -237,6 +245,7 @@ async function main(): Promise<void> {
               title: l.title,
               summary: l.summary,
               estimatedMinutes: l.estimatedMinutes,
+              importance: l.importance ?? 'core',
               blocks: l.blocks,
               status: 'published',
               publishedAt: now,
@@ -250,6 +259,7 @@ async function main(): Promise<void> {
                 title: l.title,
                 summary: l.summary,
                 estimatedMinutes: l.estimatedMinutes,
+                importance: l.importance ?? 'core',
                 blocks: l.blocks,
                 status: 'published',
                 publishedAt: now,
@@ -263,6 +273,51 @@ async function main(): Promise<void> {
         }
       }
     }
+
+    /* 5b. Diagrams — insert-only, so admin edits survive a re-seed. */
+    for (const d of loadDiagramSeeds()) {
+      await tx
+        .insert(diagrams)
+        .values({
+          slug: d.slug,
+          title: d.title,
+          description: d.description,
+          category: d.category,
+          mimeType: d.mimeType,
+          encoding: d.encoding,
+          content: d.content,
+          sizeBytes: d.sizeBytes,
+        })
+        .onConflictDoNothing({ target: diagrams.slug });
+      counts.diagrams++;
+    }
+
+    /* 5c. Hide empty modules and paths.
+     *
+     * Re-shaping the curriculum leaves orphans behind: a module whose lessons
+     * moved elsewhere, or a path whose modules all went away. A published track
+     * with nothing in it looks broken to a learner, so unpublish those rather
+     * than deleting anything - lesson rows and user progress are preserved, and
+     * an editor can republish from the admin panel.
+     */
+    const emptyModules = await tx.execute(sql`
+      UPDATE modules SET published = false, updated_at = now()
+      WHERE published = true
+        AND NOT EXISTS (
+          SELECT 1 FROM lessons l WHERE l.module_id = modules.id AND l.status = 'published'
+        )
+      RETURNING id
+    `);
+    const emptyPaths = await tx.execute(sql`
+      UPDATE learning_paths SET published = false, updated_at = now()
+      WHERE published = true
+        AND NOT EXISTS (
+          SELECT 1 FROM modules m WHERE m.path_id = learning_paths.id AND m.published = true
+        )
+      RETURNING id
+    `);
+    counts.hiddenEmptyModules = emptyModules.length;
+    counts.hiddenEmptyPaths = emptyPaths.length;
 
     for (const e of EXERCISE_SEEDS) {
       const lessonId = lessonIdBySlug.get(e.lessonSlug);
@@ -461,6 +516,10 @@ async function main(): Promise<void> {
   console.log(`Modules:            ${counts.modules}`);
   console.log(`Lessons:            ${counts.lessons}`);
   console.log(`Practice exercises: ${counts.exercises}`);
+  console.log(`Diagrams:           ${counts.diagrams}`);
+  if (counts.hiddenEmptyModules || counts.hiddenEmptyPaths) {
+    console.log(`Hidden as empty:    ${counts.hiddenEmptyModules} module(s), ${counts.hiddenEmptyPaths} path(s)`);
+  }
   console.log(`Labs:               ${counts.labs}`);
   console.log(`Achievements:       ${counts.achievements}`);
   console.log(`Demo users:         ${counts.users}`);

@@ -15,6 +15,11 @@ import { errors } from '../core/errors';
 import { contentBlockSchema, type LessonDetail, type LessonSummary, type PathDetail, type ExercisePublic } from '@suraksha/shared';
 import type { AuthedUser } from '../core/auth';
 
+/** Narrows the stored string to a known tier, defaulting to the unbadged middle. */
+function toImportance(value: unknown): 'essential' | 'core' | 'optional' {
+  return value === 'essential' || value === 'optional' ? value : 'core';
+}
+
 /** Ordered published lessons across all published paths (the "spine"). */
 export async function orderedPublishedLessonIds(): Promise<string[]> {
   const rows = await db
@@ -90,8 +95,11 @@ export async function getPathDetail(slug: string, user: AuthedUser | null): Prom
       title: l.title,
       summary: l.summary,
       estimatedMinutes: l.estimatedMinutes,
+      importance: toImportance(l.importance),
       orderIndex: l.sortOrder,
-      hasVideo: (l.blocks as { type: string }[]).some((b) => b.type === 'video'),
+      hasVideo: (l.blocks as { type: string; url?: string }[]).some(
+        (b) => b.type === 'video' && !(b.url ?? '').includes('video.suraksha.local'),
+      ),
       hasPractice: false, // filled below
       completed: completedSet.has(l.id),
       started: startedSet.has(l.id) || completedSet.has(l.id),
@@ -238,6 +246,7 @@ export async function getLessonDetail(slug: string, user: AuthedUser | null): Pr
     title: lesson.title,
     summary: lesson.summary,
     estimatedMinutes: lesson.estimatedMinutes,
+    importance: toImportance(lesson.importance),
     blocks: blocks.success ? blocks.data : [],
     moduleSlug: mod.slug,
     moduleTitle: mod.title,

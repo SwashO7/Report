@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 330" width="880" height="330" role="img" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#a8a49c"/></marker>
+<marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#43bd97"/></marker>
+<marker id="aD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#e56767"/></marker>
+<marker id="aW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#dbaa3c"/></marker>
+</defs>
+<text x="440" y="24" text-anchor="middle" font-size="13" font-weight="600" fill="#77746c">SQL injection: your input stops being data and becomes code</text>
+<rect x="30" y="55" width="380" height="110" rx="8" fill="none" stroke="#52b788" stroke-width="1.5"/><text x="220" y="115" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">What the developer meant</text>
+<text x="220" y="100" text-anchor="middle" font-size="12.5" font-weight="400" fill="#eceae6" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">SELECT * FROM users</text>
+<text x="220" y="122" text-anchor="middle" font-size="12.5" font-weight="400" fill="#52b788" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">WHERE name = 'ravi'</text>
+<text x="220" y="148" text-anchor="middle" font-size="11" font-weight="400" fill="#a8a49c">input stayed inside the quotes</text>
+<rect x="470" y="55" width="380" height="110" rx="8" fill="none" stroke="#e56767" stroke-width="1.5"/><text x="660" y="115" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">What the attacker sends</text>
+<text x="660" y="100" text-anchor="middle" font-size="12.5" font-weight="400" fill="#eceae6" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">SELECT * FROM users</text>
+<text x="660" y="122" text-anchor="middle" font-size="12.5" font-weight="400" fill="#e56767" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">WHERE name = '' OR 1=1 --'</text>
+<text x="660" y="148" text-anchor="middle" font-size="11" font-weight="400" fill="#e56767">the quote closed early - now it is logic</text>
+<line x1="410" y1="110" x2="470" y2="110" stroke="#e56767" stroke-width="1.5" marker-end="url(#aD)"/>
+<rect x="150" y="190" width="580" height="46" rx="8" fill="#301718" stroke="#e56767" stroke-width="1.5"/><text x="440" y="218" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">Input:  ' OR 1=1 --</text>
+<rect x="150" y="250" width="280" height="46" rx="8" fill="#22261f" stroke="#e56767" stroke-width="1.5"/><text x="290" y="278" text-anchor="middle" font-size="12.5" font-weight="600" fill="#eceae6">Result: every row returns</text>
+<rect x="450" y="250" width="280" height="46" rx="8" fill="#22261f" stroke="#52b788" stroke-width="1.5"/><text x="590" y="278" text-anchor="middle" font-size="12.5" font-weight="600" fill="#eceae6">Fix: parameterised queries</text>
+<text x="440" y="318" text-anchor="middle" font-size="12" font-weight="400" fill="#77746c">The database never sees your quote as text. It sees a new instruction.</text>
+</svg>

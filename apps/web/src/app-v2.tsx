@@ -32,6 +32,7 @@ const AdminDashboard = lazy(() => import('@/pages/admin/dashboard'));
 const AdminUsers = lazy(() => import('@/pages/admin/users'));
 const AdminContent = lazy(() => import('@/pages/admin/content'));
 const AdminPractice = lazy(() => import('@/pages/admin/practice'));
+const AdminDiagrams = lazy(() => import('@/pages/admin/diagrams'));
 const AdminLessonEditor = lazy(() => import('@/pages/admin/lesson-editor'));
 const AdminLabs = lazy(() => import('@/pages/admin/labs'));
 const AdminLabEditor = lazy(() => import('@/pages/admin/lab-editor'));
@@ -130,6 +131,7 @@ function AppRoutes() {
         <Route path="users" element={suspense(<AdminUsers />)} />
         <Route path="content" element={suspense(<AdminContent />)} />
         <Route path="practice" element={suspense(<AdminPractice />)} />
+        <Route path="diagrams" element={suspense(<AdminDiagrams />)} />
         <Route path="content/lessons/:id" element={suspense(<AdminLessonEditor />)} />
         <Route path="labs" element={suspense(<AdminLabs />)} />
         <Route path="labs/new" element={suspense(<AdminLabEditor />)} />

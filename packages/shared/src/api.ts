@@ -58,12 +58,21 @@ export interface LearningPath {
   published: boolean;
 }
 
+/**
+ * How much a lesson matters.
+ * - 'essential' = the backbone. Badged "Must know"; skipping it breaks later lessons.
+ * - 'core'      = normal curriculum. No badge, because a badge on everything is noise.
+ * - 'optional'  = a side quest. Badged "Optional" so someone in a hurry can skip it.
+ */
+export type LessonImportance = 'essential' | 'core' | 'optional';
+
 export interface LessonSummary {
   id: string;
   slug: string;
   title: string;
   summary: string;
   estimatedMinutes: number;
+  importance: LessonImportance;
   orderIndex: number;
   hasVideo: boolean;
   hasPractice: boolean;
@@ -113,6 +122,7 @@ export interface LessonDetail {
   title: string;
   summary: string;
   estimatedMinutes: number;
+  importance: LessonImportance;
   blocks: ContentBlock[];
   moduleSlug: string;
   moduleTitle: string;
@@ -132,6 +142,28 @@ export interface Recommendation {
   lesson?: { slug: string; title: string; moduleTitle: string };
   exercise?: { slug: string; title: string };
   lab?: { slug: string; title: string };
+}
+
+/** ---------- Diagrams ---------- */
+
+/** A lesson diagram stored in the database and served from /api/v1/diagrams/:slug. */
+export interface DiagramSummary {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  mimeType: string;
+  sizeBytes: number;
+  category: string;
+  updatedAt: string;
+  /** Ready-to-embed URL for an image block. */
+  url: string;
+}
+
+export interface DiagramDetail extends DiagramSummary {
+  /** 'utf8' for editable SVG markup, 'base64' for raster uploads. */
+  encoding: string;
+  content: string;
 }
 
 /** ---------- Labs ---------- */

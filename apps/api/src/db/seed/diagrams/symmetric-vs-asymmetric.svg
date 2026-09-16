@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 300" width="880" height="300" role="img" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#a8a49c"/></marker>
+<marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#43bd97"/></marker>
+<marker id="aD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#e56767"/></marker>
+<marker id="aW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#dbaa3c"/></marker>
+</defs>
+<text x="440" y="24" text-anchor="middle" font-size="13" font-weight="600" fill="#77746c">One shared key, or a matched pair</text>
+<rect x="20" y="45" width="410" height="235" rx="10" fill="none" stroke="#43bd97" stroke-width="1.2" stroke-dasharray="6 5"/><text x="30" y="63" text-anchor="start" font-size="11.5" font-weight="600" fill="#43bd97">SYMMETRIC - same key both ends</text>
+<rect x="50" y="90" width="130" height="50" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="115" y="120" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">Sender</text>
+<rect x="270" y="90" width="130" height="50" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="335" y="120" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">Receiver</text>
+<line x1="180" y1="115" x2="270" y2="115" stroke="#43bd97" stroke-width="1.5" marker-end="url(#aA)"/>
+<rect x="140" y="165" width="170" height="44" rx="8" fill="#2d2413" stroke="#dbaa3c" stroke-width="1.5"/><text x="225" y="192" text-anchor="middle" font-size="12.5" font-weight="600" fill="#eceae6">ONE shared key</text>
+<text x="225" y="235" text-anchor="middle" font-size="11.5" font-weight="400" fill="#a8a49c">Fast. Great for bulk data.</text>
+<text x="225" y="258" text-anchor="middle" font-size="11.5" font-weight="400" fill="#dbaa3c">Problem: how do you share the key?</text>
+<rect x="450" y="45" width="410" height="235" rx="10" fill="none" stroke="#52b788" stroke-width="1.2" stroke-dasharray="6 5"/><text x="460" y="63" text-anchor="start" font-size="11.5" font-weight="600" fill="#52b788">ASYMMETRIC - public locks, private unlocks</text>
+<rect x="480" y="90" width="130" height="50" rx="8" fill="#22261f" stroke="#a8a49c" stroke-width="1.5"/><text x="545" y="120" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">Anyone</text>
+<rect x="700" y="90" width="130" height="50" rx="8" fill="#22261f" stroke="#52b788" stroke-width="1.5"/><text x="765" y="120" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">You</text>
+<line x1="610" y1="115" x2="700" y2="115" stroke="#52b788" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="470" y="165" width="150" height="44" rx="8" fill="#22261f" stroke="#52b788" stroke-width="1.5"/><text x="545" y="184" text-anchor="middle" font-size="12.5" font-weight="600" fill="#eceae6">PUBLIC key</text><text x="545" y="201" text-anchor="middle" font-size="11.5" fill="#a8a49c">share freely</text>
+<rect x="690" y="165" width="150" height="44" rx="8" fill="#22261f" stroke="#e56767" stroke-width="1.5"/><text x="765" y="184" text-anchor="middle" font-size="12.5" font-weight="600" fill="#eceae6">PRIVATE key</text><text x="765" y="201" text-anchor="middle" font-size="11.5" fill="#a8a49c">never share</text>
+<text x="655" y="258" text-anchor="middle" font-size="11.5" font-weight="400" fill="#a8a49c">Slower. Used to agree on a symmetric key.</text>
+</svg>

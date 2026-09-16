@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 320" width="880" height="320" role="img" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#a8a49c"/></marker>
+<marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#43bd97"/></marker>
+<marker id="aD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#e56767"/></marker>
+<marker id="aW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#dbaa3c"/></marker>
+</defs>
+<text x="440" y="24" text-anchor="middle" font-size="13" font-weight="600" fill="#77746c">The report shape triagers wish everyone used</text>
+<rect x="60" y="50" width="760" height="44" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="440" y="77" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">1. Title - the bug and the impact in one line</text>
+<rect x="60" y="102" width="760" height="44" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="440" y="129" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">2. Summary - what it is and why it matters, three sentences</text>
+<rect x="60" y="154" width="760" height="44" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="440" y="181" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">3. Steps to reproduce - numbered, no missing step, works cold</text>
+<rect x="60" y="206" width="760" height="44" rx="8" fill="#22261f" stroke="#dbaa3c" stroke-width="1.5"/><text x="440" y="233" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">4. Impact - what an attacker gains, in business terms</text>
+<rect x="60" y="258" width="370" height="44" rx="8" fill="#22261f" stroke="#3d443a" stroke-width="1.5"/><text x="245" y="285" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">5. Proof - short clip or screenshots</text>
+<rect x="450" y="258" width="370" height="44" rx="8" fill="#22261f" stroke="#3d443a" stroke-width="1.5"/><text x="635" y="285" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">6. Fix suggestion - earns goodwill</text>
+<text x="870" y="74" text-anchor="middle" font-size="12" font-weight="400" fill="#a8a49c"></text>
+</svg>

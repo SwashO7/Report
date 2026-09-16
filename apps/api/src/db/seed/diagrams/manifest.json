@@ -1,0 +1,188 @@
+[
+  {
+    "slug": "arp-request",
+    "title": "ARP request and reply",
+    "category": "networking",
+    "file": "arp-request.svg"
+  },
+  {
+    "slug": "bug-bounty-lifecycle",
+    "title": "Bug bounty lifecycle",
+    "category": "bug-bounty",
+    "file": "bug-bounty-lifecycle.svg"
+  },
+  {
+    "slug": "cloud-shared-responsibility",
+    "title": "Cloud shared responsibility",
+    "category": "cloud",
+    "file": "cloud-shared-responsibility.svg"
+  },
+  {
+    "slug": "cookies-and-sessions",
+    "title": "Cookies and sessions",
+    "category": "web",
+    "file": "cookies-and-sessions.svg"
+  },
+  {
+    "slug": "dns-resolution",
+    "title": "DNS resolution chain",
+    "category": "networking",
+    "file": "dns-resolution.svg"
+  },
+  {
+    "slug": "encapsulation",
+    "title": "Packet encapsulation layers",
+    "category": "networking",
+    "file": "encapsulation.svg"
+  },
+  {
+    "slug": "hashing-vs-encryption",
+    "title": "Encoding vs encryption vs hashing",
+    "category": "crypto",
+    "file": "hashing-vs-encryption.svg"
+  },
+  {
+    "slug": "http-request-response",
+    "title": "HTTP request and response",
+    "category": "web",
+    "file": "http-request-response.svg"
+  },
+  {
+    "slug": "iam-privilege-chain",
+    "title": "IAM privilege escalation chain",
+    "category": "cloud",
+    "file": "iam-privilege-chain.svg"
+  },
+  {
+    "slug": "idor-flow",
+    "title": "How an IDOR works",
+    "category": "web",
+    "file": "idor-flow.svg"
+  },
+  {
+    "slug": "ip-and-ports",
+    "title": "IP address vs port",
+    "category": "networking",
+    "file": "ip-and-ports.svg"
+  },
+  {
+    "slug": "jwt-anatomy",
+    "title": "Anatomy of a JWT",
+    "category": "web",
+    "file": "jwt-anatomy.svg"
+  },
+  {
+    "slug": "linux-filesystem",
+    "title": "Linux filesystem tree",
+    "category": "linux",
+    "file": "linux-filesystem.svg"
+  },
+  {
+    "slug": "linux-permissions",
+    "title": "Reading Linux permissions",
+    "category": "linux",
+    "file": "linux-permissions.svg"
+  },
+  {
+    "slug": "metadata-ssrf",
+    "title": "SSRF to cloud metadata",
+    "category": "cloud",
+    "file": "metadata-ssrf.svg"
+  },
+  {
+    "slug": "nat",
+    "title": "NAT and private addressing",
+    "category": "networking",
+    "file": "nat.svg"
+  },
+  {
+    "slug": "network-basics",
+    "title": "How data reaches a server",
+    "category": "networking",
+    "file": "network-basics.svg"
+  },
+  {
+    "slug": "oauth-flow",
+    "title": "OAuth login flow",
+    "category": "web",
+    "file": "oauth-flow.svg"
+  },
+  {
+    "slug": "osi-layers",
+    "title": "The seven OSI layers",
+    "category": "networking",
+    "file": "osi-layers.svg"
+  },
+  {
+    "slug": "pipes-redirection",
+    "title": "Pipes and redirection",
+    "category": "linux",
+    "file": "pipes-redirection.svg"
+  },
+  {
+    "slug": "privesc-ladder",
+    "title": "Privilege escalation chain",
+    "category": "linux",
+    "file": "privesc-ladder.svg"
+  },
+  {
+    "slug": "report-anatomy",
+    "title": "Anatomy of a good report",
+    "category": "bug-bounty",
+    "file": "report-anatomy.svg"
+  },
+  {
+    "slug": "severity-matrix",
+    "title": "Severity: impact vs ease",
+    "category": "bug-bounty",
+    "file": "severity-matrix.svg"
+  },
+  {
+    "slug": "sqli-flow",
+    "title": "How SQL injection works",
+    "category": "web",
+    "file": "sqli-flow.svg"
+  },
+  {
+    "slug": "ssh-key-auth",
+    "title": "SSH key authentication",
+    "category": "linux",
+    "file": "ssh-key-auth.svg"
+  },
+  {
+    "slug": "subnet-mask",
+    "title": "Subnet mask: network vs host",
+    "category": "networking",
+    "file": "subnet-mask.svg"
+  },
+  {
+    "slug": "symmetric-vs-asymmetric",
+    "title": "Symmetric vs asymmetric keys",
+    "category": "crypto",
+    "file": "symmetric-vs-asymmetric.svg"
+  },
+  {
+    "slug": "tcp-handshake",
+    "title": "TCP three-way handshake",
+    "category": "networking",
+    "file": "tcp-handshake.svg"
+  },
+  {
+    "slug": "tcp-vs-udp",
+    "title": "TCP vs UDP",
+    "category": "networking",
+    "file": "tcp-vs-udp.svg"
+  },
+  {
+    "slug": "traceroute-hops",
+    "title": "How traceroute reveals hops",
+    "category": "networking",
+    "file": "traceroute-hops.svg"
+  },
+  {
+    "slug": "xss-types",
+    "title": "Reflected, stored and DOM XSS",
+    "category": "web",
+    "file": "xss-types.svg"
+  }
+]

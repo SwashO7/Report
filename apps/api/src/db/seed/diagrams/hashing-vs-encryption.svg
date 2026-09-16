@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 260" width="880" height="260" role="img" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#a8a49c"/></marker>
+<marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#43bd97"/></marker>
+<marker id="aD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#e56767"/></marker>
+<marker id="aW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#dbaa3c"/></marker>
+</defs>
+<text x="440" y="24" text-anchor="middle" font-size="13" font-weight="600" fill="#77746c">Encoding, encryption, hashing - three different jobs</text>
+<rect x="20" y="60" width="270" height="160" rx="8" fill="none" stroke="#dbaa3c" stroke-width="1.5"/><text x="155" y="145" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6"></text>
+<text x="155" y="86" text-anchor="middle" font-size="13" font-weight="600" fill="#dbaa3c">ENCODING</text>
+<text x="155" y="112" text-anchor="middle" font-size="12" font-weight="400" fill="#a8a49c">base64, URL, hex</text>
+<rect x="45" y="128" width="220" height="40" rx="8" fill="#22261f" stroke="#dbaa3c" stroke-width="1.5"/><text x="155" y="153" text-anchor="middle" font-size="12" font-weight="600" fill="#eceae6">reversible by anyone</text>
+<text x="155" y="196" text-anchor="middle" font-size="11.5" font-weight="400" fill="#dbaa3c">NOT security. Just formatting.</text>
+<rect x="305" y="60" width="270" height="160" rx="8" fill="none" stroke="#43bd97" stroke-width="1.5"/><text x="440" y="145" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6"></text>
+<text x="440" y="86" text-anchor="middle" font-size="13" font-weight="600" fill="#43bd97">ENCRYPTION</text>
+<text x="440" y="112" text-anchor="middle" font-size="12" font-weight="400" fill="#a8a49c">AES, RSA, TLS</text>
+<rect x="330" y="128" width="220" height="40" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="440" y="153" text-anchor="middle" font-size="12" font-weight="600" fill="#eceae6">reversible with a key</text>
+<text x="440" y="196" text-anchor="middle" font-size="11.5" font-weight="400" fill="#43bd97">For data you need back later.</text>
+<rect x="590" y="60" width="270" height="160" rx="8" fill="none" stroke="#52b788" stroke-width="1.5"/><text x="725" y="145" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6"></text>
+<text x="725" y="86" text-anchor="middle" font-size="13" font-weight="600" fill="#52b788">HASHING</text>
+<text x="725" y="112" text-anchor="middle" font-size="12" font-weight="400" fill="#a8a49c">argon2, bcrypt, SHA-256</text>
+<rect x="615" y="128" width="220" height="40" rx="8" fill="#22261f" stroke="#52b788" stroke-width="1.5"/><text x="725" y="153" text-anchor="middle" font-size="12" font-weight="600" fill="#eceae6">one way, never reversible</text>
+<text x="725" y="196" text-anchor="middle" font-size="11.5" font-weight="400" fill="#52b788">For passwords and integrity.</text>
+<text x="440" y="242" text-anchor="middle" font-size="12" font-weight="400" fill="#e56767">A site that can email you your old password is storing it wrong.</text>
+</svg>

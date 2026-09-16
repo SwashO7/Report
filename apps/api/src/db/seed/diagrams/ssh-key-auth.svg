@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 280" width="880" height="280" role="img" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#a8a49c"/></marker>
+<marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#43bd97"/></marker>
+<marker id="aD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#e56767"/></marker>
+<marker id="aW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#dbaa3c"/></marker>
+</defs>
+<text x="440" y="24" text-anchor="middle" font-size="13" font-weight="600" fill="#77746c">Key auth: the private key never leaves your laptop</text>
+<rect x="40" y="70" width="200" height="80" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="140" y="100" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">Your laptop</text><text x="140" y="117" text-anchor="middle" font-size="11.5" fill="#a8a49c">~/.ssh/id_ed25519</text><text x="140" y="132" text-anchor="middle" font-size="11.5" fill="#a8a49c">PRIVATE - never share</text>
+<rect x="640" y="70" width="200" height="80" rx="8" fill="#22261f" stroke="#43bd97" stroke-width="1.5"/><text x="740" y="100" text-anchor="middle" font-size="14" font-weight="600" fill="#eceae6">Server</text><text x="740" y="117" text-anchor="middle" font-size="11.5" fill="#a8a49c">~/.ssh/authorized_keys</text><text x="740" y="132" text-anchor="middle" font-size="11.5" fill="#a8a49c">holds your PUBLIC key</text>
+<line x1="240" y1="95" x2="640" y2="95" stroke="#a8a49c" stroke-width="1.5" marker-end="url(#a)"/><text x="440" y="87" text-anchor="middle" font-size="11.5" fill="#a8a49c">1. I am this public key</text>
+<line x1="640" y1="130" x2="240" y2="130" stroke="#a8a49c" stroke-width="1.5" marker-end="url(#a)"/><text x="440" y="122" text-anchor="middle" font-size="11.5" fill="#a8a49c">2. sign this random challenge</text>
+<line x1="240" y1="190" x2="640" y2="190" stroke="#43bd97" stroke-width="1.5" marker-end="url(#aA)"/><text x="440" y="182" text-anchor="middle" font-size="11.5" fill="#43bd97">3. signature (proves you hold the private key)</text>
+<rect x="300" y="215" width="280" height="46" rx="8" fill="#17281f" stroke="#52b788" stroke-width="1.5"/><text x="440" y="235" text-anchor="middle" font-size="13" font-weight="600" fill="#eceae6">Logged in</text><text x="440" y="252" text-anchor="middle" font-size="11.5" fill="#a8a49c">no password ever sent</text>
+<text x="440" y="55" text-anchor="middle" font-size="11.5" font-weight="400" fill="#77746c">Passwords can be guessed. A 256-bit key cannot.</text>
+</svg>

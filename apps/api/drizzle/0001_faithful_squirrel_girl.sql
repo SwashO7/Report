@@ -1,0 +1,1 @@
+ALTER TABLE "lessons" ADD COLUMN "importance" varchar(20) DEFAULT 'core' NOT NULL;
