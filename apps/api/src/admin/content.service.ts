@@ -44,6 +44,39 @@ export async function adminUpdatePath(c: Context, user: AuthedUser, id: string, 
   return row;
 }
 
+/**
+ * Deletes a path. Cascades to its modules, lessons, and every learner's
+ * progress on those lessons, so it refuses while lessons remain unless the
+ * caller explicitly forces it. The returned counts let the UI tell the user
+ * exactly what is at stake before they confirm.
+ */
+export async function adminDeletePath(c: Context, user: AuthedUser, id: string, force: boolean) {
+  const path = (await db.select().from(learningPaths).where(eq(learningPaths.id, id)).limit(1))[0];
+  if (!path) throw errors.notFound('Path not found.');
+
+  const mods = await db.select({ id: modules.id }).from(modules).where(eq(modules.pathId, id));
+  const moduleIds = mods.map((m) => m.id);
+  const lessonCount = moduleIds.length
+    ? Number((await db.select({ n: count() }).from(lessons).where(inArray(lessons.moduleId, moduleIds)))[0].n)
+    : 0;
+
+  if (lessonCount > 0 && !force) {
+    throw errors.conflict(
+      `This path still holds ${lessonCount} lesson(s) across ${moduleIds.length} module(s). Deleting it removes them and all learner progress on them.`,
+    );
+  }
+
+  await db.delete(learningPaths).where(eq(learningPaths.id, id));
+  await auditFromContext(c, {
+    actorId: user.id,
+    action: 'path_deleted',
+    entityType: 'learning_path',
+    entityId: id,
+    metadata: { slug: path.slug, modules: moduleIds.length, lessons: lessonCount, forced: force },
+  });
+  return { ok: true, deleted: { modules: moduleIds.length, lessons: lessonCount } };
+}
+
 /* ------------------------------- Modules --------------------------------- */
 
 /**
@@ -85,6 +118,29 @@ export async function adminUpdateModule(c: Context, user: AuthedUser, id: string
   if (!row) throw errors.notFound('Module not found.');
   await auditFromContext(c, { actorId: user.id, action: 'module_updated', entityType: 'module', entityId: id, metadata: { changes: Object.keys(input) } });
   return row;
+}
+
+/** Deletes a module. Same guard as paths: refuses while it still holds lessons. */
+export async function adminDeleteModule(c: Context, user: AuthedUser, id: string, force: boolean) {
+  const mod = (await db.select().from(modules).where(eq(modules.id, id)).limit(1))[0];
+  if (!mod) throw errors.notFound('Module not found.');
+
+  const lessonCount = Number((await db.select({ n: count() }).from(lessons).where(eq(lessons.moduleId, id)))[0].n);
+  if (lessonCount > 0 && !force) {
+    throw errors.conflict(
+      `This module still holds ${lessonCount} lesson(s). Deleting it removes them and all learner progress on them.`,
+    );
+  }
+
+  await db.delete(modules).where(eq(modules.id, id));
+  await auditFromContext(c, {
+    actorId: user.id,
+    action: 'module_deleted',
+    entityType: 'module',
+    entityId: id,
+    metadata: { slug: mod.slug, lessons: lessonCount, forced: force },
+  });
+  return { ok: true, deleted: { lessons: lessonCount } };
 }
 
 /* ------------------------------- Lessons --------------------------------- */

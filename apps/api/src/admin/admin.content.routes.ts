@@ -7,6 +7,8 @@ import {
   adminCreatePath,
   adminUpdatePath,
   adminCreateModule,
+  adminDeleteModule,
+  adminDeletePath,
   adminListModules,
   adminUpdateModule,
   adminListLessons,
@@ -32,6 +34,23 @@ const pathCreateSchema = z.object({
   icon: z.string().max(60).optional(),
 });
 
+/**
+ * Editable path fields.
+ *
+ * This is deliberately NOT `pathCreateSchema.partial()`: that shape has no
+ * `published` key, and because Zod strips unknown keys the publish toggle was
+ * silently discarded, so the API answered "updated" while changing nothing.
+ * The slug stays immutable - it is referenced by seed data and lab links.
+ */
+const pathUpdateSchema = z.object({
+  name: z.string().trim().min(2).max(150).optional(),
+  levelNumber: z.number().int().min(0).max(50).optional(),
+  description: z.string().max(2000).optional(),
+  icon: z.string().max(60).optional(),
+  published: z.boolean().optional(),
+  sortOrder: z.number().int().min(0).max(999).optional(),
+});
+
 export const adminContentRoutes = new Hono()
   .use('*', requireContentEditor)
 
@@ -46,11 +65,22 @@ export const adminContentRoutes = new Hono()
 
   .patch('/paths/:id', async (c) => {
     const user = getAuthUser(c);
-    const input = pathCreateSchema.partial().omit({ slug: true }).parse(await c.req.json());
+    const input = pathUpdateSchema.parse(await c.req.json());
     return c.json({ path: await adminUpdatePath(c, user, c.req.param('id'), input) });
   })
 
-  /* ------------------------------- Modules --------------------------------- */
+  /**
+   * Deleting a path cascades to its modules, lessons and learner progress, so
+   * it refuses by default when the path still holds lessons. The caller must
+   * pass ?force=true to confirm, which the admin UI only sends after showing
+   * exactly how much content would go.
+   */
+  .delete('/paths/:id', async (c) => {
+    const user = getAuthUser(c);
+    const force = new URL(c.req.url).searchParams.get('force') === 'true';
+    return c.json(await adminDeletePath(c, user, c.req.param('id'), force));
+  })
+
   /* ------------------------------- Modules --------------------------------- */
   .get('/modules', async (c) => {
     const pathId = new URL(c.req.url).searchParams.get('pathId') ?? undefined;
@@ -74,6 +104,13 @@ export const adminContentRoutes = new Hono()
       })
       .parse(await c.req.json());
     return c.json({ module: await adminUpdateModule(c, user, c.req.param('id'), input) });
+  })
+
+  /** Same guard as paths: refuses while the module still holds lessons. */
+  .delete('/modules/:id', async (c) => {
+    const user = getAuthUser(c);
+    const force = new URL(c.req.url).searchParams.get('force') === 'true';
+    return c.json(await adminDeleteModule(c, user, c.req.param('id'), force));
   })
 
   /* -------------------------------- Lessons -------------------------------- */

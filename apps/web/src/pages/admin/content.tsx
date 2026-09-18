@@ -9,6 +9,7 @@ import {
   PencilLine,
   Plus,
   Search,
+  Trash2,
 } from 'lucide-react';
 import { api, ApiError } from '@/lib/api';
 import { qk } from '@/lib/queries';
@@ -141,6 +142,9 @@ function PathsTab() {
 
   const [newPathOpen, setNewPathOpen] = useState(false);
   const [addModuleOpen, setAddModuleOpen] = useState(false);
+  const [editPath, setEditPath] = useState<AdminPath | null>(null);
+  const [deletePathTarget, setDeletePathTarget] = useState<AdminPath | null>(null);
+  const [deleteModuleTarget, setDeleteModuleTarget] = useState<AdminModule | null>(null);
 
   const invalidateContent = () => {
     void qc.invalidateQueries({ queryKey: qk.adminPaths });
@@ -155,6 +159,29 @@ function PathsTab() {
       invalidateContent();
     },
     onError: (e) => toast('error', 'Update failed', errMsg(e)),
+  });
+
+  const deletePath = useMutation({
+    mutationFn: ({ id, force }: { id: string; force: boolean }) =>
+      api(`/admin/content/paths/${id}${force ? '?force=true' : ''}`, { method: 'DELETE' }),
+    onSuccess: () => {
+      toast('success', 'Path deleted');
+      setDeletePathTarget(null);
+      setSelectedId(null);
+      invalidateContent();
+    },
+    onError: (e) => toast('error', 'Delete failed', errMsg(e)),
+  });
+
+  const deleteModule = useMutation({
+    mutationFn: ({ id, force }: { id: string; force: boolean }) =>
+      api(`/admin/content/modules/${id}${force ? '?force=true' : ''}`, { method: 'DELETE' }),
+    onSuccess: () => {
+      toast('success', 'Module deleted');
+      setDeleteModuleTarget(null);
+      invalidateContent();
+    },
+    onError: (e) => toast('error', 'Delete failed', errMsg(e)),
   });
 
   const patchModule = useMutation({
@@ -243,10 +270,27 @@ function PathsTab() {
                     Modules · updated {timeAgo(selected.updatedAt)}
                   </p>
                 </div>
-                <Button variant="secondary" size="sm" onClick={() => setAddModuleOpen(true)}>
-                  <Plus className="size-4" aria-hidden />
-                  Add module
-                </Button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setEditPath(selected)}>
+                    <PencilLine className="size-4" aria-hidden />
+                    Edit path
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => patchPath.mutate({ id: selected.id, body: { published: !selected.published } })}
+                  >
+                    {selected.published ? 'Unpublish' : 'Publish'}
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setDeletePathTarget(selected)}>
+                    <Trash2 className="size-4 text-danger" aria-hidden />
+                    Delete
+                  </Button>
+                  <Button variant="secondary" size="sm" onClick={() => setAddModuleOpen(true)}>
+                    <Plus className="size-4" aria-hidden />
+                    Add module
+                  </Button>
+                </div>
               </div>
               <CardContent className="divide-y divide-border p-0">
                 {modules.length === 0 && (
@@ -272,6 +316,14 @@ function PathsTab() {
                       label={`Toggle published for ${m.title}`}
                       onChange={(v) => patchModule.mutate({ id: m.id, body: { published: v } })}
                     />
+                    <button
+                      type="button"
+                      onClick={() => setDeleteModuleTarget(m)}
+                      aria-label={`Delete module ${m.title}`}
+                      className="rounded-md p-1.5 text-text-tertiary transition-colors hover:bg-surface-2 hover:text-danger"
+                    >
+                      <Trash2 className="size-4" aria-hidden />
+                    </button>
                   </div>
                 ))}
               </CardContent>
@@ -288,7 +340,191 @@ function PathsTab() {
       {selected && (
         <AddModuleModal open={addModuleOpen} onClose={() => setAddModuleOpen(false)} onCreated={invalidateContent} path={selected} />
       )}
+      {editPath && <EditPathModal path={editPath} onClose={() => setEditPath(null)} onSaved={invalidateContent} />}
+
+      {deletePathTarget && (
+        <Modal open onClose={() => setDeletePathTarget(null)} title={`Delete "${deletePathTarget.name}"?`}>
+          <div className="space-y-3 text-sm text-text-secondary">
+            <p>
+              This permanently deletes the path{' '}
+              <span className="font-mono text-text">{deletePathTarget.slug}</span>
+              {deletePathTarget.moduleCount > 0 && (
+                <>
+                  , its <span className="font-semibold text-text">{deletePathTarget.moduleCount}</span> module(s)
+                </>
+              )}
+              {deletePathTarget.lessonCount > 0 && (
+                <>
+                  , its <span className="font-semibold text-text">{deletePathTarget.lessonCount}</span> lesson(s), and every
+                  learner's progress on them
+                </>
+              )}
+              .
+            </p>
+            {deletePathTarget.lessonCount > 0 ? (
+              <p className="rounded-lg border border-danger/40 bg-danger-subtle px-3 py-2 text-danger">
+                This cannot be undone. If you only want to hide it from learners, unpublish it instead.
+              </p>
+            ) : (
+              <p className="text-text-tertiary">This path has no lessons, so nothing else is affected.</p>
+            )}
+          </div>
+          <div className="mt-5 flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setDeletePathTarget(null)}>
+              Cancel
+            </Button>
+            {deletePathTarget.lessonCount > 0 && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  patchPath.mutate({ id: deletePathTarget.id, body: { published: false } });
+                  setDeletePathTarget(null);
+                }}
+              >
+                Just hide it
+              </Button>
+            )}
+            <Button
+              variant="danger"
+              loading={deletePath.isPending}
+              onClick={() => deletePath.mutate({ id: deletePathTarget.id, force: deletePathTarget.lessonCount > 0 })}
+            >
+              Delete permanently
+            </Button>
+          </div>
+        </Modal>
+      )}
+
+      {deleteModuleTarget && (
+        <Modal open onClose={() => setDeleteModuleTarget(null)} title={`Delete "${deleteModuleTarget.title}"?`}>
+          <p className="text-sm text-text-secondary">
+            This permanently deletes the module <span className="font-mono text-text">{deleteModuleTarget.slug}</span>
+            {(deleteModuleTarget.lessonCount ?? 0) > 0 ? (
+              <>
+                , its <span className="font-semibold text-text">{deleteModuleTarget.lessonCount}</span> lesson(s), and every
+                learner's progress on them. This cannot be undone.
+              </>
+            ) : (
+              '. It has no lessons, so nothing else is affected.'
+            )}
+          </p>
+          <div className="mt-5 flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setDeleteModuleTarget(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              loading={deleteModule.isPending}
+              onClick={() =>
+                deleteModule.mutate({ id: deleteModuleTarget.id, force: (deleteModuleTarget.lessonCount ?? 0) > 0 })
+              }
+            >
+              Delete permanently
+            </Button>
+          </div>
+        </Modal>
+      )}
     </div>
+  );
+}
+
+/** Edits an existing path. The slug is immutable - seed data and labs reference it. */
+function EditPathModal({
+  path,
+  onClose,
+  onSaved,
+}: {
+  path: AdminPath;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const { toast } = useToast();
+  const [name, setName] = useState(path.name);
+  const [description, setDescription] = useState(path.description);
+  const [levelNumber, setLevelNumber] = useState(String(path.levelNumber));
+  const [icon, setIcon] = useState(path.icon ?? '');
+  const [published, setPublished] = useState(path.published);
+
+  const save = useMutation({
+    mutationFn: () =>
+      api(`/admin/content/paths/${path.id}`, {
+        method: 'PATCH',
+        body: {
+          name,
+          description,
+          levelNumber: Number(levelNumber) || 0,
+          icon: icon.trim() || undefined,
+          published,
+        },
+      }),
+    onSuccess: () => {
+      toast('success', 'Path saved');
+      onSaved();
+      onClose();
+    },
+    onError: (e) => toast('error', 'Save failed', errMsg(e)),
+  });
+
+  return (
+    <Modal open onClose={onClose} title={`Edit path: ${path.slug}`} size="lg">
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="ep-name">Name</Label>
+          <Input id="ep-name" value={name} onChange={(e) => setName(e.target.value)} />
+        </div>
+        <div>
+          <Label htmlFor="ep-desc">Description</Label>
+          <Textarea
+            id="ep-desc"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="min-h-[96px]"
+          />
+          <FormHint>Shown on the path page and the curriculum list. Two or three sentences works best.</FormHint>
+        </div>
+        <div className="flex flex-wrap gap-4">
+          <div className="w-32">
+            <Label htmlFor="ep-level">Level</Label>
+            <Input
+              id="ep-level"
+              type="number"
+              min={0}
+              max={50}
+              value={levelNumber}
+              onChange={(e) => setLevelNumber(e.target.value)}
+            />
+          </div>
+          <div className="w-44">
+            <Label htmlFor="ep-icon">Icon</Label>
+            <Input id="ep-icon" value={icon} onChange={(e) => setIcon(e.target.value)} placeholder="shield" />
+          </div>
+          <div className="flex-1">
+            <Label>Slug</Label>
+            <div className="flex h-10 items-center rounded-lg border border-border bg-surface-2 px-3 font-mono text-sm text-text-secondary">
+              {path.slug}
+            </div>
+            <FormHint>Immutable - seed data and lab links point at it.</FormHint>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 rounded-lg border border-border bg-surface-2 px-4 py-3">
+          <Toggle checked={published} onChange={setPublished} label="Toggle published" />
+          <div>
+            <p className="text-sm font-medium text-text">{published ? 'Visible to learners' : 'Hidden from learners'}</p>
+            <p className="text-xs text-text-tertiary">
+              A path with no published lessons stays effectively empty even when visible.
+            </p>
+          </div>
+        </div>
+        <div className="flex justify-end gap-2 border-t border-border pt-4">
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={() => save.mutate()} loading={save.isPending} disabled={name.trim().length < 2}>
+            Save changes
+          </Button>
+        </div>
+      </div>
+    </Modal>
   );
 }
 
