@@ -134,7 +134,15 @@ const run = async () => {
     images.map((b) => b.src).join(', '),
   );
   const imp = lessonJson?.lesson?.importance ?? lessonJson?.importance;
-  check('lesson exposes importance tag', imp === 'core' || imp === 'optional', String(imp));
+  // Three tiers exist: essential ("Must know"), core (unbadged), optional. This
+  // assertion originally predated the `essential` tier and failed once a lesson
+  // was promoted into it - accept any valid tier, and reject only a missing or
+  // unrecognised one.
+  check(
+    'lesson exposes importance tag',
+    imp === 'essential' || imp === 'core' || imp === 'optional',
+    String(imp),
+  );
 };
 
 await run().catch((e) => {

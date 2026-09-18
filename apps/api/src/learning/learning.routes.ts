@@ -5,6 +5,7 @@ import { db } from '../db/client';
 import { lessons } from '../db/schema';
 import { errors } from '../core/errors';
 import { requireAuth,  resolveSessionUser,  type AuthedUser, getAuthUser } from '../core/auth';
+import { rateLimitMiddleware, userRateLimitMiddleware } from '../core/middleware';
 import { getPathDetail, getLessonDetail, startLesson, completeLesson, recordLessonView, getNextUpLesson } from './learning.service';
 import { submitExercise } from './practice.service';
 import { exerciseSubmitSchema } from '@suraksha/shared';
@@ -51,7 +52,9 @@ export const learnRoutes = new Hono()
     return c.json(detail);
   })
 
-  .post('/lessons/:slug/view', async (c) => {
+  // Unauthenticated and writes a row per call, so it needs an IP budget or it
+  // is a free way to inflate view counts and grow the table.
+  .post('/lessons/:slug/view', rateLimitMiddleware('lesson_view', 120, 60_000), async (c) => {
     const user = await optionalUser(c);
     const lessonId = await lessonIdBySlug(c.req.param('slug'));
     await recordLessonView(lessonId, user?.id ?? null);
@@ -65,7 +68,7 @@ export const learnRoutes = new Hono()
     return c.json({ ok: true });
   })
 
-  .post('/lessons/:slug/complete', requireAuth, async (c) => {
+  .post('/lessons/:slug/complete', requireAuth, userRateLimitMiddleware('lesson_complete', 60, 60_000), async (c) => {
     const user = getAuthUser(c);
     const lessonId = await lessonIdBySlug(c.req.param('slug'));
     const result = await completeLesson(user.id, lessonId);
@@ -86,7 +89,9 @@ export const learnRoutes = new Hono()
     return c.json({ exercise });
   })
 
-  .post('/exercises/:slug/submit', requireAuth, async (c) => {
+  // Grants XP, so budget it by ACCOUNT: an IP limit is trivially dodged on
+  // mobile data, and the thing being protected is the leaderboard's integrity.
+  .post('/exercises/:slug/submit', requireAuth, userRateLimitMiddleware('exercise_submit', 30, 60_000), async (c) => {
     const user = getAuthUser(c);
     const input = exerciseSubmitSchema.parse(await c.req.json());
     const result = await submitExercise(user.id, c.req.param('slug'), input.answers);

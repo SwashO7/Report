@@ -1,0 +1,185 @@
+# CI — runs on every pull request and on push to main.
+# Three jobs: typecheck, test, and content-integrity (curriculum guards).
+#
+# The content-integrity checks exist because real regressions shipped before:
+#   - an agent silently DELETED a lesson (total count dropped, no type error);
+#   - an edit DUPLICATED a lesson's closing blocks (callouts + quiz), which
+#     broke compilation with a TypeScript error reported ~130 lines away from
+#     the real cause.
+# So these checks MUST FAIL the build, never merely warn.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancel superseded runs on the same ref so a rapid push sequence doesn't
+# queue redundant CI.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # Cache Bun's global module cache keyed on the lockfile.
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            bun-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck (all workspaces)
+        run: bun run typecheck
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    # The integration suite talks to a real PostgreSQL. Without this service the
+    # `bun test` step fails on every run: config/env.ts validates DATABASE_URL at
+    # import time and the authorization tests time out trying to connect.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: suraksha
+          POSTGRES_PASSWORD: suraksha
+          POSTGRES_DB: suraksha_test
+        ports:
+          - 5432:5432
+        # Without a health check the job races the database's startup and fails
+        # intermittently, which is worse than failing consistently.
+        options: >-
+          --health-cmd "pg_isready -U suraksha -d suraksha_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+
+    env:
+      DATABASE_URL: postgres://suraksha:suraksha@127.0.0.1:5432/suraksha_test
+      # Fake values: CI runs no real integrations. Never point these at a real secret.
+      SESSION_SECRET: ci-only-session-secret-0000000000000000
+      FLAG_HMAC_SECRET: ci-only-flag-hmac-secret-0000000000000000
+      APP_URL: http://localhost:5173
+      API_URL: http://localhost:3000
+      MAIL_TRANSPORT: console
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            bun-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Schema must exist before the integration tests query it.
+      - name: Apply migrations
+        run: bun run db:migrate
+
+      - name: Run tests
+        run: bun test
+
+  content-integrity:
+    name: Content integrity (curriculum guards)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            bun-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Validates slugs, blocks, exercise wiring and cross-links.
+      # This script exits non-zero on any hard error.
+      - name: Validate curriculum
+        run: bun scripts/validate-curriculum.ts
+
+      # Cross-checks every part file against _PLAN.md to catch a lesson that a
+      # rewrite silently dropped. This script exits non-zero on a mismatch.
+      - name: Audit lesson coverage
+        run: node scripts/audit-lesson-coverage.mjs
+
+      # Bracket-depth structure check on every curriculum part file. The script
+      # only PRINTS "final depth: N (should be 0)" — it does not set an exit
+      # code — so this step parses its output and FAILS the build if any file
+      # does not end at bracket depth 0 (the duplicated-closing-blocks bug).
+      - name: Check seed structure (bracket depth 0)
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          failed=0
+          files=(apps/api/src/db/seed/curriculum/p*.ts)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "::error::no curriculum part files found under apps/api/src/db/seed/curriculum"
+            exit 1
+          fi
+          for f in "${files[@]}"; do
+            out="$(node scripts/check-seed-structure.mjs "$f")"
+            echo "----- $f -----"
+            echo "$out"
+            depth_line="$(echo "$out" | grep -E '^final depth:' || true)"
+            depth="$(echo "$depth_line" | sed -E 's/^final depth: (-?[0-9]+).*/\1/')"
+            if [ "$depth" != "0" ]; then
+              echo "::error file=$f::structure broken — file ends at bracket depth '$depth', expected 0"
+              failed=1
+            fi
+            if echo "$out" | grep -q 'depth went NEGATIVE'; then
+              echo "::error file=$f::extra closing bracket (depth went negative)"
+              failed=1
+            fi
+            if echo "$out" | grep -q '(unterminated string)'; then
+              echo "::error file=$f::unterminated string literal"
+              failed=1
+            fi
+          done
+          if [ "$failed" -ne 0 ]; then
+            echo "::error::content-integrity structure check FAILED"
+            exit 1
+          fi
+          echo "All curriculum part files end at bracket depth 0."

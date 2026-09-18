@@ -4,13 +4,21 @@ import { db } from '../db/client';
 import { labDownloads, labs } from '../db/schema';
 import { errors } from '../core/errors';
 import { rateLimitMiddleware } from '../core/middleware';
+import { env } from '../config/env';
+import { checkDownloadQuota, checkGlobalDownloadBudget } from './download-quota';
 import { requireAuth,  resolveSessionUser, getAuthUser } from '../core/auth';
 import { hashIp } from '../core/crypto';
 import { flagSubmitSchema, labQuerySchema } from '@suraksha/shared';
 import { listPublishedLabs, getLabDetail, startAttempt, revealHint, submitFlag, categoriesWithCounts, difficulties } from './labs.service';
 import { getClientIp } from '../core/errors';
-import { pathToFileStorage } from '../storage/storage.service';
-import { labPackageFilename, labPackagePath, labPackageSize, resolveLabPackage } from '../storage/labs.storage';
+import { bytesToFileDownload } from '../storage/storage.service';
+import {
+  labPackageFilename,
+  labPackageKey,
+  labPackagePath,
+  loadLabPackage,
+  usingObjectStorage,
+} from '../storage/labs.storage';
 
 export const labRoutes = new Hono()
 
@@ -89,8 +97,33 @@ export const labRoutes = new Hono()
   })
 
   /* ------------------------------ Download -------------------------------- */
-  .get('/:slug/download', requireAuth, rateLimitMiddleware('lab_download', 10, 60_000), async (c) => {
+  // Downloads are the platform's largest cost per request (packages run to
+  // 200 MB of metered egress), so they carry three controls, not one:
+  //   1. the per-IP rate limiter below - cheap, but per instance only;
+  //   2. a DB-backed per-user daily quota, which every instance shares;
+  //   3. a platform-wide daily circuit breaker that fails closed.
+  // Tightened from 10/min to 4/min: a legitimate learner downloads a package
+  // once and runs it, so a high per-minute ceiling bought nothing but exposure.
+  .get('/:slug/download', requireAuth, rateLimitMiddleware('lab_download', 4, 60_000), async (c) => {
     const user = getAuthUser(c);
+
+    const budget = await checkGlobalDownloadBudget();
+    if (!budget.allowed) {
+      console.error(`[labs] GLOBAL download budget exhausted: ${budget.usedToday}/${budget.max} in 24h`);
+      c.header('Retry-After', '3600');
+      throw errors.tooMany(
+        'Lab downloads are temporarily paused while we handle unusually high traffic. Please try again later.',
+      );
+    }
+
+    const quota = await checkDownloadQuota(user.id);
+    if (!quota.allowed) {
+      c.header('Retry-After', String(quota.retryAfterSeconds));
+      throw errors.tooMany(
+        `You have reached the daily lab download limit (${env.LAB_DOWNLOAD_DAILY_MAX}). Packages do not change often - reuse the one you already downloaded, or try again tomorrow.`,
+      );
+    }
+
     const lab = (
       await db
         .select()
@@ -102,23 +135,22 @@ export const labRoutes = new Hono()
 
     // package_path can be null (never uploaded) or stale (recorded against a
     // different working directory / STORAGE_DIR than this process runs with).
-    // Fall back to the conventional storage location before giving up.
-    const packagePath = resolveLabPackage(lab.slug, lab.packageVersion, lab.packagePath);
-    if (!packagePath) {
+    // On Cloud Storage the locator is a gs:// URI instead. loadLabPackage
+    // handles both and falls back to the conventional location.
+    const packageBytes = await loadLabPackage(lab.slug, lab.packageVersion, lab.packagePath);
+    if (!packageBytes) {
       console.error(
-        `[labs] package missing for ${lab.slug} v${lab.packageVersion}: stored=${lab.packagePath ?? 'null'} expected=${labPackagePath(lab.slug, lab.packageVersion)}`,
+        `[labs] package missing for ${lab.slug} v${lab.packageVersion}: stored=${lab.packagePath ?? 'null'} expected=${
+          usingObjectStorage ? labPackageKey(lab.slug, lab.packageVersion) : labPackagePath(lab.slug, lab.packageVersion)
+        }`,
       );
       throw errors.notFound('The lab package is not available yet. The team is preparing it.');
     }
 
-    // Heal the row when we recovered the file at the conventional path, so the
-    // next request (and the detail page's size field) do not need the fallback.
-    if (packagePath !== lab.packagePath) {
-      const sizeBytes = labPackageSize(packagePath);
-      await db
-        .update(labs)
-        .set({ packagePath, ...(sizeBytes !== null ? { packageSizeBytes: sizeBytes } : {}) })
-        .where(eq(labs.id, lab.id));
+    // Heal the row when the recorded size or locator drifted, so the detail
+    // page's size field stays right without re-reading the object.
+    if (lab.packageSizeBytes !== packageBytes.byteLength) {
+      await db.update(labs).set({ packageSizeBytes: packageBytes.byteLength }).where(eq(labs.id, lab.id));
     }
 
     await db.insert(labDownloads).values({
@@ -130,5 +162,5 @@ export const labRoutes = new Hono()
     await db.update(labs).set({ downloadCount: sql`${labs.downloadCount} + 1` }).where(eq(labs.id, lab.id));
 
     const filename = labPackageFilename(lab.slug, lab.packageVersion);
-    return pathToFileStorage(c, packagePath, filename);
+    return bytesToFileDownload(c, packageBytes, filename);
   });

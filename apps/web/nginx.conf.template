@@ -1,5 +1,23 @@
+# Suraksha Labs - web server config TEMPLATE.
+#
+# Rendered at container start by the nginx image's envsubst step. Only PORT and
+# API_UPSTREAM are substituted (see NGINX_ENVSUBST_FILTER in the Dockerfile) so
+# nginx's own runtime variables like $uri and $host survive untouched.
+#
+# Two deployment shapes, one image:
+#
+#   Docker Compose -> API_UPSTREAM=api:3000, PORT=80
+#       nginx reverse-proxies /api/ to the api container on the compose network.
+#
+#   Cloud Run      -> API_UPSTREAM unset, PORT=8080
+#       The load balancer routes /api/* straight to the api service, so this
+#       container never sees an API request. Critically, the proxy block is then
+#       NOT emitted at all: nginx resolves proxy_pass hostnames at STARTUP, so a
+#       block pointing at the non-existent host "api" would stop the container
+#       from booting - which is exactly what would have happened on Cloud Run.
+
 server {
-    listen 80;
+    listen ${PORT};
     server_name _;
     root /usr/share/nginx/html;
     index index.html;
@@ -36,15 +54,16 @@ server {
         add_header Cache-Control "public, max-age=604800" always;
     }
 
-    # API proxied to the backend service.
-    location /api/ {
-        proxy_pass http://api:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        client_max_body_size 220m;
+    # Written at startup by 10-api-proxy.sh: the /api/ proxy block when
+    # API_UPSTREAM is set, otherwise an empty file.
+    include /etc/nginx/api-proxy.conf;
+
+    # Lightweight liveness endpoint so the platform can health check the static
+    # tier without pulling the whole SPA.
+    location = /healthz {
+        access_log off;
+        add_header Content-Type "text/plain" always;
+        return 200 "ok\n";
     }
 
     # The entry document must NEVER be cached. It names the hashed asset

@@ -1,0 +1,259 @@
+# Deploy to PRODUCTION — triggered ONLY by a version tag (v*).
+#
+# The `production` GitHub Environment requires a manual reviewer approval
+# before any job step runs, so a human always gates a production release.
+#
+# Flow: authenticate (WIF, no JSON key) ->
+#       build + push api and web images tagged by commit SHA ->
+#       run DB migrations as a Cloud Run JOB and WAIT ->
+#       deploy api with --no-traffic (new revision receives no live traffic) ->
+#       smoke-test the new revision directly ->
+#       shift 100% of traffic to it ->
+#       deploy web.
+# A documented rollback step is included at the bottom of this file.
+#
+# ---------------------------------------------------------------------------
+# Required GitHub configuration (Settings -> Secrets and variables -> Actions)
+#
+#   Repository VARIABLES (vars.*) — non-secret identifiers:
+#     PROD_PROJECT_ID           e.g. suraksha-prod
+#     PROD_WIF_PROVIDER         full resource name of the Workload Identity
+#                               provider, e.g.
+#                               projects/<num>/locations/global/workloadIdentityPools/github/providers/github-provider
+#     PROD_DEPLOYER_SA          github-deployer@suraksha-prod.iam.gserviceaccount.com
+#     PROD_RUNTIME_SA           suraksha-api@suraksha-prod.iam.gserviceaccount.com
+#     GCP_REGION                asia-south1
+#     AR_REPO                   suraksha            (Artifact Registry repo)
+#     CLOUDSQL_INSTANCE_PROD    suraksha-prod:asia-south1:suraksha-pg
+#     PROD_APP_URL              https://suraksha.shadowsecurity.in
+#     PROD_GCS_BUCKET           suraksha-prod-labs
+#
+#   No repository SECRETS are consumed by this workflow directly: runtime
+#   secrets (DATABASE_URL, SESSION_SECRET, FLAG_HMAC_SECRET, ZEPTOMAIL_TOKEN,
+#   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET) live in GCP Secret Manager and are
+#   wired with --set-secrets, never passed from GitHub.
+# ---------------------------------------------------------------------------
+
+name: Deploy Production
+
+on:
+  push:
+    tags:
+      - "v*"
+
+# One production deploy at a time; do NOT cancel one in flight — cancelling a
+# release mid traffic-shift would leave traffic split.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  GCP_REGION: ${{ vars.GCP_REGION }}
+  REGISTRY: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.PROD_PROJECT_ID }}/${{ vars.AR_REPO }}
+
+jobs:
+  deploy:
+    name: Release to production
+    runs-on: ubuntu-latest
+    # This binds the job to the protected `production` Environment, which is
+    # configured with a required reviewer — the job pauses for approval here.
+    environment:
+      name: production
+      url: ${{ vars.PROD_APP_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compute image tag
+        id: tag
+        run: echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ vars.PROD_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.PROD_WIF_PROVIDER }}
+          service_account: ${{ vars.PROD_DEPLOYER_SA }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push API image
+        run: |
+          docker build -f apps/api/Dockerfile -t "${REGISTRY}/api:${TAG}" .
+          docker push "${REGISTRY}/api:${TAG}"
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+          TAG: ${{ steps.tag.outputs.sha }}
+
+      - name: Build and push Web image
+        run: |
+          docker build -f apps/web/Dockerfile -t "${REGISTRY}/web:${TAG}" .
+          docker push "${REGISTRY}/web:${TAG}"
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+          TAG: ${{ steps.tag.outputs.sha }}
+
+      # Migrations run and must succeed BEFORE the new revision takes traffic.
+      - name: Run database migrations (Cloud Run job)
+        run: |
+          set -euo pipefail
+          gcloud run jobs deploy suraksha-migrate \
+            --image "${REGISTRY}/api:${TAG}" \
+            --region "${GCP_REGION}" \
+            --service-account "${RUNTIME_SA}" \
+            --set-cloudsql-instances "${CLOUDSQL_INSTANCE}" \
+            --set-secrets DATABASE_URL=database-url:latest,SESSION_SECRET=session-secret:latest,FLAG_HMAC_SECRET=flag-hmac-secret:latest \
+            --command bun \
+            --args src/db/migrate.ts \
+            --max-retries 1 \
+            --quiet
+          gcloud run jobs execute suraksha-migrate --region "${GCP_REGION}" --wait
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+          TAG: ${{ steps.tag.outputs.sha }}
+          GCP_REGION: ${{ env.GCP_REGION }}
+          RUNTIME_SA: ${{ vars.PROD_RUNTIME_SA }}
+          CLOUDSQL_INSTANCE: ${{ vars.CLOUDSQL_INSTANCE_PROD }}
+
+      # Deploy the API revision but send it NO traffic yet. We tag it so we can
+      # address it directly for the smoke test.
+      - name: Deploy API (no traffic)
+        id: deploy_api
+        run: |
+          set -euo pipefail
+          # --max-instances is an explicit cap: an uncapped autoscaler is an
+          # unbounded bill and this team has fixed runway. DB_POOL_MAX(5) x
+          # max-instances(10) = 50 DB connections, under the 100 limit set on
+          # Cloud SQL — raise one and you MUST redo that arithmetic.
+          gcloud run deploy suraksha-api \
+            --image "${REGISTRY}/api:${TAG}" \
+            --region "${GCP_REGION}" \
+            --service-account "${RUNTIME_SA}" \
+            --no-allow-unauthenticated \
+            --set-cloudsql-instances "${CLOUDSQL_INSTANCE}" \
+            --set-env-vars NODE_ENV=production,APP_URL=${APP_URL},API_URL=${APP_URL},GCS_BUCKET=${GCS_BUCKET},DB_POOL_MAX=5 \
+            --set-secrets DATABASE_URL=database-url:latest,SESSION_SECRET=session-secret:latest,FLAG_HMAC_SECRET=flag-hmac-secret:latest,ZEPTOMAIL_TOKEN=zeptomail-token:latest,GOOGLE_CLIENT_ID=google-client-id:latest,GOOGLE_CLIENT_SECRET=google-client-secret:latest \
+            --min-instances 1 \
+            --max-instances 10 \
+            --concurrency 80 \
+            --cpu 1 --memory 512Mi \
+            --timeout 60 \
+            --no-traffic \
+            --tag candidate \
+            --quiet
+
+          # Record the revision that currently serves 100% (for rollback).
+          PREV_REVISION="$(gcloud run services describe suraksha-api \
+            --region "${GCP_REGION}" \
+            --format='value(status.traffic[0].revisionName)')"
+          echo "prev_revision=${PREV_REVISION}" >> "$GITHUB_OUTPUT"
+
+          # The direct URL of the just-deployed (candidate) revision.
+          CANDIDATE_URL="$(gcloud run services describe suraksha-api \
+            --region "${GCP_REGION}" \
+            --format='value(status.traffic[].url)' \
+            | tr ';' '\n' | grep -m1 candidate || true)"
+          echo "candidate_url=${CANDIDATE_URL}" >> "$GITHUB_OUTPUT"
+          echo "Previous live revision: ${PREV_REVISION}"
+          echo "Candidate URL: ${CANDIDATE_URL}"
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+          TAG: ${{ steps.tag.outputs.sha }}
+          GCP_REGION: ${{ env.GCP_REGION }}
+          RUNTIME_SA: ${{ vars.PROD_RUNTIME_SA }}
+          CLOUDSQL_INSTANCE: ${{ vars.CLOUDSQL_INSTANCE_PROD }}
+          APP_URL: ${{ vars.PROD_APP_URL }}
+          GCS_BUCKET: ${{ vars.PROD_GCS_BUCKET }}
+
+      # Smoke-test the candidate revision BEFORE it takes traffic. The service
+      # is --no-allow-unauthenticated, so send an identity token.
+      - name: Smoke-test candidate revision
+        run: |
+          set -euo pipefail
+          URL="${CANDIDATE_URL}"
+          if [ -z "${URL}" ]; then
+            echo "::error::could not resolve candidate revision URL"
+            exit 1
+          fi
+          TOKEN="$(gcloud auth print-identity-token)"
+          echo "Probing ${URL}/api/v1/health"
+          code="$(curl -s -o /tmp/health.txt -w '%{http_code}' \
+            -H "Authorization: Bearer ${TOKEN}" \
+            --max-time 20 --retry 5 --retry-delay 5 --retry-connrefused \
+            "${URL}/api/v1/health")"
+          echo "HTTP ${code}"
+          cat /tmp/health.txt || true
+          if [ "${code}" != "200" ]; then
+            echo "::error::smoke test failed (HTTP ${code}) — NOT shifting traffic"
+            exit 1
+          fi
+          echo "Smoke test passed."
+        env:
+          CANDIDATE_URL: ${{ steps.deploy_api.outputs.candidate_url }}
+
+      - name: Shift 100% traffic to new API revision
+        run: |
+          set -euo pipefail
+          gcloud run services update-traffic suraksha-api \
+            --region "${GCP_REGION}" \
+            --to-latest \
+            --quiet
+        env:
+          GCP_REGION: ${{ env.GCP_REGION }}
+
+      - name: Deploy Web to Cloud Run
+        run: |
+          set -euo pipefail
+          # API_UPSTREAM deliberately UNSET (load balancer routes /api),
+          # PORT=8080. --max-instances capped, same unbounded-bill reasoning.
+          gcloud run deploy suraksha-web \
+            --image "${REGISTRY}/web:${TAG}" \
+            --region "${GCP_REGION}" \
+            --no-allow-unauthenticated \
+            --set-env-vars PORT=8080 \
+            --min-instances 0 \
+            --max-instances 10 \
+            --cpu 1 --memory 256Mi \
+            --quiet
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+          TAG: ${{ steps.tag.outputs.sha }}
+          GCP_REGION: ${{ env.GCP_REGION }}
+
+      # ---------------------------------------------------------------------
+      # ROLLBACK (documented; runs only if a later step fails).
+      #
+      # Manual rollback at any time (no rebuild needed — Cloud Run keeps every
+      # revision):
+      #   gcloud run revisions list --service suraksha-api --region asia-south1
+      #   gcloud run services update-traffic suraksha-api \
+      #     --region asia-south1 --to-revisions=<PREVIOUS_REVISION>=100
+      #
+      # This step auto-reverts API traffic to the revision that was live before
+      # this release, if traffic-shift or the web deploy failed.
+      # ---------------------------------------------------------------------
+      - name: Rollback API traffic on failure
+        if: failure()
+        run: |
+          set -euo pipefail
+          PREV="${PREV_REVISION}"
+          if [ -z "${PREV}" ]; then
+            echo "::warning::no previous revision recorded — roll back manually (see notes above)"
+            exit 0
+          fi
+          echo "::warning::release failed — reverting traffic to ${PREV}"
+          gcloud run services update-traffic suraksha-api \
+            --region "${GCP_REGION}" \
+            --to-revisions="${PREV}=100" \
+            --quiet
+        env:
+          GCP_REGION: ${{ env.GCP_REGION }}
+          PREV_REVISION: ${{ steps.deploy_api.outputs.prev_revision }}

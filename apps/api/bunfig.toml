@@ -1,0 +1,7 @@
+# Bun test configuration.
+#
+# The preload runs before any test file and supplies fake-but-valid environment
+# values, because config/env.ts validates the environment at import time and
+# would otherwise make the unit suite unrunnable on a fresh clone or in CI.
+[test]
+preload = ["./tests/setup.ts"]

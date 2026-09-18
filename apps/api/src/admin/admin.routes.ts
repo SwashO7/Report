@@ -1,5 +1,7 @@
 import { Hono } from 'hono';
 import { requireRole, getAuthUser } from '../core/auth';
+import { userRateLimitMiddleware } from '../core/middleware';
+import { adminNetworkGuard } from '../core/admin-network';
 import { hasRole } from '../core/rbac';
 import { adminStats, labAnalytics, lessonAnalytics } from './analytics.service';
 import { allSettings, setSetting } from './settings.service';
@@ -14,13 +16,33 @@ import { adminContentRoutes } from './admin.content.routes';
 import { adminDiagramRoutes } from './admin.diagrams.routes';
 import { adminLabRoutes } from './admin.labs.routes';
 import { adminAchievementRoutes } from './admin.achievements.routes';
+import { adminEmailRoutes } from './admin.email.routes';
 
 export const adminRoutes = new Hono()
+
+  /* ----------------------------- Network gate ------------------------------ */
+  // Runs BEFORE authentication on purpose: an attacker outside the allowlist
+  // should not even be able to submit credentials here, so stolen staff
+  // passwords and session-fixation attempts never reach the login path.
+  .use('*', adminNetworkGuard())
 
   /* --------------------------- Authorization gate -------------------------- */
   // Coarse gate: any staff role may enter /admin. Each sub-router then enforces
   // its own stricter role requirements server-side.
   .use('*', requireRole('moderator', 'content_editor', 'lab_manager', 'administrator', 'super_admin'))
+
+  /**
+   * Budget every admin WRITE by account.
+   *
+   * The README claimed admin surfaces were rate limited; they were not. A staff
+   * session is the most valuable credential on the platform, so if one is stolen
+   * this caps how fast it can be used to rewrite content or exfiltrate through
+   * pagination. Reads are left alone so the dashboard stays responsive.
+   */
+  .use('*', async (c, next) => {
+    if (c.req.method === 'GET' || c.req.method === 'HEAD' || c.req.method === 'OPTIONS') return next();
+    return userRateLimitMiddleware('admin_write', 120, 60_000)(c, next);
+  })
 
   /* ------------------------------- Stats ----------------------------------- */
   .get('/stats', async (c) => c.json(await adminStats()))
@@ -100,4 +122,5 @@ export const adminRoutes = new Hono()
   .route('/content', adminContentRoutes)
   .route('/diagrams', adminDiagramRoutes)
   .route('/labs', adminLabRoutes)
-  .route('/achievements', adminAchievementRoutes);
+  .route('/achievements', adminAchievementRoutes)
+  .route('/email', adminEmailRoutes);

@@ -9,7 +9,9 @@ import { hasRole } from '../core/rbac';
 import { audit } from '../audit/audit.service';
 import { labCreateSchema, labUpdateSchema } from '@suraksha/shared';
 import { flagHmacFor } from '../core/crypto';
-import { saveLabPackage, STORAGE_ROOT, labPackageSize, resolveLabPackage } from '../storage/labs.storage';
+import { saveLabPackage, STORAGE_ROOT, statLabPackage } from '../storage/labs.storage';
+import { createCampaign } from '../email/campaigns.service';
+import { escapeHtml } from '../email/templates.service';
 import { join, resolve } from 'node:path';
 import { mkdirSync, writeFileSync } from 'node:fs';
 
@@ -104,7 +106,7 @@ export const adminLabRoutes = new Hono()
     // The editor's completion checklist reads this field, so omitting it — as
     // this endpoint used to — pinned "Docker package uploaded" to permanently
     // incomplete even straight after a successful upload.
-    const resolvedPackage = resolveLabPackage(row.slug, row.packageVersion, row.packagePath);
+    const resolvedSize = await statLabPackage(row.slug, row.packageVersion, row.packagePath);
     const { packagePath, ...safe } = row;
     return c.json({
       lab: {
@@ -112,9 +114,9 @@ export const adminLabRoutes = new Hono()
         // Plaintext flag never leaves the server; client sends it fresh on change.
         flagHmac: undefined,
         hasFlag: true,
-        hasPackage: resolvedPackage !== null,
+        hasPackage: resolvedSize !== null,
         packageLinked: Boolean(row.packagePath),
-        packageSizeBytes: row.packageSizeBytes ?? (resolvedPackage ? labPackageSize(resolvedPackage) : null),
+        packageSizeBytes: row.packageSizeBytes ?? resolvedSize,
         createdAt: row.createdAt.toISOString(),
         updatedAt: row.updatedAt.toISOString(),
         publishedAt: row.publishedAt?.toISOString() ?? null,
@@ -171,7 +173,7 @@ export const adminLabRoutes = new Hono()
     await db
       .update(labs)
       .set({
-        packagePath: stored.absolutePath,
+        packagePath: stored.locator,
         packageSizeBytes: stored.sizeBytes,
         packageVersion: versionInput,
         updatedAt: new Date(),
@@ -199,9 +201,9 @@ export const adminLabRoutes = new Hono()
     // entrypoint. The download route already resolves this way, so gating the
     // workflow on the raw column alone stranded such a lab in draft forever,
     // telling the author to upload a package that was already sitting there.
-    const resolvedPackage = resolveLabPackage(current.slug, current.packageVersion, current.packagePath);
+    const resolvedPackageSize = await statLabPackage(current.slug, current.packageVersion, current.packagePath);
     const needsPackage = input.status === 'published' || input.status === 'security_review' || input.status === 'ready';
-    if (needsPackage && !resolvedPackage) {
+    if (needsPackage && resolvedPackageSize === null) {
       throw errors.badRequest(
         input.status === 'published'
           ? 'Upload the lab package before publishing.'
@@ -220,11 +222,12 @@ export const adminLabRoutes = new Hono()
       }
     }
 
-    // Link a package we found on disk but that was never recorded, so the row
-    // stops depending on the fallback and the editor reports it as present.
+    // Record the size we just resolved so the editor reports the package as
+    // present without re-reading the object on every load. The locator itself is
+    // left alone: on object storage it is a gs:// URI that never goes stale.
     const packageLink =
-      resolvedPackage && resolvedPackage !== current.packagePath
-        ? { packagePath: resolvedPackage, packageSizeBytes: labPackageSize(resolvedPackage) ?? current.packageSizeBytes }
+      resolvedPackageSize !== null && resolvedPackageSize !== current.packageSizeBytes
+        ? { packageSizeBytes: resolvedPackageSize }
         : {};
 
     const [row] = await db
@@ -242,6 +245,29 @@ export const adminLabRoutes = new Hono()
       .returning({ id: labs.id, slug: labs.slug, status: labs.status });
 
     await audit({ actorId: user.id, action: `lab_${input.status}`, entityType: 'lab', entityId: id, metadata: { slug: current.slug, from: current.status, to: input.status } });
+
+    // First-time publish → stage a DRAFT announcement campaign for an admin to
+    // review and send. Never auto-sends. `publishedAt` was null before this
+    // transition, so a re-publish (unarchive) does not create a duplicate.
+    if (input.status === 'published' && !current.publishedAt) {
+      try {
+        await createCampaign(
+          {
+            subject: `New lab: ${current.title}`,
+            htmlBody: `<p>A new hands-on lab is live on Suraksha Labs: <strong>${escapeHtml(current.title)}</strong>.</p><p>Log in to launch it and earn XP.</p>`,
+            textBody: `A new hands-on lab is live on Suraksha Labs: ${current.title}. Log in to launch it and earn XP.`,
+            audience: 'verified',
+            triggerKind: 'lab_published',
+            triggerEntityId: id,
+          },
+          user.id,
+        );
+      } catch (err) {
+        // A failed announcement draft must not block the publish itself.
+        console.error(JSON.stringify({ level: 'error', msg: 'lab_publish_campaign_failed', labId: id }));
+      }
+    }
+
     return c.json({ lab: row });
   })
 

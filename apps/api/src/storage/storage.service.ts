@@ -31,12 +31,28 @@ const MIME_BY_EXT: Record<string, string> = {
 
 /** Streams a stored file as an authorized, safe download. */
 export function pathToFileStorage(c: Context, absolutePath: string, downloadName: string) {
+  const data = readFileSync(absolutePath);
+  return bytesToFileDownload(c, data, downloadName);
+}
+
+/**
+ * Serves already-loaded bytes as a download. Used when the object came from
+ * Cloud Storage and never touched this container's filesystem.
+ *
+ * Always sends an attachment disposition with a sanitised filename and
+ * `nosniff`, so an untrusted archive can never be interpreted as anything
+ * executable by the browser.
+ */
+export function bytesToFileDownload(c: Context, data: Buffer | Uint8Array, downloadName: string) {
   const safeName = downloadName.replace(/[^\w.\-]/g, '_');
   const mime = MIME_BY_EXT[extname(safeName).toLowerCase()] ?? 'application/octet-stream';
-  const data = readFileSync(absolutePath);
-  c.header('Content-Type', mime);
-  c.header('Content-Disposition', `attachment; filename="${safeName}"`);
-  c.header('Content-Length', String(data.byteLength));
-  c.header('X-Content-Type-Options', 'nosniff');
-  return c.body(data, 200);
+  const bytes = data instanceof Buffer ? new Uint8Array(data) : data;
+  const headers = {
+    'Content-Type': mime,
+    'Content-Disposition': `attachment; filename="${safeName}"`,
+    'Content-Length': String(bytes.byteLength),
+    'X-Content-Type-Options': 'nosniff',
+  };
+  // Returned as a native Response: Hono's c.body() types reject a Uint8Array.
+  return new Response(bytes, { status: 200, headers });
 }

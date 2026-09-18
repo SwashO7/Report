@@ -24,6 +24,17 @@ RUN bun run build
 
 FROM nginx:1.27-alpine AS runtime
 COPY --from=build /app/apps/web/dist /usr/share/nginx/html
-COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://localhost/ >/dev/null || exit 1
+
+# Config is a TEMPLATE: the nginx image renders /etc/nginx/templates/*.template
+# through envsubst at startup. The filter keeps envsubst away from nginx's own
+# runtime variables ($uri, $host, ...) - without it they would be blanked.
+COPY apps/web/nginx.conf.template /etc/nginx/templates/default.conf.template
+COPY apps/web/docker-entrypoint.d/10-api-proxy.sh /docker-entrypoint.d/10-api-proxy.sh
+RUN chmod +x /docker-entrypoint.d/10-api-proxy.sh
+
+ENV NGINX_ENVSUBST_FILTER="PORT|API_UPSTREAM"
+# Cloud Run injects PORT=8080; Compose overrides this to 80.
+ENV PORT=8080
+
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- "http://localhost:${PORT}/healthz" >/dev/null || exit 1

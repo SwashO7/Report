@@ -14,6 +14,16 @@ import {
 import { errors } from '../core/errors';
 import { rateLimitMiddleware } from '../core/middleware';
 import {
+  beginEnrolment,
+  confirmEnrolment,
+  disableTwoFactor,
+  hasTwoFactor,
+  issueTwoFactorChallenge,
+  roleRequiresTwoFactor,
+  verifySecondFactor,
+  verifyTwoFactorChallenge,
+} from './two-factor.service';
+import {
   clearSessionCookie,
   createSession,
   requireAuth,
@@ -93,15 +103,102 @@ export const authRoutes = new Hono()
     }
     if (user.status !== 'active') throw errors.forbidden('This account is suspended. Contact support if you believe this is a mistake.');
 
+    // Second factor. A correct password alone must NOT produce a session here,
+    // or 2FA would be decorative - so we return a short-lived signed challenge
+    // and the caller must complete /login/2fa to get a session.
+    if (hasTwoFactor(user)) {
+      await audit({ actorId: user.id, action: 'login_2fa_challenged', entityType: 'session' });
+      return c.json({ twoFactorRequired: true, challenge: issueTwoFactorChallenge(user.id) });
+    }
+
+    // Staff who have not enrolled yet are told to, rather than being locked out
+    // mid-rollout. The admin surface itself is separately IP-restricted, so this
+    // is a migration path and not an indefinite exemption.
+    const mustEnrol = roleRequiresTwoFactor(user.role);
+
     await createSession(c, user.id);
     await audit({ actorId: user.id, action: 'login', entityType: 'session', metadata: { method: 'password' } });
-    return c.json({ user: await toSelfUser(user) });
+    return c.json({ user: await toSelfUser(user), ...(mustEnrol ? { twoFactorEnrolmentRequired: true } : {}) });
+  })
+
+  /* --------------------------- Login step 2 (2FA) -------------------------- */
+  /**
+   * Exchanges a password-verified challenge plus a TOTP or recovery code for a
+   * real session. Rate limited hard: six digits is only a million possibilities,
+   * so an unthrottled endpoint here is brute-forceable.
+   */
+  .post('/login/2fa', rateLimitMiddleware('login_2fa', 10, 10 * 60_000), async (c) => {
+    const body = await c.req.json();
+    const challenge = typeof body?.challenge === 'string' ? body.challenge : '';
+    const code = typeof body?.code === 'string' ? body.code : '';
+    if (!challenge || !code) throw errors.badRequest('Provide the challenge and your authentication code.');
+
+    const userId = verifyTwoFactorChallenge(challenge);
+    if (!userId) throw errors.unauthorized('That sign-in attempt expired. Please enter your password again.');
+
+    if (!(await verifySecondFactor(userId, code))) {
+      await audit({ actorId: userId, action: 'login_2fa_failed', entityType: 'session' });
+      throw errors.unauthorized('That code is not valid.');
+    }
+
+    const row = (await db.select().from(users).where(eq(users.id, userId)).limit(1))[0];
+    if (!row || row.status !== 'active') throw errors.forbidden('This account is not active.');
+
+    await createSession(c, userId);
+    await audit({ actorId: userId, action: 'login', entityType: 'session', metadata: { method: 'password+2fa' } });
+    return c.json({ user: await toSelfUser(row) });
   })
 
   /* ------------------------------- Logout -------------------------------- */
   .post('/logout', async (c) => {
     await revokeCurrentSession(c);
     return c.json({ ok: true });
+  })
+
+  /* --------------------------- 2FA enrolment ------------------------------ */
+  .post('/2fa/enroll', requireAuth, rateLimitMiddleware('2fa_enroll', 10, 10 * 60_000), async (c) => {
+    const user = getAuthUser(c);
+    const body = await c.req.json();
+    const password = typeof body?.password === 'string' ? body.password : '';
+    if (!password) throw errors.badRequest('Confirm your password to set up two-factor authentication.');
+
+    const offer = await beginEnrolment(user.id, password);
+    await audit({ actorId: user.id, action: '2fa_enrolment_started', entityType: 'user', entityId: user.id });
+    // The secret is returned once, for the QR code. It is never logged.
+    return c.json(offer);
+  })
+
+  .post('/2fa/confirm', requireAuth, rateLimitMiddleware('2fa_confirm', 10, 10 * 60_000), async (c) => {
+    const user = getAuthUser(c);
+    const body = await c.req.json();
+    const code = typeof body?.code === 'string' ? body.code : '';
+    if (!code) throw errors.badRequest('Enter the 6-digit code from your authenticator app.');
+
+    const result = await confirmEnrolment(user.id, code);
+    await audit({ actorId: user.id, action: '2fa_enabled', entityType: 'user', entityId: user.id });
+    return c.json(result);
+  })
+
+  .post('/2fa/disable', requireAuth, rateLimitMiddleware('2fa_disable', 5, 10 * 60_000), async (c) => {
+    const user = getAuthUser(c);
+    const body = await c.req.json();
+    const password = typeof body?.password === 'string' ? body.password : '';
+    const code = typeof body?.code === 'string' ? body.code : '';
+    if (!password || !code) throw errors.badRequest('Confirm your password and a current code to turn this off.');
+
+    await disableTwoFactor(user.id, password, code);
+    await audit({ actorId: user.id, action: '2fa_disabled', entityType: 'user', entityId: user.id });
+    return c.json({ ok: true });
+  })
+
+  .get('/2fa/status', requireAuth, async (c) => {
+    const user = getAuthUser(c);
+    const row = (await db.select().from(users).where(eq(users.id, user.id)).limit(1))[0];
+    return c.json({
+      enabled: row ? hasTwoFactor(row) : false,
+      required: row ? roleRequiresTwoFactor(row.role) : false,
+      recoveryCodesRemaining: row?.totpRecoveryHashes.length ?? 0,
+    });
   })
 
   /* --------------------------- Current user ------------------------------ */

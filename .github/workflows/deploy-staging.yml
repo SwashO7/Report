@@ -1,0 +1,172 @@
+# Deploy to STAGING — runs automatically on every push to main.
+#
+# Flow: authenticate (Workload Identity Federation, no JSON key) ->
+#       build + push api and web images tagged by commit SHA ->
+#       run DB migrations as a Cloud Run JOB and WAIT for it to succeed ->
+#       deploy api and web to Cloud Run.
+# Migrations run and must succeed BEFORE any new revision takes traffic.
+#
+# ---------------------------------------------------------------------------
+# Required GitHub configuration (Settings -> Secrets and variables -> Actions)
+#
+#   Repository VARIABLES (vars.*) — non-secret identifiers:
+#     STAGING_PROJECT_ID          e.g. suraksha-staging
+#     STAGING_WIF_PROVIDER        full resource name of the Workload Identity
+#                                 provider, e.g.
+#                                 projects/<num>/locations/global/workloadIdentityPools/github/providers/github-provider
+#     STAGING_DEPLOYER_SA         github-deployer@suraksha-staging.iam.gserviceaccount.com
+#     STAGING_RUNTIME_SA          suraksha-api@suraksha-staging.iam.gserviceaccount.com
+#     GCP_REGION                  asia-south1
+#     AR_REPO                     suraksha            (Artifact Registry repo)
+#     CLOUDSQL_INSTANCE_STAGING   suraksha-staging:asia-south1:suraksha-pg
+#     STAGING_APP_URL             the staging origin the SPA/API run under
+#
+#   No repository SECRETS are consumed by this workflow directly: runtime
+#   secrets (DATABASE_URL, SESSION_SECRET, FLAG_HMAC_SECRET, ...) live in GCP
+#   Secret Manager and are wired with --set-secrets, not passed from GitHub.
+# ---------------------------------------------------------------------------
+
+name: Deploy Staging
+
+on:
+  push:
+    branches: [main]
+
+# Never let two staging deploys run at once — the later push wins, the
+# in-flight one is cancelled, so revisions can't race each other.
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: true
+
+# WIF needs id-token: write to mint the OIDC token GCP exchanges.
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  GCP_REGION: ${{ vars.GCP_REGION }}
+  REGISTRY: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.STAGING_PROJECT_ID }}/${{ vars.AR_REPO }}
+
+jobs:
+  deploy:
+    name: Build, migrate and deploy (staging)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compute image tag
+        id: tag
+        run: echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      # Workload Identity Federation — short-lived token, NO service-account
+      # JSON key anywhere.
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ vars.STAGING_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.STAGING_WIF_PROVIDER }}
+          service_account: ${{ vars.STAGING_DEPLOYER_SA }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push API image
+        run: |
+          docker build -f apps/api/Dockerfile -t "${REGISTRY}/api:${TAG}" .
+          docker push "${REGISTRY}/api:${TAG}"
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+          TAG: ${{ steps.tag.outputs.sha }}
+
+      - name: Build and push Web image
+        run: |
+          docker build -f apps/web/Dockerfile -t "${REGISTRY}/web:${TAG}" .
+          docker push "${REGISTRY}/web:${TAG}"
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+          TAG: ${{ steps.tag.outputs.sha }}
+
+      # Run migrations as a Cloud Run JOB and WAIT. If it fails, the workflow
+      # stops here and NO new revision is deployed.
+      - name: Run database migrations (Cloud Run job)
+        run: |
+          set -euo pipefail
+          gcloud run jobs deploy suraksha-migrate \
+            --image "${REGISTRY}/api:${TAG}" \
+            --region "${GCP_REGION}" \
+            --service-account "${RUNTIME_SA}" \
+            --set-cloudsql-instances "${CLOUDSQL_INSTANCE}" \
+            --set-secrets DATABASE_URL=database-url:latest,SESSION_SECRET=session-secret:latest,FLAG_HMAC_SECRET=flag-hmac-secret:latest \
+            --command bun \
+            --args src/db/migrate.ts \
+            --max-retries 1 \
+            --quiet
+          gcloud run jobs execute suraksha-migrate --region "${GCP_REGION}" --wait
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+          TAG: ${{ steps.tag.outputs.sha }}
+          GCP_REGION: ${{ env.GCP_REGION }}
+          RUNTIME_SA: ${{ vars.STAGING_RUNTIME_SA }}
+          CLOUDSQL_INSTANCE: ${{ vars.CLOUDSQL_INSTANCE_STAGING }}
+
+      - name: Deploy API to Cloud Run
+        run: |
+          set -euo pipefail
+          # --max-instances is an explicit cap on BOTH services: an uncapped
+          # autoscaler is an unbounded bill, and this team has fixed runway.
+          # DB_POOL_MAX(5) x max-instances(10) = 50 connections, under the 100
+          # limit — raise one and you must redo that arithmetic.
+          gcloud run deploy suraksha-api \
+            --image "${REGISTRY}/api:${TAG}" \
+            --region "${GCP_REGION}" \
+            --service-account "${RUNTIME_SA}" \
+            --no-allow-unauthenticated \
+            --set-cloudsql-instances "${CLOUDSQL_INSTANCE}" \
+            --set-env-vars NODE_ENV=production,APP_URL=${APP_URL},API_URL=${APP_URL},DB_POOL_MAX=5 \
+            --set-secrets DATABASE_URL=database-url:latest,SESSION_SECRET=session-secret:latest,FLAG_HMAC_SECRET=flag-hmac-secret:latest,ZEPTOMAIL_TOKEN=zeptomail-token:latest,GOOGLE_CLIENT_ID=google-client-id:latest,GOOGLE_CLIENT_SECRET=google-client-secret:latest \
+            --min-instances 0 \
+            --max-instances 10 \
+            --concurrency 80 \
+            --cpu 1 --memory 512Mi \
+            --timeout 60 \
+            --quiet
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+          TAG: ${{ steps.tag.outputs.sha }}
+          GCP_REGION: ${{ env.GCP_REGION }}
+          RUNTIME_SA: ${{ vars.STAGING_RUNTIME_SA }}
+          CLOUDSQL_INSTANCE: ${{ vars.CLOUDSQL_INSTANCE_STAGING }}
+          APP_URL: ${{ vars.STAGING_APP_URL }}
+
+      - name: Deploy Web to Cloud Run
+        run: |
+          set -euo pipefail
+          # API_UPSTREAM is deliberately UNSET: on Cloud Run the load balancer
+          # routes /api, so nginx must NOT try to proxy it to a Compose
+          # hostname. PORT=8080 is the port the web container listens on.
+          # --max-instances capped here too, same unbounded-bill reasoning.
+          gcloud run deploy suraksha-web \
+            --image "${REGISTRY}/web:${TAG}" \
+            --region "${GCP_REGION}" \
+            --no-allow-unauthenticated \
+            --set-env-vars PORT=8080 \
+            --min-instances 0 \
+            --max-instances 10 \
+            --cpu 1 --memory 256Mi \
+            --quiet
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+          TAG: ${{ steps.tag.outputs.sha }}
+          GCP_REGION: ${{ env.GCP_REGION }}
+
+      - name: Summary
+        run: |
+          echo "Deployed staging @ ${{ steps.tag.outputs.sha }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- api: ${REGISTRY}/api:${{ steps.tag.outputs.sha }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- web: ${REGISTRY}/web:${{ steps.tag.outputs.sha }}" >> "$GITHUB_STEP_SUMMARY"
+        env:
+          REGISTRY: ${{ env.REGISTRY }}

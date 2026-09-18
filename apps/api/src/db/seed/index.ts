@@ -448,7 +448,30 @@ async function main(): Promise<void> {
     }
 
     /* 8. Demo users */
-    const allDemoUsers: DemoUserSeed[] = [...STAFF_USERS, ...LEADERBOARD_USERS];
+    /**
+     * Demo humans are DEVELOPMENT/DEMO-ONLY: their passwords are published in the
+     * README, so one surviving in a real deployment is a full compromise.
+     *
+     * Production runs this exact same seeder - the curriculum must be identical,
+     * and a second production-only seeder would silently drift from this one - so
+     * the people are gated here rather than in a parallel script.
+     *
+     * The gate needs care because the local Docker Compose stack also runs with
+     * NODE_ENV=production (it is a production-shaped image), and that stack is
+     * where the team demos and where the verify scripts log in. So NODE_ENV alone
+     * is the wrong signal: an environment must OPT IN to demo humans by setting
+     * SEED_DEMO_USERS=true, which docker-compose.prod.yml does and Cloud Run does
+     * not. Non-production environments get them by default for convenience.
+     */
+    const demoOptIn = process.env.SEED_DEMO_USERS === 'true';
+    const demoUsersAllowed =
+      demoOptIn || (process.env.NODE_ENV !== 'production' && process.env.SEED_DEMO_USERS !== 'false');
+
+    if (!demoUsersAllowed) {
+      console.log('Demo users:         SKIPPED (no SEED_DEMO_USERS opt-in - create staff via bootstrap-production-admin.ts)');
+    }
+
+    const allDemoUsers: DemoUserSeed[] = demoUsersAllowed ? [...STAFF_USERS, ...LEADERBOARD_USERS] : [];
     const todayIso = new Date().toISOString().slice(0, 10);
     for (const u of allDemoUsers) {
       const passwordHash = await Bun.password.hash(u.password, { algorithm: 'argon2id', memoryCost: 65536, timeCost: 3 });
@@ -527,9 +550,21 @@ async function main(): Promise<void> {
   console.log(`Seasons:            ${counts.seasons}`);
   console.log('Seed completed successfully.');
 
-  console.log('\n=== DEMO DATA (development only — do NOT use in production) ===');
-  for (const u of [...STAFF_USERS, ...LEADERBOARD_USERS]) {
-    console.log(`${u.email.padEnd(28)} / ${u.password.padEnd(16)} (${u.role}${u.xp ? `, ${u.xp} XP` : ''})`);
+  // Only print credentials when they were actually created. In a real deployment
+  // this banner would write the published demo passwords straight into Cloud
+  // Logging, where they persist and are readable by anyone with log access.
+  const demoSeeded =
+    process.env.SEED_DEMO_USERS === 'true' ||
+    (process.env.NODE_ENV !== 'production' && process.env.SEED_DEMO_USERS !== 'false');
+
+  if (demoSeeded) {
+    console.log('\n=== DEMO DATA (development only — do NOT use in production) ===');
+    for (const u of [...STAFF_USERS, ...LEADERBOARD_USERS]) {
+      console.log(`${u.email.padEnd(28)} / ${u.password.padEnd(16)} (${u.role}${u.xp ? `, ${u.xp} XP` : ''})`);
+    }
+  } else {
+    console.log('\nNo demo accounts were created. Create the first super-admin with:');
+    console.log('  bun scripts/bootstrap-production-admin.ts');
   }
 }
 

@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
 import { ZodError } from 'zod';
 import { env, isProd, googleOAuthEnabled } from '../config/env';
-import { csrfOriginCheck } from './middleware';
+import { csrfOriginCheck, rateLimitMiddleware } from './middleware';
+import { warnIfAdminSurfaceUnrestricted } from './admin-network';
 import { toSafeErrorResponse } from './errors';
 import { healthRoutes } from '../routes/health';
 import { authRoutes } from '../auth/auth.routes';
@@ -12,9 +13,13 @@ import { gamificationRoutes } from '../gamification/gamification.routes';
 import { settingsRoutes } from '../users/settings.routes';
 import { adminRoutes } from '../admin/admin.routes';
 import { publicRoutes } from '../public/public.routes';
+import { unsubscribeRoutes } from '../email/unsubscribe.routes';
 
 export function createApp() {
   const app = new Hono();
+
+  // Shouts at boot if production is running with an unrestricted admin surface.
+  warnIfAdminSurfaceUnrestricted();
 
   /* ---------------------------- Security headers --------------------------- */
   app.use('*', async (c, next) => {
@@ -30,6 +35,27 @@ export function createApp() {
     c.header('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'");
   });
 
+  /* --------------------- Global request ceiling (cost) --------------------- */
+  /**
+   * A blanket per-IP limit across EVERY endpoint, including reads.
+   *
+   * The per-route limits protect specific abuse paths (credential stuffing, flag
+   * guessing). They left every ordinary GET - the path list, lesson bodies, the
+   * leaderboard - completely unbudgeted, and on a pay-per-use autoscaler an
+   * unbudgeted read is a billing vector: hammering a cheap endpoint scales
+   * instances up and the invoice with them.
+   *
+   * Generous enough that a real learner never sees it (a page view is a handful
+   * of requests), low enough that a single host cannot drive autoscaling.
+   *
+   * Health checks are exempt so the platform can always probe liveness, and
+   * because a 429 there would cause the very restarts it is meant to prevent.
+   */
+  app.use('*', async (c, next) => {
+    if (c.req.path.startsWith('/api/v1/health')) return next();
+    return rateLimitMiddleware('global', env.RATE_LIMIT_MAX, env.RATE_LIMIT_WINDOW_MS)(c, next);
+  });
+
   /* ------------------------------- CSRF ----------------------------------- */
   const trusted = [env.APP_URL, env.API_URL];
   app.use('*', csrfOriginCheck(trusted));
@@ -43,6 +69,7 @@ export function createApp() {
   app.route('/api/v1', gamificationRoutes);
   app.route('/api/v1/me', settingsRoutes);
   app.route('/api/v1/public', publicRoutes);
+  app.route('/api/v1/unsubscribe', unsubscribeRoutes);
   app.route('/api/v1/admin', adminRoutes);
 
   /* ---------------------------- 404 + errors ------------------------------ */

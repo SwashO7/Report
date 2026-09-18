@@ -1,4 +1,5 @@
 import type { Context } from 'hono';
+import { env } from '../config/env';
 
 /** Application error with an HTTP status and a safe, user-facing message. */
 export class AppError extends Error {
@@ -37,10 +38,40 @@ export function toSafeErrorResponse(err: unknown): { status: number; body: Retur
   return { status: 500, body: errorBody('INTERNAL_ERROR', errors.internal().message) };
 }
 
+/**
+ * The client's IP, as trustworthy as the deployment allows.
+ *
+ * `X-Forwarded-For` is a list that each proxy APPENDS to, so the leftmost entry
+ * is whatever the original caller sent - fully attacker-controlled. Reading the
+ * left end (as this used to) let anyone defeat every rate limit by sending a
+ * different `X-Forwarded-For` on each request, and made the audit log's IP
+ * hashes meaningless.
+ *
+ * The only trustworthy entries are the ones our own infrastructure appended, so
+ * we count in from the RIGHT. `TRUSTED_PROXY_HOPS` is how many proxies sit in
+ * front of the app:
+ *
+ *   0 - direct, or a single nginx that appends the real peer (Docker Compose)
+ *   1 - Cloud Run behind the global load balancer ("client, lb")
+ *
+ * Set it too low and you rate-limit your own proxy as one client; too high and
+ * you are back to trusting attacker input. It is deliberately explicit.
+ */
 export function getClientIp(c: Context): string {
-  return (
-    c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ||
-    c.req.header('x-real-ip') ||
-    ''
-  );
+  const hops = env.TRUSTED_PROXY_HOPS;
+  const forwarded = c.req.header('x-forwarded-for');
+
+  if (forwarded) {
+    const parts = forwarded
+      .split(',')
+      .map((p) => p.trim())
+      .filter(Boolean);
+    if (parts.length > 0) {
+      // Walk in from the right by the number of proxies we control.
+      const index = Math.max(0, parts.length - 1 - hops);
+      return parts[index];
+    }
+  }
+
+  return c.req.header('x-real-ip')?.trim() || '';
 }
