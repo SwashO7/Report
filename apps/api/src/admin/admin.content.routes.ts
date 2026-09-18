@@ -7,6 +7,7 @@ import {
   adminCreatePath,
   adminUpdatePath,
   adminCreateModule,
+  adminListModules,
   adminUpdateModule,
   adminListLessons,
   adminGetLesson,
@@ -50,6 +51,12 @@ export const adminContentRoutes = new Hono()
   })
 
   /* ------------------------------- Modules --------------------------------- */
+  /* ------------------------------- Modules --------------------------------- */
+  .get('/modules', async (c) => {
+    const pathId = new URL(c.req.url).searchParams.get('pathId') ?? undefined;
+    return c.json({ modules: await adminListModules(pathId) });
+  })
+
   .post('/modules', async (c) => {
     const user = getAuthUser(c);
     const input = moduleCreateSchema.parse(await c.req.json());

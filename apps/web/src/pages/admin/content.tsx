@@ -240,7 +240,7 @@ function PathsTab() {
                 <div className="min-w-0">
                   <h3 className="truncate font-semibold tracking-tight">{selected.name}</h3>
                   <p className="mt-0.5 text-sm text-text-secondary">
-                    Modules Â· updated {timeAgo(selected.updatedAt)}
+                    Modules · updated {timeAgo(selected.updatedAt)}
                   </p>
                 </div>
                 <Button variant="secondary" size="sm" onClick={() => setAddModuleOpen(true)}>

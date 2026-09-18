@@ -79,11 +79,18 @@ They are on their phone. They have 6 minutes. They want a win.
   never cringe, never sarcasm at the learner's expense.
 - Slang: sparingly. A little is chill; three per paragraph is trying too hard.
 - Emoji: at most one or two in a whole lesson, and only in a callout title.
-- **Length ceiling per lesson: about 250 words of prose.** If you need more,
-  you are writing a textbook. Cut it.
+- **Length: 450 to 700 words of prose per lesson.** A learner who skips the
+  video must finish the lesson genuinely understanding the topic - the text is
+  the primary material, not a caption for a video. Under 400 words is too thin.
+  Over 800 and you are writing a textbook. Depth means *explaining the
+  mechanism*, not padding with adjectives.
 - Never say "as we discussed earlier" or reference other lessons vaguely.
 - No fake statistics, no invented CVE numbers, no invented bounty amounts, no
   claims about specific companies' current bugs.
+- **Nothing decorative.** Every block must carry information. If a diagram is
+  present, the prose must explain what the diagram shows. If a command is
+  present, the prose must say what its output means. A block nobody needs is
+  clutter, and clutter is what makes a lesson feel like filler.
 
 **Bad:** "A computer network is a collection of interconnected computing devices
 that facilitate the exchange of data through standardized communication
@@ -95,23 +102,50 @@ you get the internet."
 
 ## 4. Lesson recipe
 
-6 to 10 blocks. `estimatedMinutes` between 4 and 9. Order:
+9 to 14 blocks. `estimatedMinutes` between 7 and 12. The shape:
 
-1. `videoSlot('<the video you would actually film>')` — **always the first block.**
-   The title is a real video title, e.g. `'TCP vs UDP - why your video call stutters but your download does not'`.
-2. `paragraph` — the hook. 2-3 sentences. What this is, in plain words.
-3. The meat: pick 2-4 of `list`, `code`, `command`, `paragraph`, `heading`(3).
-   Prefer a `command` or `code` block in any lesson where the learner could
-   actually run something. Commands must be real and safe (read-only /
-   local-only). Never a destructive command.
-4. `callout` `'info'` or `'warning'` — the pro tip or the gotcha people trip on.
-5. `callout` `'success'` — the dopamine hit. Title like `'You just unlocked'` /
+1. **Video slot - ONLY IF THE LESSON NEEDS ONE.** See section 4a. When it does,
+   `videoSlot('<the video you would actually film>')` is the first block. When it
+   does not, the lesson simply starts at step 2 and has no video block at all.
+2. `paragraph` - the hook. 2-3 sentences. What this is, in plain words, and why
+   the reader should care.
+3. **How it actually works.** 2-3 `paragraph` blocks, or a `heading`(3) plus
+   paragraphs. This is the part that was missing when lessons were too short:
+   explain the mechanism step by step. Name the moving parts. Walk one concrete
+   worked example end to end with real values, not placeholders.
+4. `list` - the reference facts worth keeping (ports, flags, record types,
+   payload variants). Not a summary of the prose - new information.
+5. **Hands-on.** A `command` or `code` block the reader can actually run, then a
+   `paragraph` explaining *what they will see and how to read it*. A snippet with
+   no interpretation teaches nothing. Commands must be real, correct and
+   non-destructive.
+6. **Why it matters to a hacker / defender.** One `paragraph` connecting the
+   mechanism to a real finding: what breaks, what you would test, what the impact
+   is.
+7. `callout` `'info'` or `'warning'` - the gotcha people trip on.
+8. `callout` `'success'` - the dopamine hit. Title like `'You just unlocked'` /
    `'Level up'` / `'Locked in'`, one line naming the new skill in plain words.
-6. `quiz` — exactly one, 3-4 options, `correctIndex` correct, short
-   `explanation`. Make the wrong options plausible, not silly.
+9. `quiz` - exactly one, 3-4 options, `correctIndex` correct, short
+   `explanation`. Wrong options plausible, not silly.
 
-Legal/safety `callout` `'danger'`: add one in any lesson describing an attack -
+Legal/safety `callout` `'danger'`: required in any lesson describing an attack -
 one line, "only on targets you own or are authorised to test", no lecture.
+
+## 4a. Which lessons get a video
+
+A video slot is a promise to film something. Only reserve one where **watching
+beats reading**:
+
+- **Yes:** tool walkthroughs (Burp, nmap, Wireshark, ffuf, sqlmap), live attack
+  demos, protocol exchanges that animate well (handshakes, DNS resolution, OAuth
+  redirects), environment setup, anything where the reader must follow a screen.
+- **No:** concepts and reference material, law and ethics, career and reporting
+  advice, methodology and mindset, "how to read X" lessons, comparisons and
+  trade-offs. These are better read than watched, and a placeholder video card on
+  them is dead weight.
+
+When in doubt, leave the video out. An empty promise on every lesson is worse
+than a video on the third of lessons that genuinely need one.
 
 ## 5. Module rules
 
@@ -119,10 +153,20 @@ one line, "only on targets you own or are authorised to test", no lecture.
 {
   slug: 'assigned-slug',
   title: 'Assigned Title',
-  description: 'One line, max ~110 chars, says what the learner walks away with.',
+  description: '2-3 sentences, 200-380 characters.',
   lessons: [ /* in the plan's order */ ],
 }
 ```
+
+The description is what a learner reads before deciding to start the module, so
+a single clause does not earn the click. Cover three things: what the module is
+about, what they will actually be able to DO at the end, and why it matters for
+finding real bugs. Concrete over grand - name the specific skills, not "master
+the fundamentals of networking".
+
+**Too short:** `'Networks, IP addresses, ports, and the two transport protocols.'`
+
+**Right:** `'How machines find each other and hold a conversation: addresses, ports, and the two transport protocols that carry almost all traffic. By the end you can read an IP:port pair and say what is probably running there, explain a TCP handshake, and understand why a UDP scan is slower and less certain than a TCP one.'`
 
 ## 6. Exercise rules
 
@@ -247,10 +291,15 @@ export const EXERCISES: ExerciseSeed[] = [
 
 - Count your lessons against the plan. Every assigned lesson slug present, in
   order, nothing extra.
-- Every lesson starts with `videoSlot(...)`.
+- Every lesson reads as complete WITHOUT a video: 450-700 words, the mechanism
+  explained, one worked example with real values.
+- Every lesson that has a video slot genuinely needs one (section 4a). Lessons
+  that do not have no video block at all.
+- Every `command` / `code` block is followed by prose explaining the output.
 - Every lesson has a `'success'` callout and exactly one `quiz` block.
+- Attack lessons have a `'danger'` authorisation callout.
 - Every module has its exercise, and that exercise's `lessonSlug` exists in
   YOUR file.
 - No smart quotes, no em dashes, no unescaped apostrophes in single-quoted
   strings.
-- Run `node --check` mentally: balanced brackets, trailing commas fine.
+- Balanced brackets; trailing commas are fine.

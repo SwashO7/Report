@@ -45,7 +45,12 @@ for (const p of PATH_SEEDS) {
     if (moduleKeys.has(key)) errors.push(`duplicate module slug: ${key}`);
     moduleKeys.add(key);
     if (!m.lessons.length) errors.push(`module ${key} has no lessons`);
-    if (!m.description) warnings.push(`module ${key} has no description`);
+    if (!m.description) errors.push(`module ${key} has no description`);
+    else if (m.description.length < 150) {
+      errors.push(`module ${key}: description is ${m.description.length} chars - too thin to sell the module (want 200-380)`);
+    } else if (m.description.length > 500) {
+      warnings.push(`module ${key}: description is ${m.description.length} chars - trim it`);
+    }
 
     for (const l of m.lessons) {
       lessonCount++;
@@ -73,12 +78,17 @@ for (const p of PATH_SEEDS) {
       }
 
       const blocks = parsed.data;
-      if (blocks.length < 4) errors.push(`${l.slug}: only ${blocks.length} blocks (recipe wants 6-10)`);
-      if (blocks.length > 16) warnings.push(`${l.slug}: ${blocks.length} blocks - probably too long`);
+      if (blocks.length < 8) errors.push(`${l.slug}: only ${blocks.length} blocks (recipe wants 9-14)`);
+      if (blocks.length > 20) warnings.push(`${l.slug}: ${blocks.length} blocks - probably too long`);
 
-      const first = blocks[0];
-      if (!first || first.type !== 'video') errors.push(`${l.slug}: first block must be the video slot`);
-      else if (first.url.includes('video.suraksha.local')) videoSlots++;
+      // A video is optional now: only lessons where watching beats reading get
+      // one. When present it must lead, so the page opens with the player.
+      const videoBlocks = blocks.filter((b) => b.type === 'video');
+      if (videoBlocks.length > 1) errors.push(`${l.slug}: ${videoBlocks.length} video blocks, expected at most 1`);
+      if (videoBlocks.length === 1) {
+        if (blocks[0].type !== 'video') errors.push(`${l.slug}: the video block must be the first block`);
+        videoSlots++;
+      }
 
       const quizzes = blocks.filter((b) => b.type === 'quiz');
       if (quizzes.length !== 1) errors.push(`${l.slug}: expected exactly 1 inline quiz, found ${quizzes.length}`);
@@ -116,7 +126,19 @@ for (const p of PATH_SEEDS) {
         .map((b) => (b.type === 'paragraph' ? b.text : ''))
         .join(' ');
       const words = prose.split(/\s+/).filter(Boolean).length;
-      if (words > 420) warnings.push(`${l.slug}: ${words} words of prose - textbook territory`);
+      // Depth: a learner who skips the video must still understand the topic.
+      // Under 250 words the lesson is a caption, not a lesson - that is a hard
+      // failure. 250-450 is readable but below the target, so it is flagged for
+      // a depth pass rather than blocking the build.
+      if (words < 250) errors.push(`${l.slug}: only ${words} words of prose - unusable without the video (want 450-700)`);
+      else if (words < 450) warnings.push(`${l.slug}: ${words} words of prose - below the 450 target, needs a depth pass`);
+      else if (words > 900) warnings.push(`${l.slug}: ${words} words of prose - textbook territory`);
+
+      // A snippet with no interpretation teaches nothing.
+      const hasSnippet = blocks.some((b) => b.type === 'command' || b.type === 'code');
+      if (!hasSnippet && l.importance !== 'optional') {
+        warnings.push(`${l.slug}: no command or code block - is there really nothing to try?`);
+      }
 
       const raw = JSON.stringify(l.blocks);
       for (const [needle, label] of [

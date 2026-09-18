@@ -46,6 +46,29 @@ export async function adminUpdatePath(c: Context, user: AuthedUser, id: string, 
 
 /* ------------------------------- Modules --------------------------------- */
 
+/**
+ * Modules for a path, with their lesson counts.
+ *
+ * The admin content page asks for this when a path is selected. Without it the
+ * page falls back to an empty list and reports "No modules in this path yet"
+ * even for a path full of modules.
+ */
+export async function adminListModules(pathId?: string) {
+  const rows = await db
+    .select()
+    .from(modules)
+    .where(pathId ? eq(modules.pathId, pathId) : undefined)
+    .orderBy(asc(modules.sortOrder));
+
+  const counts = await db
+    .select({ moduleId: lessons.moduleId, n: count() })
+    .from(lessons)
+    .groupBy(lessons.moduleId);
+  const lessonsByModule = new Map(counts.map((c) => [c.moduleId, Number(c.n)]));
+
+  return rows.map((m) => ({ ...m, lessonCount: lessonsByModule.get(m.id) ?? 0 }));
+}
+
 export async function adminCreateModule(c: Context, user: AuthedUser, input: { pathId: string; title: string; slug: string; description: string }) {
   const path = (await db.select().from(learningPaths).where(eq(learningPaths.id, input.pathId)).limit(1))[0];
   if (!path) throw errors.notFound('Path not found.');
