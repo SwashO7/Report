@@ -34,7 +34,7 @@ export const EXERCISES: ExerciseSeed[] = [ /* one quiz per module */ ];
 { type: 'heading', level: 3, text: string }                        // level 2|3|4 — use 3
 { type: 'paragraph', text: string }
 { type: 'video', provider: 'youtube', url: string, title?: string } // use videoSlot() instead
-{ type: 'image', src: string, alt: string, caption?: string }       // do NOT use (no assets yet)
+{ type: 'image', src: string, alt: string, caption?: string }       // diagrams only - see below
 { type: 'code', language: string, filename?: string, code: string }
 { type: 'command', description?: string, commands: string[] }       // 1..20 commands
 { type: 'callout', variant: 'info' | 'warning' | 'success' | 'danger', title?: string, text: string }
@@ -46,7 +46,11 @@ export const EXERCISES: ExerciseSeed[] = [ /* one quiz per module */ ];
 { type: 'related_lesson', lessonSlug: string, title?: string }
 ```
 
-3. **`lab_ref` may only use these four lab slugs** (nothing else exists):
+3. **`image` blocks may ONLY reference a seeded diagram**, as
+   `src: '/api/v1/diagrams/<slug>'` where `<slug>` is the filename of an SVG in
+   `apps/api/src/db/seed/diagrams/`. `alt` is required, and the prose must explain
+   what the diagram shows. Never link an external image.
+4. **`lab_ref` may only use these four lab slugs** (nothing else exists):
    `port-discovery`, `http-investigation`, `invoice-portal`, `log-hunter`.
    Use one only where it genuinely fits; most lessons have no `lab_ref`.
 4. **`related_lesson` may only point at a lesson slug that exists in the plan**
@@ -288,6 +292,15 @@ export const EXERCISES: ExerciseSeed[] = [
 ```
 
 ## 8. Before you finish
+
+Run the validator - it checks most of this list mechanically and must report
+zero errors:
+
+```
+bun scripts/validate-curriculum.ts
+```
+
+Then confirm by hand what a script cannot judge:
 
 - Count your lessons against the plan. Every assigned lesson slug present, in
   order, nothing extra.

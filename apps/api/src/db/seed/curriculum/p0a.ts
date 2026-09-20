@@ -280,6 +280,92 @@ export const MODULES: ModuleSeed[] = [
         ],
       },
       {
+        slug: 'choose-your-path',
+        title: 'Which Levels You Actually Need',
+        summary: 'Nobody does all ten levels. Pick the route that matches what you want to do, and skip the rest without guilt.',
+        estimatedMinutes: 8,
+        importance: 'core',
+        blocks: [
+          {
+            type: 'paragraph',
+            text:
+              'There are ten levels on this platform. You are not supposed to finish all of them. That is not a motivational line - it is how the curriculum is designed. Different jobs need different halves of it, and doing the wrong half slowly is the most common way people quit.',
+          },
+          {
+            type: 'paragraph',
+            text:
+              "Think of it like a railway junction. Everyone boards at the same platform - Foundations - because every route runs over the same track for the first stretch. After that the lines split, and the train to Web Security is not the train to Wireless. Sitting in every coach to be safe just means you arrive nowhere late.",
+          },
+          {
+            type: 'paragraph',
+            text:
+              "Two levels are non-negotiable for everyone. Level 0 Foundations, because nothing later makes sense without addresses, ports, HTTP and sessions. And Level 1 Linux, because almost every server you will ever test runs it, and you cannot read a finding you cannot reproduce in a terminal. After those two, the map opens up and you choose.",
+          },
+          { type: 'heading', level: 3, text: 'What each level is for' },
+          {
+            type: 'list',
+            ordered: false,
+            items: [
+              '**Level 0 Foundations** - everyone, no exceptions',
+              '**Level 1 Linux** - everyone, no exceptions',
+              '**Level 2 Networking** - anyone doing network, wireless, packet or infrastructure work; web hunters need only the first module',
+              '**Level 3 Programming** - anyone who wants to read source code or write their own tools; skip it only if you already code',
+              '**Level 4 Web Security** - the biggest single track, and where most bounties come from',
+              '**Level 5 Recon and OSINT** - bug bounty hunters and red teamers; skip if you only test apps handed to you with credentials',
+              '**Level 6 Tools Mastery** - after you understand a bug class, not before',
+              '**Level 7 APIs, Cloud and Modern Apps** - anyone testing anything built in the last ten years',
+              '**Level 8 Bug Bounty and Vulnerability Research** - only if you intend to hunt or report professionally',
+              '**Level 9 Beyond Web** - optional side quests: Active Directory, binaries, crypto, blue team, social engineering, AI security',
+            ],
+          },
+          {
+            type: 'paragraph',
+            text:
+              "Walk one real route. Say you want to file your first valid bug bounty report in six months and you have an hour a day. You do Level 0, then Level 1, then the first module of Level 2 - enough networking to read an IP and a port, not subnetting for its own sake. Then Level 3 for HTML, JavaScript and enough Python to script a request. Then all of Level 4, slowly, doing every lab. Then Level 5 to find targets and Level 8 to write the report properly. You have skipped wireless, binaries, Active Directory and forensics entirely, and you are still a competent web hunter. Somebody heading for a SOC job skips Level 5 and lives inside Level 9's blue team module instead.",
+          },
+          {
+            type: 'list',
+            ordered: true,
+            items: [
+              '**Web bug hunter** - 0, 1, a bit of 2, 3, 4, 5, 6, 7, 8',
+              '**Network and infrastructure tester** - 0, 1, all of 2, 6, 9 (Active Directory and privilege escalation)',
+              '**Defender or SOC analyst** - 0, 1, 2, 4 (so you know what you are detecting), 9 (blue team and forensics)',
+            ],
+          },
+          {
+            type: 'paragraph',
+            text:
+              "Inside a level, the badges do the same job at a smaller scale. A lesson marked *Must know* carries something later lessons assume. A lesson marked *Optional* is genuinely skippable - it is there for the day you need it, not as homework. If a module feels heavy, do its Must-know lessons, take the quiz, and move on. Coming back later with a reason to care is far more effective than grinding through now out of duty.",
+          },
+          {
+            type: 'callout',
+            variant: 'info',
+            title: 'Going back is not failure',
+            text:
+              'The honest signal that you skipped too much is a lesson that stops making sense, not a gap in your completion percentage. When that happens, go back one level and fill the hole. Nobody is auditing your XP bar.',
+          },
+          {
+            type: 'callout',
+            variant: 'success',
+            title: 'You just unlocked',
+            text: 'You know which levels are mandatory, which ones your goal actually needs, and that skipping the rest is the intended way to use this platform.',
+          },
+          {
+            type: 'quiz',
+            question: 'You want to hunt web bugs on bounty platforms. Which level can you safely leave for much later?',
+            options: [
+              'Level 0 Foundations',
+              'Level 1 Linux',
+              'Level 9 Beyond Web (Active Directory, binaries, forensics)',
+              'Level 4 Web Security',
+            ],
+            correctIndex: 2,
+            explanation:
+              'Levels 0 and 1 are mandatory for everyone, and Level 4 is the core of web hunting. Level 9 is a set of optional side quests - useful someday, irrelevant to your first report.',
+          },
+        ],
+      },
+      {
         slug: 'your-hacking-setup',
         title: 'Your Setup: Laptop, VM, Browser',
         summary: 'You do not need a supercomputer. You need one VM, one browser, and a place to break things safely.',

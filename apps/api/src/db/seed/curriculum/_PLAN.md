@@ -15,6 +15,7 @@ named. Exercise attaches to the module's last `C` lesson unless stated.
 - `hacker-types-and-jobs` — White Hat, Black Hat, and Who Actually Pays — C
 - `rules-of-the-game` — The Rules: Law, Consent, and Not Going to Jail — C
 - `how-to-use-suraksha-labs` — How to Actually Use This Platform — O
+- `choose-your-path` — Which Levels You Actually Need — C
 - `your-hacking-setup` — Your Setup: Laptop, VM, Browser — C
 
 **`how-computers-communicate`** — "How Computers Talk" — Addresses, ports, and the two protocols that carry the internet.
@@ -337,6 +338,38 @@ Note: attach a `lab_ref` for `invoice-portal` inside `idor`.
 - `chaining-vulnerabilities` — Chaining Vulnerabilities — C
 - `impact-and-severity-cvss` — Impact and Severity (CVSS) — C
 - `a-full-web-assessment-walkthrough` — A Full Web Assessment, Start to Finish — C
+
+---
+
+## p4e.ts — Level 4 "Web Hacking Core", part E
+
+**`owasp-top-10`** — "The OWASP Top 10" — The industry's shared vocabulary, as a map onto the deep dives.
+- `owasp-top-10-overview` — What the OWASP Top 10 Actually Is — C
+- `owasp-a01-broken-access-control` — A01: Broken Access Control — C
+- `owasp-a02-cryptographic-failures` — A02: Cryptographic Failures — C
+- `owasp-a03-injection` — A03: Injection — C
+- `owasp-a04-insecure-design` — A04: Insecure Design — C
+- `owasp-a05-security-misconfiguration` — A05: Security Misconfiguration — C
+- `owasp-a06-vulnerable-components` — A06: Vulnerable and Outdated Components — C
+- `owasp-a07-auth-failures` — A07: Identification and Authentication Failures — C
+- `owasp-a08-integrity-failures` — A08: Software and Data Integrity Failures — C
+- `owasp-a09-logging-failures` — A09: Security Logging and Monitoring Failures — C
+- `owasp-a10-ssrf` — A10: Server-Side Request Forgery — C
+- `owasp-api-top-10` — The OWASP API Top 10 — C
+
+Exercise: `owasp-top-10-quiz` on `owasp-api-top-10`.
+
+**`advanced-web-attacks`** — "Advanced Web Attacks" — The web bug classes the core modules do not reach.
+- `http-request-smuggling` — HTTP Request Smuggling — C
+- `web-cache-poisoning` — Web Cache Poisoning — C
+- `web-cache-deception` — Web Cache Deception — C
+- `host-header-injection` — Host Header Attacks — C
+- `crlf-and-response-splitting` — CRLF Injection and Response Splitting — C
+- `subdomain-takeover` — Subdomain Takeover — C
+- `ldap-and-xpath-injection` — LDAP and XPath Injection — O
+- `web-socket-and-sse-abuse` — WebSocket and SSE Abuse — O
+
+Exercise: `advanced-web-attacks-quiz` on `subdomain-takeover`.
 
 ---
 

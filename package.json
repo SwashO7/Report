@@ -12,6 +12,7 @@
     "build": "bun run --filter='*' build",
     "test": "bun run --cwd apps/api test",
     "typecheck": "bun run --filter='*' typecheck",
+    "validate:curriculum": "bun scripts/validate-curriculum.ts",
     "db:generate": "bun run --cwd apps/api db:generate",
     "db:migrate": "bun run --cwd apps/api db:migrate",
     "db:seed": "bun run --cwd apps/api db:seed",
