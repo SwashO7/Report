@@ -17,6 +17,7 @@ import { adminDiagramRoutes } from './admin.diagrams.routes';
 import { adminLabRoutes } from './admin.labs.routes';
 import { adminAchievementRoutes } from './admin.achievements.routes';
 import { adminEmailRoutes } from './admin.email.routes';
+import { adminReportRoutes } from './admin.reports.routes';
 
 export const adminRoutes = new Hono()
 
@@ -123,4 +124,5 @@ export const adminRoutes = new Hono()
   .route('/diagrams', adminDiagramRoutes)
   .route('/labs', adminLabRoutes)
   .route('/achievements', adminAchievementRoutes)
-  .route('/email', adminEmailRoutes);
+  .route('/email', adminEmailRoutes)
+  .route('/reports', adminReportRoutes);

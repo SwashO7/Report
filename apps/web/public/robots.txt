@@ -7,3 +7,8 @@ Disallow: /onboarding
 Disallow: /admin
 Disallow: /verify-email
 Disallow: /reset-password
+
+# Replace https://surakshalabs.example with the production domain at deploy time.
+Sitemap: https://surakshalabs.example/sitemap.xml
+# Every published report page, generated from the database.
+Sitemap: https://surakshalabs.example/api/v1/reports/sitemap.xml

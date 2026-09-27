@@ -16,6 +16,8 @@ const ProfilePage = lazy(() => import('@/pages/profile/profile-v2'));
 const LabsPage = lazy(() => import('@/pages/labs/labs-v2'));
 const LabDetailPage = lazy(() => import('@/pages/labs/lab-detail-page'));
 const LeaderboardPage = lazy(() => import('@/pages/leaderboard'));
+const ReportsPage = lazy(() => import('@/pages/reports/reports-page'));
+const ReportDetailPage = lazy(() => import('@/pages/reports/report-detail-page'));
 const ShareCardPage = lazy(() => import('@/pages/achievements/share-card-page'));
 const PracticePage = lazy(() => import('@/pages/practice/practice-page'));
 const PracticeAttemptPage = lazy(() => import('@/pages/practice/practice-attempt-page'));
@@ -38,6 +40,8 @@ const AdminEmailCampaigns = lazy(() => import('@/pages/admin/email-campaigns'));
 const AdminLessonEditor = lazy(() => import('@/pages/admin/lesson-editor'));
 const AdminLabs = lazy(() => import('@/pages/admin/labs'));
 const AdminLabEditor = lazy(() => import('@/pages/admin/lab-editor'));
+const AdminReports = lazy(() => import('@/pages/admin/reports'));
+const AdminReportEditor = lazy(() => import('@/pages/admin/report-editor'));
 const AdminAchievements = lazy(() => import('@/pages/admin/achievements'));
 const AdminAnalytics = lazy(() => import('@/pages/admin/analytics'));
 const AdminAudit = lazy(() => import('@/pages/admin/audit'));
@@ -118,6 +122,8 @@ function AppRoutes() {
         <Route path="labs" element={suspense(<LabsPage />)} />
         <Route path="labs/:slug" element={suspense(<LabDetailPage />)} />
         <Route path="leaderboard" element={suspense(<LeaderboardPage />)} />
+        <Route path="reports" element={suspense(<ReportsPage />)} />
+        <Route path="reports/:slug" element={suspense(<ReportDetailPage />)} />
         <Route path="profile/:username" element={suspense(<ProfilePage />)} />
       </Route>
 
@@ -140,6 +146,9 @@ function AppRoutes() {
         <Route path="labs" element={suspense(<AdminLabs />)} />
         <Route path="labs/new" element={suspense(<AdminLabEditor />)} />
         <Route path="labs/:id" element={suspense(<AdminLabEditor />)} />
+        <Route path="reports" element={suspense(<AdminReports />)} />
+        <Route path="reports/new" element={suspense(<AdminReportEditor />)} />
+        <Route path="reports/:id" element={suspense(<AdminReportEditor />)} />
         <Route path="achievements" element={suspense(<AdminAchievements />)} />
         <Route path="analytics" element={suspense(<AdminAnalytics />)} />
         <Route path="audit" element={suspense(<AdminAudit />)} />

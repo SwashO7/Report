@@ -63,6 +63,9 @@ export const isEditorRole = (role?: string) =>
 export const isLabManagerRole = (role?: string) =>
   isAdminRole(role) || role === 'lab_manager';
 
+/** Mirrors REPORT_MANAGE_ROLES on the server, which is the actual enforcement point. */
+export const isReportManagerRole = (role?: string) => role === 'administrator' || role === 'super_admin';
+
 /** Where a signed-in user should land by default — staff go straight to the console. */
 export function homeForRole(role?: string): string {
   return isStaffRole(role) ? '/admin' : '/dashboard';

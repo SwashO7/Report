@@ -15,7 +15,8 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        // Override when port 3000 is taken locally, e.g. API_PROXY_TARGET=http://localhost:3001
+        target: process.env.API_PROXY_TARGET ?? 'http://localhost:3000',
         changeOrigin: true,
       },
     },

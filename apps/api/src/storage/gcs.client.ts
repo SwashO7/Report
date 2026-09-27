@@ -85,6 +85,23 @@ export async function gcsDownload(key: string): Promise<Buffer | null> {
   return Buffer.from(await res.arrayBuffer());
 }
 
+/**
+ * Streams an inclusive byte range of an object without buffering it.
+ * Used for media playback, where browsers seek with HTTP Range requests and a
+ * full download of a large video per request would waste memory and egress.
+ */
+export async function gcsStreamRange(key: string, start: number, end: number): Promise<ReadableStream<Uint8Array> | null> {
+  assertSafeKey(key);
+  const url = `https://storage.googleapis.com/storage/v1/b/${encodeURIComponent(bucket())}/o/${encodeURIComponent(key)}?alt=media`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${await accessToken()}`, Range: `bytes=${start}-${end}` },
+    signal: AbortSignal.timeout(120_000),
+  });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`gcs range download ${res.status}`);
+  return res.body;
+}
+
 /** Object size in bytes, or null when the object does not exist. */
 export async function gcsSize(key: string): Promise<number | null> {
   assertSafeKey(key);

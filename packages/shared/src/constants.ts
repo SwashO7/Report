@@ -25,6 +25,8 @@ export const LAB_MANAGE_ROLES: Role[] = ['lab_manager', 'administrator', 'super_
 export const PUBLISH_ROLES: Role[] = ['administrator', 'super_admin'];
 /** Roles allowed user administration + audit + settings. */
 export const USER_ADMIN_ROLES: Role[] = ['administrator', 'super_admin'];
+/** Roles allowed to create, edit, publish and delete public reports. */
+export const REPORT_MANAGE_ROLES: Role[] = ['administrator', 'super_admin'];
 /** Full platform control. */
 export const SUPER_ADMIN_ROLES: Role[] = ['super_admin'];
 
@@ -36,6 +38,15 @@ export type AuthProvider = (typeof AUTH_PROVIDERS)[number];
 
 export const CONTENT_STATUSES = ['draft', 'published', 'archived'] as const;
 export type ContentStatus = (typeof CONTENT_STATUSES)[number];
+
+export const REPORT_STATUSES = ['draft', 'published'] as const;
+export type ReportStatus = (typeof REPORT_STATUSES)[number];
+
+/** Upload ceilings for report media. Enforced server-side; mirrored in the admin UI. */
+export const REPORT_IMAGE_MAX_BYTES = 10 * 1024 * 1024;
+export const REPORT_VIDEO_MAX_BYTES = 100 * 1024 * 1024;
+export const REPORT_IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] as const;
+export const REPORT_VIDEO_MIME_TYPES = ['video/mp4', 'video/webm'] as const;
 
 export const LAB_STATUSES = [
   'draft',

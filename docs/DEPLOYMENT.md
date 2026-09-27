@@ -68,7 +68,7 @@ curl https://labs.example.com/api/v1/health/ready  # -> {"status":"ready","datab
 3. Confirm email delivery: request a password reset for a test address.
 4. Configure Google OAuth (optional) — see below.
 5. Upload lab packages via Admin → Labs (or run `bun scripts/build-lab-packages.ts` locally and upload the zips).
-6. Update `apps/web/public/sitemap.xml` with the production domain.
+6. Update `apps/web/public/sitemap.xml` and the `Sitemap:` lines in `apps/web/public/robots.txt` with the production domain. Published report pages are listed automatically by `/api/v1/reports/sitemap.xml` (built from `APP_URL`).
 7. Review Admin → Settings (XP config, registration toggle, announcement).
 
 ## 5. Google OAuth setup

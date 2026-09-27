@@ -691,6 +691,49 @@ export const emailCampaigns = pgTable(
   (t) => [index('email_campaigns_status_idx').on(t.status)],
 );
 
+/* ================================ Reports ================================= */
+
+/**
+ * Public bug / incident reports, authored by administrators in the admin panel
+ * and readable by anyone once published.
+ *
+ * Media is optional and stored through the same storage backends as lab
+ * packages (local filesystem, or Cloud Storage when GCS_BUCKET is set). The row
+ * keeps only the generated object filename - never a user-supplied name - plus
+ * the MIME type that was verified from the file's own bytes at upload time.
+ */
+export const reports = pgTable(
+  'reports',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    slug: varchar('slug', { length: 160 }).notNull(),
+    title: varchar('title', { length: 200 }).notNull(),
+    /** Long-form report body. Plain text with the platform's safe inline markup. */
+    description: text('description').notNull().default(''),
+    /** Generated storage filename, e.g. `3f1c…-9a.webp`. Null when no image. */
+    imageKey: varchar('image_key', { length: 120 }),
+    imageMime: varchar('image_mime', { length: 60 }),
+    imageSizeBytes: integer('image_size_bytes'),
+    /** Short alternative text for the image (accessibility). */
+    imageAlt: varchar('image_alt', { length: 300 }).notNull().default(''),
+    videoKey: varchar('video_key', { length: 120 }),
+    videoMime: varchar('video_mime', { length: 60 }),
+    videoSizeBytes: bigint('video_size_bytes', { mode: 'number' }),
+    /** draft | published */
+    status: varchar('status', { length: 20 }).notNull().default('draft'),
+    authorId: uuid('author_id').references(() => users.id, { onDelete: 'set null' }),
+    publishedAt: timestamp('published_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex('reports_slug_uq').on(t.slug),
+    index('reports_status_published_idx').on(t.status, t.publishedAt),
+    uniqueIndex('reports_image_key_uq').on(t.imageKey),
+    uniqueIndex('reports_video_key_uq').on(t.videoKey),
+  ],
+);
+
 /* ============================ Audit & Settings ============================ */
 
 export const auditLogs = pgTable(

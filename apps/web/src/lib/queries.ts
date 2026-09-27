@@ -38,6 +38,10 @@ export const qk = {
   adminAudit: (params: string) => ['admin', 'audit', params] as const,
   adminSettings: ['admin', 'settings'] as const,
   adminLessonAnalytics: ['admin', 'lesson-analytics'] as const,
+  reports: (params: string) => ['reports', params] as const,
+  report: (slug: string) => ['reports', 'detail', slug] as const,
+  adminReports: (params: string) => ['admin', 'reports', params] as const,
+  adminReport: (id: string) => ['admin', 'report', id] as const,
 };
 
 export function useMe() {

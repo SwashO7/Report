@@ -10,6 +10,7 @@ const nav = [
   { to: '/labs', label: 'Labs' },
   { to: '/practice', label: 'Practice' },
   { to: '/leaderboard', label: 'Community' },
+  { to: '/reports', label: 'Reports' },
 ];
 
 function Brand() {

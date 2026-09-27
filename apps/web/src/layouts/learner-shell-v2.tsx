@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Bell,
   BookOpen,
+  FileWarning,
   FlaskConical,
   Gauge,
   LogOut,
@@ -29,6 +30,7 @@ const navItems = [
   { to: '/practice', label: 'Practice', icon: PencilLine },
   { to: '/labs', label: 'Labs', icon: FlaskConical },
   { to: '/leaderboard', label: 'Rankings', icon: Trophy },
+  { to: '/reports', label: 'Reports', icon: FileWarning },
 ];
 
 function NotificationsMenu() {
@@ -176,6 +178,7 @@ export function LearnerShellV2() {
       {mobileOpen && (
         <div className="fixed inset-x-3 top-[4.5rem] z-50 rounded-xl border border-border bg-surface p-2 shadow-lg lg:hidden">
           <Link to="/leaderboard" className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-text-secondary"><Trophy className="size-4" /> Rankings</Link>
+          <Link to="/reports" className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-text-secondary"><FileWarning className="size-4" /> Reports</Link>
           <Link to={`/profile/${user.username}`} className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-text-secondary"><User className="size-4" /> My profile</Link>
           <Link to="/settings" className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-text-secondary"><Settings className="size-4" /> Settings</Link>
           {isStaffRole(user.role) && <Link to="/admin" className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-text-secondary"><ShieldCheck className="size-4" /> Admin workspace</Link>}

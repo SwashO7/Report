@@ -14,6 +14,7 @@ import { settingsRoutes } from '../users/settings.routes';
 import { adminRoutes } from '../admin/admin.routes';
 import { publicRoutes } from '../public/public.routes';
 import { unsubscribeRoutes } from '../email/unsubscribe.routes';
+import { reportRoutes } from '../reports/reports.routes';
 
 export function createApp() {
   const app = new Hono();
@@ -69,6 +70,7 @@ export function createApp() {
   app.route('/api/v1', gamificationRoutes);
   app.route('/api/v1/me', settingsRoutes);
   app.route('/api/v1/public', publicRoutes);
+  app.route('/api/v1/reports', reportRoutes);
   app.route('/api/v1/unsubscribe', unsubscribeRoutes);
   app.route('/api/v1/admin', adminRoutes);
 

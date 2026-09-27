@@ -166,6 +166,53 @@ export interface DiagramDetail extends DiagramSummary {
   content: string;
 }
 
+/** ---------- Reports ---------- */
+
+export interface ReportMedia {
+  /** Public URL served by the API, e.g. /api/v1/reports/media/<file>. */
+  url: string;
+  mimeType: string;
+  sizeBytes: number;
+}
+
+/** A published report as shown in the public feed (description is an excerpt). */
+export interface ReportCard {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  image: (ReportMedia & { alt: string }) | null;
+  video: ReportMedia | null;
+  /** Null only for a never-published draft seen in staff preview. */
+  publishedAt: string | null;
+  updatedAt: string;
+}
+
+export interface ReportDetail extends ReportCard {
+  description: string;
+  /** Only report managers can load a draft; the page shows a preview banner then. */
+  status: 'draft' | 'published';
+}
+
+/** Row in the admin report list. */
+export interface AdminReportRow {
+  id: string;
+  slug: string;
+  title: string;
+  status: 'draft' | 'published';
+  hasImage: boolean;
+  hasVideo: boolean;
+  publishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminReportDetail extends AdminReportRow {
+  description: string;
+  image: (ReportMedia & { alt: string }) | null;
+  video: ReportMedia | null;
+}
+
 /** ---------- Labs ---------- */
 
 export interface LabCard {
