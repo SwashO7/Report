@@ -22,7 +22,7 @@ WORKDIR /app/apps/web
 # API base for the SPA is same-origin /api (served behind the reverse proxy).
 RUN bun run build
 
-FROM nginx:1.27-alpine AS runtime
+FROM nginx:1.31-alpine AS runtime
 COPY --from=build /app/apps/web/dist /usr/share/nginx/html
 
 # Config is a TEMPLATE: the nginx image renders /etc/nginx/templates/*.template
